@@ -5,7 +5,6 @@ using Unity.Netcode;
 
 public class LocalPlayer : MonoBehaviour
 {
-
     public bool doSync = false;
     
     public PlayerPositionManager positionManager;

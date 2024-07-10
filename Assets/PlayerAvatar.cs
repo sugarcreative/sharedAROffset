@@ -17,26 +17,44 @@ public class PlayerAvatar : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+
+        PosManager = FindObjectOfType<PlayerPositionManager>();
+        ReferenceObject = PosManager.ReferenceObject;
+        localID = NetworkManager.Singleton.LocalClientId;
+
         //networkPositionText.text = "are we evening spawning";
         if (IsOwner)
         {
             networkPositionText.text = "Are we spawning with ownership";
             _localPlayer = FindObjectOfType<LocalPlayer>();
+            GetComponent<MeshRenderer>().enabled = false;
             //arlocation = FindObjectOfType<ARLocation>().gameObject;
             //transform.SetParent(arlocation.transform, true);
-            localID = NetworkManager.Singleton.LocalClientId;
-            
         }
 
-        PosManager = FindObjectOfType<PlayerPositionManager>();
-        ReferenceObject = PosManager.ReferenceObject;
+        if (localID == 0) {
+            //IS PLAYER ONE
+        }
+        else {
+            //IS PLAYER TWO
+        }
 
         base.OnNetworkSpawn();
+    }
+
+    public void PosChanged(Vector3 previous, Vector3 current) {
+
     }
 
     void Update()
     {
         //networkPositionText.text = transform.position.ToString();
+
+        if(localID == 0) {
+            //IS PLAYER ONE
+        } else {
+            //IS PLAYER TWO
+        }
 
         if (IsOwner)
         {

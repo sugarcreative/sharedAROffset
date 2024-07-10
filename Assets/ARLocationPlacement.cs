@@ -96,12 +96,9 @@ public class ARLocationPlacement : MonoBehaviour
     [ServerRpc]
     private void SpawnNetworkPlayerServerRpc(ulong clientId)
     {
-        GameObject netGo = Instantiate(networkAvatar);
+        //GameObject netGo = Instantiate(networkAvatar);
         //PlayerAvatar playerAvatar = netGo.GetComponent<PlayerAvatar>();
         //playerAvatar.Initialize();
-        text.text = clientId.ToString();
-        //NetworkObject networkObject = networkAvatar.GetComponent<NetworkObject>();
-        //networkObject.transform.SetParent(ArLocation.transform, true);
-        //networkObject.SpawnWithOwnership(clientId);
+        //text.text = clientId.ToString();
     }
 }

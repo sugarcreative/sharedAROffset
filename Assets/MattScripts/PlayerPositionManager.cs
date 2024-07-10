@@ -39,13 +39,15 @@ public class PlayerPositionManager : NetworkBehaviour
         localID = NetworkManager.Singleton.LocalClientId;
 
         if(localID == 0) {
-            //IS PLAYER ONE
-            P1_Position.OnValueChanged += UpdateLocalPosition;
-            P1_Rotation.OnValueChanged += UpdateLocalRotation;
-        } else {
-            //IS PLAYER TWO
+            //IS PLAYER ONE, WANTS TO UPDATE P2 VALUES
             P2_Position.OnValueChanged += UpdateLocalPosition;
             P2_Rotation.OnValueChanged += UpdateLocalRotation;
+        } else {
+            //IS PLAYER TWO, WANTS TO UPDATE P1 VALUES
+            P1_Position.OnValueChanged += UpdateLocalPosition;
+            P1_Rotation.OnValueChanged += UpdateLocalRotation;
+            UpdateLocalPosition(Vector3.zero, P1_Position.Value);
+            UpdateLocalRotation(Quaternion.identity, P1_Rotation.Value);
         }
     }
 
@@ -58,7 +60,7 @@ public class PlayerPositionManager : NetworkBehaviour
     private void UpdateLocalPosition(Vector3 previousValue, Vector3 newValue) {
         Vector3 playerPosition = ReferenceObject.transform.position + newValue;
         RemotePlayer.transform.position = playerPosition;
-        RemotePlayer.SetActive(false);
+        RemotePlayer.SetActive(true);
     }
 
     //Update player 1 position

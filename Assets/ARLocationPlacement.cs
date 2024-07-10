@@ -73,6 +73,9 @@ public class ARLocationPlacement : MonoBehaviour
     {
         localAvatar.transform.SetPositionAndRotation(position, rotation);
         localAvatar.gameObject.SetActive(true);
+
+        localAvatar.GetComponent<LocalPlayer>().doSync = true;
+
     }
 
     public void SpawnObjectFromHitTest(Vector3 position, Quaternion rotation)

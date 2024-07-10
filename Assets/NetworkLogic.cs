@@ -28,6 +28,7 @@ public class NetworkLogic : MonoBehaviour
 
     public bool _forceTracking = false;
 
+
     protected void Awake()
     {
         DontDestroyOnLoad(gameObject);
@@ -65,7 +66,7 @@ public class NetworkLogic : MonoBehaviour
         NetworkManager.Singleton.StartHost();
         _joinAsHostButton.gameObject.SetActive(false);
         _joinAsClientButton.gameObject.SetActive(false);
-
+        _isHost = true;
     }
 
     private void OnJoinAsClientClicked()
@@ -77,6 +78,8 @@ public class NetworkLogic : MonoBehaviour
         NetworkManager.Singleton.StartClient();
         _joinAsHostButton.gameObject.SetActive(false);
         _joinAsClientButton.gameObject.SetActive(false);
+
+        _isHost = false;
     }
 
     private void HideButtons()

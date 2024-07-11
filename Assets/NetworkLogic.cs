@@ -24,9 +24,7 @@ public class NetworkLogic : MonoBehaviour
 
     private string _roomName;
 
-    public bool _isHost;
-
-    public bool _forceTracking = false;
+    private bool _isJoined;
 
     protected void Awake()
     {
@@ -50,8 +48,9 @@ public class NetworkLogic : MonoBehaviour
     private void OnColocalizationTrackingStateChanged(
         SharedSpaceManager.SharedSpaceManagerStateChangeEventArgs args)
     {
-        if (args.Tracking || _forceTracking)
+        if (args.Tracking)
         {
+            if (_isJoined) return;
             _joinAsHostButton.gameObject.SetActive(true);
             _joinAsClientButton.gameObject.SetActive(true);
         }
@@ -65,6 +64,7 @@ public class NetworkLogic : MonoBehaviour
         NetworkManager.Singleton.StartHost();
         _joinAsHostButton.gameObject.SetActive(false);
         _joinAsClientButton.gameObject.SetActive(false);
+        _isJoined = true;
 
     }
 
@@ -77,6 +77,7 @@ public class NetworkLogic : MonoBehaviour
         NetworkManager.Singleton.StartClient();
         _joinAsHostButton.gameObject.SetActive(false);
         _joinAsClientButton.gameObject.SetActive(false);
+        _isJoined = true;
     }
 
     private void HideButtons()

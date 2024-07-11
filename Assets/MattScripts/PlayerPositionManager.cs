@@ -34,6 +34,8 @@ public class PlayerPositionManager : NetworkBehaviour
     public GameObject LocalPlayer;
     public GameObject RemotePlayer;
 
+    public TMPro.TextMeshProUGUI LocalPlayerText, RemotePlayerText;
+
     private bool hasSpawned = false;
 
     private ulong localID;
@@ -44,12 +46,12 @@ public class PlayerPositionManager : NetworkBehaviour
 
         if(localID == 0) {
             //IS PLAYER ONE, WANTS TO UPDATE P2 VALUES
-            P2_Position.OnValueChanged += UpdateRemovePosition;
-            P2_Rotation.OnValueChanged += UpdateRemoveRotation;
+            P2_Position.OnValueChanged += UpdateRemotePosition;
+            P2_Rotation.OnValueChanged += UpdateRemoteRotation;
         } else {
             //IS PLAYER TWO, WANTS TO UPDATE P1 VALUES
-            P1_Position.OnValueChanged += UpdateRemovePosition;
-            P1_Rotation.OnValueChanged += UpdateRemoveRotation;
+            P1_Position.OnValueChanged += UpdateRemotePosition;
+            P1_Rotation.OnValueChanged += UpdateRemoteRotation;
             //UpdateRemovePosition(Vector3.zero, P1_Position.Value);
             //UpdateRemoveRotation(Quaternion.identity, P1_Rotation.Value);
         }
@@ -72,22 +74,25 @@ public class PlayerPositionManager : NetworkBehaviour
         }
     }
 
-    private void UpdateRemoveRotation(Quaternion previousValue, Quaternion newValue) {     
+    private void UpdateRemoteRotation(Quaternion previousValue, Quaternion newValue) {     
         Quaternion playerRotation = ReferenceObject.transform.rotation * newValue;
         RemotePlayer.transform.rotation = playerRotation;
         RemotePlayer.SetActive(true);
+        RemotePlayerText.text = newValue.ToString();
     }
 
-    private void UpdateRemovePosition(Vector3 previousValue, Vector3 newValue) {
+    private void UpdateRemotePosition(Vector3 previousValue, Vector3 newValue) {
         Vector3 playerPosition = ReferenceObject.transform.position + newValue;
         RemotePlayer.transform.position = playerPosition;
         RemotePlayer.SetActive(true);
+        RemotePlayerText.text = newValue.ToString();
     }
 
     //Update player 1 position
     public void UpdateP1PositionAndRotation() {
         var relativePositionAndRotation = GetRelativePositionAndRotation(ReferenceObject.transform, LocalPlayer.transform);
         UpdateP1ServerRpc(relativePositionAndRotation.Item1, relativePositionAndRotation.Item2);
+        LocalPlayerText.text = relativePositionAndRotation.Item1.ToString();
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -100,6 +105,7 @@ public class PlayerPositionManager : NetworkBehaviour
     public void UpdateP2PositionAndRotation() {
         var relativePositionAndRotation = GetRelativePositionAndRotation(ReferenceObject.transform, LocalPlayer.transform);
         UpdateP2ServerRpc(relativePositionAndRotation.Item1, relativePositionAndRotation.Item2);
+        LocalPlayerText.text = relativePositionAndRotation.Item1.ToString();
     }
 
     [ServerRpc(RequireOwnership = false)]

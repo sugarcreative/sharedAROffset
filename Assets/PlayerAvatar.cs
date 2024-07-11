@@ -15,6 +15,9 @@ public class PlayerAvatar : NetworkBehaviour
 
     //public GameObject arlocation;
 
+    private void Awake() {
+        Debug.Log("HELLLLO");
+    }
     public override void OnNetworkSpawn()
     {
 

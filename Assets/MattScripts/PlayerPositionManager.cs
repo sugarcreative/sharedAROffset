@@ -31,41 +31,63 @@ public class PlayerPositionManager : NetworkBehaviour
     );
 
     public GameObject ReferenceObject;
+    public GameObject LocalPlayer;
     public GameObject RemotePlayer;
 
+    private bool hasSpawned = false;
+
     private ulong localID;
+
     public override void OnNetworkSpawn() {
         base.OnNetworkSpawn();
         localID = NetworkManager.Singleton.LocalClientId;
 
         if(localID == 0) {
             //IS PLAYER ONE, WANTS TO UPDATE P2 VALUES
-            P2_Position.OnValueChanged += UpdateLocalPosition;
-            P2_Rotation.OnValueChanged += UpdateLocalRotation;
+            P2_Position.OnValueChanged += UpdateRemovePosition;
+            P2_Rotation.OnValueChanged += UpdateRemoveRotation;
         } else {
             //IS PLAYER TWO, WANTS TO UPDATE P1 VALUES
-            P1_Position.OnValueChanged += UpdateLocalPosition;
-            P1_Rotation.OnValueChanged += UpdateLocalRotation;
-            UpdateLocalPosition(Vector3.zero, P1_Position.Value);
-            UpdateLocalRotation(Quaternion.identity, P1_Rotation.Value);
+            P1_Position.OnValueChanged += UpdateRemovePosition;
+            P1_Rotation.OnValueChanged += UpdateRemoveRotation;
+            //UpdateRemovePosition(Vector3.zero, P1_Position.Value);
+            //UpdateRemoveRotation(Quaternion.identity, P1_Rotation.Value);
+        }
+
+        hasSpawned = true;
+    }
+
+    private void Update() {
+
+        if(hasSpawned == false) {
+            return;
+        }
+
+        // Continuously update the position and rotation of the local player
+        if (localID == 0) {
+            UpdateP1PositionAndRotation();
+        }
+        else {
+            UpdateP2PositionAndRotation();
         }
     }
 
-    private void UpdateLocalRotation(Quaternion previousValue, Quaternion newValue) {     
+    private void UpdateRemoveRotation(Quaternion previousValue, Quaternion newValue) {     
         Quaternion playerRotation = ReferenceObject.transform.rotation * newValue;
         RemotePlayer.transform.rotation = playerRotation;
         RemotePlayer.SetActive(true);
     }
 
-    private void UpdateLocalPosition(Vector3 previousValue, Vector3 newValue) {
+    private void UpdateRemovePosition(Vector3 previousValue, Vector3 newValue) {
         Vector3 playerPosition = ReferenceObject.transform.position + newValue;
         RemotePlayer.transform.position = playerPosition;
         RemotePlayer.SetActive(true);
     }
 
     //Update player 1 position
-    public void UpdateP1PositionAndRotation(Vector3 _Position, Quaternion _Rotation) {
-        UpdateP1ServerRpc(_Position, _Rotation);
+    public void UpdateP1PositionAndRotation() {
+        var relativePositionAndRotation = GetRelativePositionAndRotation(ReferenceObject.transform, LocalPlayer.transform);
+        UpdateP1ServerRpc(relativePositionAndRotation.Item1, relativePositionAndRotation.Item2);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -75,13 +97,24 @@ public class PlayerPositionManager : NetworkBehaviour
     }
 
     //Update player 2 position
-    public void UpdateP2PositionAndRotation(Vector3 _Position, Quaternion _Rotation) {
-        UpdateP2ServerRpc(_Position, _Rotation);
+    public void UpdateP2PositionAndRotation() {
+        var relativePositionAndRotation = GetRelativePositionAndRotation(ReferenceObject.transform, LocalPlayer.transform);
+        UpdateP2ServerRpc(relativePositionAndRotation.Item1, relativePositionAndRotation.Item2);
     }
 
     [ServerRpc(RequireOwnership = false)]
     public void UpdateP2ServerRpc(Vector3 pos, Quaternion rot) {
         P2_Position.Value = pos;
         P2_Rotation.Value = rot;
+    }
+
+    public (Vector3, Quaternion) GetRelativePositionAndRotation(Transform reference, Transform target) {
+        // Calculate relative position
+        Vector3 relativePosition = reference.InverseTransformPoint(target.position);
+
+        // Calculate relative rotation
+        Quaternion relativeRotation = Quaternion.Inverse(reference.rotation) * target.rotation;
+
+        return (relativePosition, relativeRotation);
     }
 }

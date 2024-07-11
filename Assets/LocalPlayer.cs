@@ -2,11 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.EventSystems;
 
 public class LocalPlayer : MonoBehaviour
-{
-    public bool doSync = false;
-    
+{  
     public PlayerPositionManager positionManager;
     public GameObject ReferenceObject;
 
@@ -17,17 +16,41 @@ public class LocalPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(doSync == false) {
-            return;
+        DoRaycast();
+    }
+
+    private void DoRaycast() {
+        if (Input.touchCount > 0 && Input.touchCount < 2 && Input.GetTouch(0).phase == TouchPhase.Began) {
+            Touch touch = Input.GetTouch(0);
+
+            PointerEventData pointerData = new PointerEventData(EventSystem.current);
+            pointerData.position = touch.position;
+
+            List<RaycastResult> results = new List<RaycastResult>();
+
+            EventSystem.current.RaycastAll(pointerData, results);
+
+            if (results.Count > 0) {
+                return;
+            }
+
+            if (EventSystem.current.IsPointerOverGameObject(touch.fingerId)) {
+                return;
+            }
+
+            TouchToRay(touch.position);
         }
+    }
 
-        Vector3 posOffset = transform.position - ReferenceObject.transform.position;
-        Quaternion RotationDifference = Quaternion.Inverse(ReferenceObject.transform.rotation) * transform.rotation;
+    private void TouchToRay(Vector3 touch) {
 
-        if (NetworkManager.Singleton.LocalClientId == 0) {
-            positionManager.UpdateP1PositionAndRotation(posOffset, RotationDifference);
-        } else {
-            positionManager.UpdateP2PositionAndRotation(posOffset, RotationDifference);
+        Ray ray = Camera.main.ScreenPointToRay(touch);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit) && hit.transform.CompareTag("Floor")) {
+            Quaternion rot = Quaternion.FromToRotation(Vector3.up, hit.normal);
+            Vector3 pos = new Vector3(hit.point.x, hit.point.y, hit.point.z);
+            transform.SetPositionAndRotation(pos, rot);
         }
     }
 }

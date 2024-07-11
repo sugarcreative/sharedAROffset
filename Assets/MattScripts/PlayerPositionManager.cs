@@ -45,15 +45,13 @@ public class PlayerPositionManager : NetworkBehaviour
         localID = NetworkManager.Singleton.LocalClientId;
 
         if(localID == 0) {
-            //IS PLAYER ONE, WANTS TO UPDATE P2 VALUES
+            //IS PLAYER ONE, LISTEN FOR CHANGES TO P2
             P2_Position.OnValueChanged += UpdateRemotePosition;
             P2_Rotation.OnValueChanged += UpdateRemoteRotation;
         } else {
-            //IS PLAYER TWO, WANTS TO UPDATE P1 VALUES
+            //IS PLAYER TWO, LISTEN FOR CHANGES TO P1
             P1_Position.OnValueChanged += UpdateRemotePosition;
             P1_Rotation.OnValueChanged += UpdateRemoteRotation;
-            //UpdateRemovePosition(Vector3.zero, P1_Position.Value);
-            //UpdateRemoveRotation(Quaternion.identity, P1_Rotation.Value);
         }
 
         hasSpawned = true;
@@ -74,25 +72,27 @@ public class PlayerPositionManager : NetworkBehaviour
         }
     }
 
-    private void UpdateRemoteRotation(Quaternion previousValue, Quaternion newValue) {     
-        Quaternion playerRotation = ReferenceObject.transform.rotation * newValue;
-        RemotePlayer.transform.rotation = playerRotation;
+    private void UpdateRemoteRotation(Quaternion previousValue, Quaternion newValue) {
+        //Quaternion playerRotation = ReferenceObject.transform.rotation * newValue;
+        //RemotePlayer.transform.rotation = playerRotation;
+        RemotePlayer.transform.localRotation = newValue;
         RemotePlayer.SetActive(true);
-        RemotePlayerText.text = newValue.ToString();
     }
 
     private void UpdateRemotePosition(Vector3 previousValue, Vector3 newValue) {
-        Vector3 playerPosition = ReferenceObject.transform.position + newValue;
-        RemotePlayer.transform.position = playerPosition;
+        //Vector3 playerPosition = ReferenceObject.transform.position + newValue;
+        //RemotePlayer.transform.position = playerPosition;
         RemotePlayer.SetActive(true);
         RemotePlayerText.text = newValue.ToString();
+        RemotePlayer.transform.localPosition = newValue;
     }
 
     //Update player 1 position
     public void UpdateP1PositionAndRotation() {
-        var relativePositionAndRotation = GetRelativePositionAndRotation(ReferenceObject.transform, LocalPlayer.transform);
-        UpdateP1ServerRpc(relativePositionAndRotation.Item1, relativePositionAndRotation.Item2);
-        LocalPlayerText.text = relativePositionAndRotation.Item1.ToString();
+        //var relativePositionAndRotation = GetRelativePositionAndRotation(ReferenceObject.transform, LocalPlayer.transform);
+        //UpdateP1ServerRpc(relativePositionAndRotation.Item1, relativePositionAndRotation.Item2);
+        LocalPlayerText.text = LocalPlayer.transform.localPosition.ToString();
+        UpdateP1ServerRpc(LocalPlayer.transform.localPosition, LocalPlayer.transform.localRotation);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -103,9 +103,10 @@ public class PlayerPositionManager : NetworkBehaviour
 
     //Update player 2 position
     public void UpdateP2PositionAndRotation() {
-        var relativePositionAndRotation = GetRelativePositionAndRotation(ReferenceObject.transform, LocalPlayer.transform);
-        UpdateP2ServerRpc(relativePositionAndRotation.Item1, relativePositionAndRotation.Item2);
-        LocalPlayerText.text = relativePositionAndRotation.Item1.ToString();
+        //var relativePositionAndRotation = GetRelativePositionAndRotation(ReferenceObject.transform, LocalPlayer.transform);
+        //UpdateP2ServerRpc(relativePositionAndRotation.Item1, relativePositionAndRotation.Item2);
+        LocalPlayerText.text = LocalPlayer.transform.localPosition.ToString();
+        UpdateP2ServerRpc(LocalPlayer.transform.localPosition, LocalPlayer.transform.localRotation);
     }
 
     [ServerRpc(RequireOwnership = false)]

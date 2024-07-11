@@ -6,13 +6,6 @@ using UnityEngine.EventSystems;
 
 public class LocalPlayer : MonoBehaviour
 {  
-    public PlayerPositionManager positionManager;
-    public GameObject ReferenceObject;
-
-    private void Start() {
-        positionManager = FindObjectOfType<PlayerPositionManager>();
-    }
-
     // Update is called once per frame
     void Update()
     {

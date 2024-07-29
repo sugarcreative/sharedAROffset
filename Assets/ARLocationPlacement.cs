@@ -65,7 +65,7 @@ public class ARLocationPlacement : MonoBehaviour
             Vector3 pos = new Vector3(hit.point.x, hit.point.y, hit.point.z);
             //SpawnObjectFromHitTest(pos, rot);
             SetLocalAvatarToLocation(pos, rot);
-            _canPlace = false;
+            //_canPlace = false;
         }
     }
 

@@ -1578,8 +1578,6 @@ MonoBehaviour:
   _joinAsClientButton: {fileID: 766680196}
   _sharedSpaceManager: {fileID: 135122425}
   arLocation: {fileID: 1804478174}
-  _isHost: 0
-  _forceTracking: 0
 --- !u!4 &915224705
 Transform:
   m_ObjectHideFlags: 0
@@ -2145,10 +2143,6 @@ PrefabInstance:
     - target: {fileID: 2680303834412452400, guid: 01f4e055fc5b29b47802cf6baf76b797, type: 3}
       propertyPath: m_Name
       value: LocalPlayerAvatar
-      objectReference: {fileID: 0}
-    - target: {fileID: 2680303834412452400, guid: 01f4e055fc5b29b47802cf6baf76b797, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3261893672802006950, guid: 01f4e055fc5b29b47802cf6baf76b797, type: 3}
       propertyPath: m_LocalPosition.x

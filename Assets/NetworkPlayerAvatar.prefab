@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5995117630967832839}
   - component: {fileID: -8314844324751472893}
   - component: {fileID: 5947496363004159443}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: NetworkPlayerAvatar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,7 +106,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -198,7 +198,7 @@ GameObject:
   - component: {fileID: 3298868777382718824}
   - component: {fileID: 2637196270036563538}
   - component: {fileID: 7830524594996056369}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -299,7 +299,7 @@ GameObject:
   - component: {fileID: 3856644777152174642}
   - component: {fileID: 2863932661364081616}
   - component: {fileID: 8380444570986234270}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: NetworkObjectPositionText
   m_TagString: Untagged
   m_Icon: {fileID: 0}

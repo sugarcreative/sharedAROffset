@@ -1,4 +1,3 @@
-using Niantic.Lightship.AR.LocationAR;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -9,7 +8,7 @@ public class PlayerAvatar : NetworkBehaviour
 
     public TMP_Text networkPositionText;
 
-    private MeshRenderer mesh;
+    public MeshRenderer[] mesh;
 
     //public GameObject arlocation;
 
@@ -18,8 +17,13 @@ public class PlayerAvatar : NetworkBehaviour
         //networkPositionText.text = "are we evening spawning";
         if (IsOwner)
         {
-            mesh = GetComponent<MeshRenderer>();
-            mesh.enabled = false;
+            //mesh = GetComponent<MeshRenderer>();
+            mesh = GetComponentsInChildren<MeshRenderer>();
+            //mesh.enabled = false;
+            foreach (MeshRenderer mr in mesh)
+            {
+                mr.enabled = false;
+            }
             //networkPositionText.text = "Are we spawning with ownership";
             _localPlayer = FindObjectOfType<LocalPlayer>();
             //arlocation = FindObjectOfType<ARLocation>().gameObject;
@@ -37,6 +41,7 @@ public class PlayerAvatar : NetworkBehaviour
         if (IsOwner)
         {
             networkPositionText.text = NetworkManager.Singleton.LocalClientId + " // " + transform.position.ToString();
+            networkPositionText.gameObject.SetActive(false);
 
             if (_localPlayer != null)
             {

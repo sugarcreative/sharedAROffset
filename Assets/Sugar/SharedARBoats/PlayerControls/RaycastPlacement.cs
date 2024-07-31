@@ -1,25 +1,14 @@
-using Niantic.Lightship.AR.LocationAR;
 using System.Collections.Generic;
-using TMPro;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ARLocationPlacement : MonoBehaviour
+public class RaycastPlacement : MonoBehaviour
 {
     [SerializeField]
     private GameObject localAvatar;
 
     [SerializeField]
-    private GameObject networkAvatar;
-
-    [SerializeField]
-    private ARLocation ArLocation;
-
-    [SerializeField]
     private Camera _camera;
-
-    [SerializeField] private TMP_Text text;
 
     [SerializeField]
     private bool _canPlace = true;
@@ -63,9 +52,8 @@ public class ARLocationPlacement : MonoBehaviour
         {
             Quaternion rot = Quaternion.FromToRotation(Vector3.up, hit.normal);
             Vector3 pos = new Vector3(hit.point.x, hit.point.y, hit.point.z);
-            //SpawnObjectFromHitTest(pos, rot);
             SetLocalAvatarToLocation(pos, rot);
-            //_canPlace = false;
+            _canPlace = false;
         }
     }
 
@@ -73,32 +61,5 @@ public class ARLocationPlacement : MonoBehaviour
     {
         localAvatar.transform.SetPositionAndRotation(position, rotation);
         localAvatar.gameObject.SetActive(true);
-    }
-
-    public void SpawnObjectFromHitTest(Vector3 position, Quaternion rotation)
-    {
-        GameObject go = Instantiate(localAvatar, position, rotation);
-        go.transform.SetParent(ArLocation.transform, true);
-
-        SpawnNetworkPlayerServerRpc(NetworkManager.Singleton.LocalClientId);
-
-        //GameObject netGo = Instantiate(networkAvatar);
-        //PlayerAvatar playerAvatar = netGo.GetComponent<PlayerAvatar>();
-        //playerAvatar.Initialize(go);
-        //NetworkObject networkObject = networkAvatar.GetComponent<NetworkObject>();
-        //networkObject.transform.SetParent(ArLocation.transform, true);
-        //networkObject.Spawn();
-    }
-
-    [ServerRpc]
-    private void SpawnNetworkPlayerServerRpc(ulong clientId)
-    {
-        GameObject netGo = Instantiate(networkAvatar);
-        //PlayerAvatar playerAvatar = netGo.GetComponent<PlayerAvatar>();
-        //playerAvatar.Initialize();
-        text.text = clientId.ToString();
-        //NetworkObject networkObject = networkAvatar.GetComponent<NetworkObject>();
-        //networkObject.transform.SetParent(ArLocation.transform, true);
-        //networkObject.SpawnWithOwnership(clientId);
     }
 }

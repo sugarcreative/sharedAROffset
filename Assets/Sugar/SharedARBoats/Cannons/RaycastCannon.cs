@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class RaycastCannon : NetworkBehaviour
 {
-
     [SerializeField] private float _cannonRange;
 
     //[SerializeField] private CannonLogic _cannonLogic;
@@ -22,28 +21,32 @@ public class RaycastCannon : NetworkBehaviour
     {
         RaycastHit[] hits;
         hits = Physics.RaycastAll(transform.position, transform.forward, _cannonRange, _hitLayers);
+        int num = hits.Length;
+        SendHitMessageServerRpc(num);
+        //combatLog.text = hits.Length.ToString();
+
+       
 
         foreach (RaycastHit hit in hits)
         {
             NetworkObject networkObj = hit.collider.GetComponent<NetworkObject>();
-            if (networkObj != null && networkObj.OwnerClientId != OwnerClientId)
+            if (networkObj != null && networkObj.OwnerClientId != NetworkManager.Singleton.LocalClientId)
             {
                 ulong networkObjId = networkObj.OwnerClientId;
-                combatLog.text = $"{networkObjId} has been hit!";
-                //SendHitMessageServerRpc(networkObjId);
+                //combatLog.text = $"{networkObjId} has been hit!";
             }
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
-    void SendHitMessageServerRpc(ulong ownerClientId)
+    void SendHitMessageServerRpc(int num)
     {
-        UpdateCombatLogOnClientRpc(ownerClientId);
+        UpdateCombatLogOnClientRpc(num);
     }
 
     [ClientRpc]
-    void UpdateCombatLogOnClientRpc(ulong ownerClientId)
+    void UpdateCombatLogOnClientRpc(int num)
     {
-        combatLog.text = $"{ownerClientId} has been hit!";
+        combatLog.text = $"{num} hits detected by client {NetworkManager.Singleton.LocalClientId}";
     }
 }

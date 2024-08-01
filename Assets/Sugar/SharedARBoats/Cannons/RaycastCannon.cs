@@ -19,34 +19,40 @@ public class RaycastCannon : NetworkBehaviour
 
     public void FireCannon()
     {
-        RaycastHit[] hits;
-        hits = Physics.RaycastAll(transform.position, transform.forward, _cannonRange, _hitLayers);
-        int num = hits.Length;
-        SendHitMessageServerRpc(num);
-        //combatLog.text = hits.Length.ToString();
 
-       
-
-        foreach (RaycastHit hit in hits)
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.forward, out hit, _cannonRange, _hitLayers))
         {
-            NetworkObject networkObj = hit.collider.GetComponent<NetworkObject>();
-            if (networkObj != null && networkObj.OwnerClientId != NetworkManager.Singleton.LocalClientId)
+            ulong targetId = hit.collider.GetComponent<NetworkObject>().OwnerClientId;
+            combatLog.text = $"you have hit {targetId}!";
+            ClientRpcParams clientRpcParams = new ClientRpcParams
             {
-                ulong networkObjId = networkObj.OwnerClientId;
-                //combatLog.text = $"{networkObjId} has been hit!";
-            }
+                Send = new ClientRpcSendParams
+                {
+                    TargetClientIds = new ulong[] { targetId },
+                }
+            };
+            SendHitMessageServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
+            //combatLog.text = $"{NetworkManager.Singleton.LocalClientId} has hit {hit.collider.GetComponent<NetworkObject>().OwnerClientId}";
+
+        }
+        else
+        {
+            combatLog.text = $"{NetworkManager.Singleton.LocalClientId} has hit nothing!";
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
-    void SendHitMessageServerRpc(int num)
+    void SendHitMessageServerRpc(ulong shooterId, ulong targetId)
     {
-        UpdateCombatLogOnClientRpc(num);
+        UpdateCombatLogOnClientRpc(shooterId, targetId);
     }
 
     [ClientRpc]
-    void UpdateCombatLogOnClientRpc(int num)
+    void UpdateCombatLogOnClientRpc(ulong shooterId, ulong targetId)
     {
-        combatLog.text = $"{num} hits detected by client {NetworkManager.Singleton.LocalClientId}";
+        if (targetId != NetworkManager.Singleton.LocalClientId) return;
+
+        combatLog.text = $"You have been shot by {shooterId}!";
     }
 }

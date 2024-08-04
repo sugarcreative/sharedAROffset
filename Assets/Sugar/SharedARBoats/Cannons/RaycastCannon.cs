@@ -6,15 +6,13 @@ public class RaycastCannon : NetworkBehaviour
 {
     [SerializeField] private float _cannonRange;
 
-    //[SerializeField] private CannonLogic _cannonLogic;
-
     public LayerMask _hitLayers;
 
     public TMP_Text combatLog;
 
     [SerializeField] private GameObject _hitParticles;
 
-    private void Start()
+    private void Awake()
     {
         combatLog = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
     }
@@ -31,26 +29,9 @@ public class RaycastCannon : NetworkBehaviour
                 SpawnParticles(_hitParticles, hit.point, hit.normal);
                 ulong targetId = hit.collider.GetComponent<NetworkObject>().OwnerClientId;
                 combatLog.text = $"you have hit {targetId}!";
-                //ClientRpcParams clientRpcParams = new ClientRpcParams
-                //{
-                //    Send = new ClientRpcSendParams
-                //    {
-                //        TargetClientIds = new ulong[] { targetId },
-                //    }
-                //};
-                SendHitMessageServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
+                NetworkEntityManager.Instance.ReduceHealthServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
+                //SendHitMessageServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
             }
-
-            //ulong targetId = hit.collider.GetComponent<NetworkObject>().OwnerClientId;
-            //combatLog.text = $"you have hit {targetId}!";
-            //ClientRpcParams clientRpcParams = new ClientRpcParams
-            //{
-            //    Send = new ClientRpcSendParams
-            //    {
-            //        TargetClientIds = new ulong[] { targetId },
-            //    }
-            //};
-            //SendHitMessageServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
         }
         else
         {
@@ -64,17 +45,7 @@ public class RaycastCannon : NetworkBehaviour
         
         Quaternion rotationQ = Quaternion.Euler(rotation);
         GameObject instantiatedParticles = Instantiate(particles, position, rotationQ);
-        Destroy(instantiatedParticles.gameObject, 3f);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    void ServerHitParticleServerRpc (ulong shooterId)
-    {
-        
-    }
-
-    [ClientRpc]
-    void ServerHitParticleClientRpc() { 
+        Destroy(instantiatedParticles.gameObject, 0.8f);
     }
 
     [ServerRpc(RequireOwnership = false)]

@@ -31,13 +31,13 @@ public class RaycastCannon : NetworkBehaviour
                 SpawnParticles(_hitParticles, hit.point, hit.normal);
                 ulong targetId = hit.collider.GetComponent<NetworkObject>().OwnerClientId;
                 combatLog.text = $"you have hit {targetId}!";
-                ClientRpcParams clientRpcParams = new ClientRpcParams
-                {
-                    Send = new ClientRpcSendParams
-                    {
-                        TargetClientIds = new ulong[] { targetId },
-                    }
-                };
+                //ClientRpcParams clientRpcParams = new ClientRpcParams
+                //{
+                //    Send = new ClientRpcSendParams
+                //    {
+                //        TargetClientIds = new ulong[] { targetId },
+                //    }
+                //};
                 SendHitMessageServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
             }
 
@@ -68,16 +68,32 @@ public class RaycastCannon : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    void SendHitMessageServerRpc(ulong shooterId, ulong targetId)
+    void ServerHitParticleServerRpc (ulong shooterId)
     {
-        UpdateCombatLogOnClientRpc(shooterId, targetId);
+        
     }
 
     [ClientRpc]
-    void UpdateCombatLogOnClientRpc(ulong shooterId, ulong targetId)
-    {
-        if (targetId != NetworkManager.Singleton.LocalClientId) return;
+    void ServerHitParticleClientRpc() { 
+    }
 
+    [ServerRpc(RequireOwnership = false)]
+    void SendHitMessageServerRpc(ulong shooterId, ulong targetId)
+    {
+        ClientRpcParams clientRpcParams = new ClientRpcParams
+        {
+            Send = new ClientRpcSendParams
+            {
+                TargetClientIds = new ulong[] { targetId },
+            }
+        };
+
+        UpdateCombatLogOnClientRpc(shooterId, clientRpcParams);
+    }
+
+    [ClientRpc]
+    void UpdateCombatLogOnClientRpc(ulong shooterId, ClientRpcParams clientRpcParams)
+    {
         combatLog.text = $"You have been shot by {shooterId}!";
     }
 }

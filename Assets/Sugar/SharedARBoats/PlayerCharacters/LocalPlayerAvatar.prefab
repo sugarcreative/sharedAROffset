@@ -696,6 +696,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   combatLog: {fileID: 0}
+  _hitParticles: {fileID: 7728172301512204917, guid: 080f8901c1e7ee244a7f277d057dc25a, type: 3}
 --- !u!114 &2480560803022409942
 MonoBehaviour:
   m_ObjectHideFlags: 0

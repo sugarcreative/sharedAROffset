@@ -12,6 +12,8 @@ public class RaycastCannon : NetworkBehaviour
 
     public TMP_Text combatLog;
 
+    [SerializeField] private GameObject _hitParticles;
+
     private void Start()
     {
         combatLog = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
@@ -21,25 +23,48 @@ public class RaycastCannon : NetworkBehaviour
     {
 
         RaycastHit hit;
+
         if (Physics.Raycast(transform.position, transform.forward, out hit, _cannonRange, _hitLayers))
         {
-            ulong targetId = hit.collider.GetComponent<NetworkObject>().OwnerClientId;
-            combatLog.text = $"you have hit {targetId}!";
-            ClientRpcParams clientRpcParams = new ClientRpcParams
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("NetworkPlayer"))
             {
-                Send = new ClientRpcSendParams
+                SpawnParticles(_hitParticles, hit.point, hit.normal);
+                ulong targetId = hit.collider.GetComponent<NetworkObject>().OwnerClientId;
+                combatLog.text = $"you have hit {targetId}!";
+                ClientRpcParams clientRpcParams = new ClientRpcParams
                 {
-                    TargetClientIds = new ulong[] { targetId },
-                }
-            };
-            SendHitMessageServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
-            //combatLog.text = $"{NetworkManager.Singleton.LocalClientId} has hit {hit.collider.GetComponent<NetworkObject>().OwnerClientId}";
+                    Send = new ClientRpcSendParams
+                    {
+                        TargetClientIds = new ulong[] { targetId },
+                    }
+                };
+                SendHitMessageServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
+            }
 
+            //ulong targetId = hit.collider.GetComponent<NetworkObject>().OwnerClientId;
+            //combatLog.text = $"you have hit {targetId}!";
+            //ClientRpcParams clientRpcParams = new ClientRpcParams
+            //{
+            //    Send = new ClientRpcSendParams
+            //    {
+            //        TargetClientIds = new ulong[] { targetId },
+            //    }
+            //};
+            //SendHitMessageServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
         }
         else
         {
             combatLog.text = $"{NetworkManager.Singleton.LocalClientId} has hit nothing!";
         }
+    }
+
+    void SpawnParticles(GameObject particles, Vector3 position, Vector3 rotation)
+    {
+        if (particles == null) return;
+        
+        Quaternion rotationQ = Quaternion.Euler(rotation);
+        GameObject instantiatedParticles = Instantiate(particles, position, rotationQ);
+        Destroy(instantiatedParticles.gameObject, 3f);
     }
 
     [ServerRpc(RequireOwnership = false)]

@@ -90,6 +90,7 @@ public class NetworkEntityManager : NetworkBehaviour
                         health = newHealth,
                         isDead = true
                     };
+                    UpdateLocalHealthClientRpc(target, newHealth);
                     ConveyDeathClientRpc(shooterId, target);
                 }
 

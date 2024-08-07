@@ -1,18 +1,22 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CannonLogic : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+    [SerializeField] private RaycastCannon[] cannons;
+
+    public void ShootCannons()
     {
-        
+        StartCoroutine(FireCannons());
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator FireCannons()
     {
-        
+        foreach (var cannon in cannons)
+        {
+            cannon.FireCannon();
+            yield return new WaitForSeconds(0.3f);
+        }
     }
 }

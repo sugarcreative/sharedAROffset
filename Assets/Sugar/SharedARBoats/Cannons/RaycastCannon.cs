@@ -12,6 +12,8 @@ public class RaycastCannon : NetworkBehaviour
 
     [SerializeField] private GameObject _hitParticles;
 
+    [SerializeField] private GameObject _shootParticles;
+
     private void Awake()
     {
         combatLog = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
@@ -19,6 +21,7 @@ public class RaycastCannon : NetworkBehaviour
 
     public void FireCannon()
     {
+        SpawnLocalHitParticles(_shootParticles, transform.position, transform.forward);
 
         RaycastHit hit;
 
@@ -26,7 +29,7 @@ public class RaycastCannon : NetworkBehaviour
         {
             if (hit.collider.gameObject.layer == LayerMask.NameToLayer("NetworkPlayer"))
             {
-                SpawnParticles(_hitParticles, hit.point, hit.normal);
+                SpawnLocalHitParticles(_hitParticles, hit.point, hit.normal);
                 ulong targetId = hit.collider.GetComponent<NetworkObject>().OwnerClientId;
                 combatLog.text = $"you have hit {targetId}!";
                 NetworkEntityManager.Instance.ReduceHealthServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
@@ -39,13 +42,21 @@ public class RaycastCannon : NetworkBehaviour
         }
     }
 
-    void SpawnParticles(GameObject particles, Vector3 position, Vector3 rotation)
+    void SpawnLocalHitParticles(GameObject particles, Vector3 position, Vector3 rotation)
     {
         if (particles == null) return;
         
         Quaternion rotationQ = Quaternion.Euler(rotation);
         GameObject instantiatedParticles = Instantiate(particles, position, rotationQ);
         Destroy(instantiatedParticles.gameObject, 0.8f);
+    }
+
+
+    private void SpawnLocalShootingParticles(GameObject shootParticles, Vector3 position, Vector3 rotation)
+    {
+        Quaternion rotationQ = Quaternion.Euler(rotation);
+        GameObject instantiatedParticles = Instantiate(shootParticles, position, rotationQ);
+        Destroy(instantiatedParticles.gameObject, 0.2f);
     }
 
     [ServerRpc(RequireOwnership = false)]

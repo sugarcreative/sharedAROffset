@@ -1,5 +1,7 @@
+using Newtonsoft.Json.Bson;
 using TMPro;
 using Unity.Netcode;
+using Unity.VisualScripting;
 
 public class NetworkEntityManager : NetworkBehaviour
 {
@@ -7,11 +9,17 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private NetworkList<PlayerData> allPlayerData;
 
-    private const int MAXHEALTH = 3;
+    private const int MAXHEALTH = 10;
+
+    private const int STARTSCORE = 0;
 
     private const int DAMAGE = 1;
 
-    private TMP_Text text;
+    private TMP_Text combatLog;
+
+    private TMP_Text localHealth;
+
+    private TMP_Text localScore;
 
     private void Awake()
     {
@@ -28,7 +36,10 @@ public class NetworkEntityManager : NetworkBehaviour
     {
         allPlayerData = new NetworkList<PlayerData>();
         NetworkManager.Singleton.OnClientConnectedCallback += AddNewClientToList;
-        text = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
+        combatLog = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
+        localHealth = FindObjectOfType<LocalHealth>().GetComponent<TMP_Text>();
+        localScore = FindObjectOfType<LocalScore>().GetComponent<TMP_Text>();
+
     }
 
     private void AddNewClientToList(ulong clientId)
@@ -43,10 +54,12 @@ public class NetworkEntityManager : NetworkBehaviour
         PlayerData newPlayerData = new PlayerData
         {
             clientId = clientId,
-            score = 0,
-            health = MAXHEALTH
+            score = STARTSCORE,
+            health = MAXHEALTH,
+            isDead = false
         };
 
+        UpdateLocalHealthClientRpc(clientId, MAXHEALTH);
         allPlayerData.Add(newPlayerData);
     }
 
@@ -55,6 +68,8 @@ public class NetworkEntityManager : NetworkBehaviour
     public void ReduceHealthServerRpc(ulong shooterId, ulong target)
     {
         if (!IsServer) return;
+
+        //Reduce the health of target
 
         for (int i = 0; i < allPlayerData.Count; i++)
         {
@@ -76,19 +91,44 @@ public class NetworkEntityManager : NetworkBehaviour
                         isDead = true
                     };
                     ConveyDeathClientRpc(shooterId, target);
-                    return;
                 }
 
-                UpdateLocalTextClientRpc(shooterId, target);
+                if (!allPlayerData[i].isDead)
+                {
+                    UpdateLocalTextClientRpc(shooterId, target);
+                    UpdateLocalHealthClientRpc(target, newHealth);
+
+                    allPlayerData[i] = new PlayerData
+                    {
+                        clientId = allPlayerData[i].clientId,
+                        score = allPlayerData[i].score,
+                        health = newHealth,
+                        isDead = allPlayerData[i].isDead
+                    };
+                }
+                break;
+            }
+        }
+
+        //Increment the Score of the shooter 
+
+        for (int i = 0;i < allPlayerData.Count; i++)
+        {
+            if ((allPlayerData[i].clientId == shooterId))
+            {
+
+                int newScore = allPlayerData[i].score + 1;
+
+                UpdateLocalScoreClientRpc(shooterId, newScore);
 
                 allPlayerData[i] = new PlayerData
                 {
                     clientId = allPlayerData[i].clientId,
-                    score = allPlayerData[i].score,
-                    health = newHealth
+                    score = newScore,
+                    health = allPlayerData[i].health,
+                    isDead = allPlayerData[i].isDead
                 };
 
-                break;
             }
         }
     }
@@ -104,7 +144,21 @@ public class NetworkEntityManager : NetworkBehaviour
     void UpdateLocalTextClientRpc(ulong shooterId, ulong targetId)
     {
         if (NetworkManager.Singleton.LocalClientId != targetId) return;
-        text.text = $"You have been shot by {shooterId}";
+        combatLog.text = $"You have been shot by {shooterId}";
+    }
+
+    [ClientRpc]
+    void UpdateLocalScoreClientRpc(ulong clientId, int score)
+    {
+        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        localScore.text = score.ToString();
+    }
+
+    [ClientRpc]
+    void UpdateLocalHealthClientRpc(ulong clientId, int health)
+    {
+        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        localHealth.text = health.ToString();
     }
 
     [ClientRpc]
@@ -112,7 +166,7 @@ public class NetworkEntityManager : NetworkBehaviour
     {
         if (NetworkManager.Singleton.LocalClientId == targetId)
         {
-            text.text = $"{shooterId} has sunk your boat!";
+            combatLog.text = $"{shooterId} has sunk your boat!";
         }
     }
 }

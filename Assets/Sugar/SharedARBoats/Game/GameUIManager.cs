@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class GameUIManager : MonoBehaviour
@@ -14,6 +13,17 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private Transform scoreboard;
 
     private Dictionary<int, PlayerCard> playerCards = new Dictionary<int, PlayerCard>();
+
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(this);
+            return;
+        }
+
+        instance = this;
+    }
 
     public static void PlayerJoin(int clientId)
     {

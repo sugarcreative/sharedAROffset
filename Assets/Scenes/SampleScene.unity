@@ -375,9 +375,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15989f7e66b4e764799c5111143dde47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthText: {fileID: 0}
   playerCardPrefab: {fileID: -2613954208235621649, guid: 6be5c1d5e184b92408d1eccdab26c409, type: 3}
-  scoreboard: {fileID: 2141284947}
+  scoreboard: {fileID: 1938013187}
 --- !u!4 &146968125
 Transform:
   m_ObjectHideFlags: 0
@@ -3420,7 +3419,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1941517131}
-  - component: {fileID: 1941517130}
+  - component: {fileID: 1941517133}
   - component: {fileID: 1941517132}
   m_Layer: 0
   m_Name: GameManager
@@ -3429,25 +3428,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1941517130
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1941517129}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f096e40f1bb924d47a900f6a3039ff44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  timerText: {fileID: 683463463}
-  matchTimer:
-    m_InternalValue: 0
-  time: 10
-  scoreboardPanel: {fileID: 0}
-  hasGameStarted: 0
-  hasGameEnded: 1
 --- !u!4 &1941517131
 Transform:
   m_ObjectHideFlags: 0
@@ -3483,6 +3463,21 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &1941517133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1941517129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f096e40f1bb924d47a900f6a3039ff44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timerText: {fileID: 683463463}
+  time: 10
+  hasGameStarted: 0
 --- !u!1 &2141284946
 GameObject:
   m_ObjectHideFlags: 0

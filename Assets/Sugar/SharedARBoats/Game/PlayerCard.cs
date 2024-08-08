@@ -12,9 +12,9 @@ public class PlayerCard : MonoBehaviour
         deathsText.text = "0";
     }
 
-    public void SetKills(int kills)
+    public void SetScore(int Score)
     {
-        killsText.text = kills.ToString();
+        killsText.text = Score.ToString();
     }
 
     public void SetDeaths(int deaths) { 

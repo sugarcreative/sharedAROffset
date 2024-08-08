@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
+using UnityEngine;
 
 public class NetworkEntityManager : NetworkBehaviour
 {
@@ -18,6 +20,15 @@ public class NetworkEntityManager : NetworkBehaviour
     private TMP_Text localHealth;
 
     private TMP_Text localScore;
+
+    [SerializeField] private PlayerCard playerCardPrefab;
+
+    [SerializeField] Transform playerCardParent;
+
+    private List<ulong> clientIds = new List<ulong>();
+
+    private Dictionary<ulong, PlayerCard> playerCards = new Dictionary<ulong, PlayerCard>(); 
+
 
     private void Awake()
     {
@@ -58,8 +69,16 @@ public class NetworkEntityManager : NetworkBehaviour
             isDead = false
         };
 
+
         UpdateLocalHealthClientRpc(clientId, MAXHEALTH);
         allPlayerData.Add(newPlayerData);
+
+        foreach (var playerData in allPlayerData)
+        {
+            SetScoreboardClientRpc(playerData.clientId, playerData.score, playerData.deaths);
+        }
+
+
     }
 
 
@@ -123,6 +142,7 @@ public class NetworkEntityManager : NetworkBehaviour
                 int newScore = allPlayerData[i].score + 1;
 
                 UpdateLocalScoreClientRpc(shooterId, newScore);
+                UpdateScoreboardScoreClientRpc(shooterId, newScore);
 
                 allPlayerData[i] = new PlayerData
                 {
@@ -141,6 +161,33 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             ReduceHealthServerRpc(shooterId, targetId);
         }
+    }
+
+    public void CreatePlayerCard(ulong clientId, int kills, int deaths)
+    {
+        PlayerCard newCard = Instantiate(playerCardPrefab, playerCardParent);
+        playerCards.Add(clientId, newCard);
+        newCard.Initialize(clientId.ToString());
+    }
+
+    [ClientRpc]
+    public void UpdateScoreboardScoreClientRpc(ulong clientId, int newScore)
+    {
+        playerCards[clientId].SetScore(newScore);
+    }
+
+    [ClientRpc]
+    public void UpdateScoreboardDeathsClientRpc(ulong clientId, int newDeaths)
+    {
+        playerCards[clientId].SetDeaths(newDeaths);
+    }
+
+    [ClientRpc]
+    public void SetScoreboardClientRpc(ulong clientId, int score, int deaths)
+    {
+        if (playerCards.ContainsKey(clientId)) return;
+
+        CreatePlayerCard(clientId, score, deaths);
     }
 
     [ClientRpc]

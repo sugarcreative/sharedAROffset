@@ -92,13 +92,13 @@ public class NetworkLogic : MonoBehaviour
     private void OnClientConnectedCallback(ulong clientId)
     {
         _statusText.text = $"{clientId} Connected";
-        GameUIManager.PlayerJoin(Convert.ToInt32(clientId.ToString()));
+        //GameUIManager.PlayerJoin(Convert.ToInt32(clientId.ToString()));
     }
 
     private void OnClientDisconnectedCallback(ulong clientId)
     {
         _statusText.text = $"{clientId} Disconnected";
-        GameUIManager.PlayerLeave(Convert.ToInt32(clientId.ToString()));
+        //GameUIManager.PlayerLeave(Convert.ToInt32(clientId.ToString()));
     }
 
     private ISharedSpaceRoomOptions SetUpRoomAndUI(ISharedSpaceTrackingOptions topts)

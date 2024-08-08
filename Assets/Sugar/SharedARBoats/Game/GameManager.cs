@@ -13,7 +13,7 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private float time;
     #endregion
 
-    [SerializeField] private bool hasGameStarted = false;
+    //[SerializeField] private bool hasGameStarted = false;
 
     //[SerializeField] private bool hasGameEnded = false;
 
@@ -44,7 +44,7 @@ public class GameManager : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        StartGameLocalClientRpc();
+        //StartGameLocalClientRpc();
     }
 
     void StartMatchTimerLocal()
@@ -80,7 +80,7 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     void StartGameLocalClientRpc()
     {
-        hasGameStarted = true;
+        //hasGameStarted = true;
     }
 
     [ClientRpc]

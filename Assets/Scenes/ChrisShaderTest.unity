@@ -240,8 +240,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 106359739}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.11265214, y: -0.31328452, z: 0.037463333, w: 0.94220954}
-  m_LocalPosition: {x: 0.12166044, y: 0.053686086, z: -0.08449814}
+  m_LocalRotation: {x: 0.08995908, y: -0.39121646, z: 0.03847329, w: 0.91508293}
+  m_LocalPosition: {x: 1.0237343, y: 0.2663529, z: -0.71398354}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5248,7 +5248,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 172706, guid: d59c5b7258646f14c9a6b0f832338741, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 414252, guid: d59c5b7258646f14c9a6b0f832338741, type: 3}
       propertyPath: m_LocalPosition.x
@@ -16782,9 +16782,33 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 249831158776975968, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1136874782524430490, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
+      propertyPath: ShapeModule.angle
+      value: 6.62
+      objectReference: {fileID: 0}
+    - target: {fileID: 1136874782524430490, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
+      propertyPath: InitialModule.gravityModifier.scalar
+      value: 0.04
+      objectReference: {fileID: 0}
     - target: {fileID: 2116799872867151200, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
       propertyPath: m_Name
       value: BoatSplash
+      objectReference: {fileID: 0}
+    - target: {fileID: 3739990363015663329, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3739990363015663329, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3739990363015663329, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 3739990363015663329, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
       propertyPath: m_LocalPosition.x
@@ -16825,6 +16849,22 @@ PrefabInstance:
     - target: {fileID: 3739990363015663329, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6297996499551680802, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
+      propertyPath: ShapeModule.angle
+      value: 4.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 6297996499551680802, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
+      propertyPath: InitialModule.startSpeed.minScalar
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6297996499551680802, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
+      propertyPath: InitialModule.gravityModifier.scalar
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 7234011312115166713, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 7242616932793904615, guid: dcfa9a93ccf355c4084166769bdfd390, type: 3}
       propertyPath: CollisionModule.m_Planes.Array.data[0]

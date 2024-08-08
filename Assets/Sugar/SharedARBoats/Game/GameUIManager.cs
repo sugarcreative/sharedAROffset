@@ -7,7 +7,7 @@ public class GameUIManager : MonoBehaviour
 
     private static GameUIManager instance;
 
-    [SerializeField] private TMP_Text healthText;
+    //[SerializeField] private TMP_Text healthText;
 
     [SerializeField] private PlayerCard playerCardPrefab;
 

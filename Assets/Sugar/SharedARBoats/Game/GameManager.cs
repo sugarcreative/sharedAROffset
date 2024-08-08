@@ -32,7 +32,7 @@ public class GameManager : NetworkBehaviour
 
     void Start()
     {
-        scoreboardPanel.gameObject.SetActive(false);
+        //scoreboardPanel.gameObject.SetActive(false);
     }
 
     void Update()

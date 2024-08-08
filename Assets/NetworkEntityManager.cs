@@ -54,6 +54,7 @@ public class NetworkEntityManager : NetworkBehaviour
             clientId = clientId,
             score = STARTSCORE,
             health = MAXHEALTH,
+            deaths = 0,
             isDead = false
         };
 
@@ -76,16 +77,19 @@ public class NetworkEntityManager : NetworkBehaviour
 
                 if (allPlayerData[i].isDead) return;
 
+                int newDeaths = allPlayerData[i].deaths + 1;
                 int newHealth = allPlayerData[i].health - DAMAGE;
 
                 if (newHealth <= 0)
                 {
                     newHealth = 0;
+                    
                     allPlayerData[i] = new PlayerData
                     {
                         clientId = allPlayerData[i].clientId,
                         score = allPlayerData[i].score,
                         health = newHealth,
+                        deaths = newDeaths,
                         isDead = true
                     };
                     UpdateLocalHealthClientRpc(target, newHealth);

@@ -1,5 +1,6 @@
 using Niantic.Lightship.AR.LocationAR;
 using Niantic.Lightship.SharedAR.Colocalization;
+using System;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -40,6 +41,7 @@ public class NetworkLogic : MonoBehaviour
 
 
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectedCallback;
 
 
         _sharedSpaceManager.sharedSpaceManagerStateChanged += OnColocalizationTrackingStateChanged;
@@ -88,7 +90,14 @@ public class NetworkLogic : MonoBehaviour
 
     private void OnClientConnectedCallback(ulong clientId)
     {
-        _statusText.text = $"Connected: {clientId}";
+        _statusText.text = $"{clientId} Connected";
+        GameUIManager.PlayerJoin(Convert.ToInt32(clientId.ToString()));
+    }
+
+    private void OnClientDisconnectedCallback(ulong clientId)
+    {
+        _statusText.text = $"{clientId} Disconnected";
+        GameUIManager.PlayerLeave(Convert.ToInt32(clientId.ToString()));
     }
 
     private ISharedSpaceRoomOptions SetUpRoomAndUI(ISharedSpaceTrackingOptions topts)

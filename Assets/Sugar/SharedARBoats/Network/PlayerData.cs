@@ -9,6 +9,8 @@ public struct PlayerData : IEquatable<PlayerData>, INetworkSerializable
 
     public int health;
 
+    public int deaths;
+
     public bool isDead;
 
     public PlayerData(ulong clientId, int score, int health)
@@ -16,6 +18,7 @@ public struct PlayerData : IEquatable<PlayerData>, INetworkSerializable
         this.clientId = clientId;
         this.score = score;
         this.health = health;
+        deaths = 0;
         isDead = false;
     }
 

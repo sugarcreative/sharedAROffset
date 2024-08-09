@@ -8,14 +8,22 @@ public class PlayerAvatar : NetworkBehaviour
 
     public MeshRenderer[] mesh;
 
+    public SkinnedMeshRenderer[] skinnedMeshRenderer;
+
     public override void OnNetworkSpawn()
     {
         if (IsOwner)
         {
             mesh = GetComponentsInChildren<MeshRenderer>();
+            skinnedMeshRenderer = GetComponentsInChildren<SkinnedMeshRenderer>();
             foreach (MeshRenderer mr in mesh)
             {
                 mr.enabled = false;
+            }
+
+            foreach (SkinnedMeshRenderer smr in skinnedMeshRenderer)
+            {
+                smr.enabled=false;
             }
 
             _localPlayer = FindObjectOfType<LocalPlayer>();
@@ -32,8 +40,6 @@ public class PlayerAvatar : NetworkBehaviour
             {
                 transform.SetPositionAndRotation(_localPlayer.transform.position, _localPlayer.transform.rotation);
             }
-        } else
-        {
         }
     }
 }

@@ -488,6 +488,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
   m_PrefabInstance: {fileID: 3469435489178334438}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &405843919 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 14d4851c7e56a624a81a868926191645, type: 3}
+  m_PrefabInstance: {fileID: 1402491696}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &423596353
 GameObject:
   m_ObjectHideFlags: 0
@@ -1201,6 +1206,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: c145eefca260b5d48a5fa01a96812d2b, type: 2}
+    - target: {fileID: -8701697781352502699, guid: e072e94cbbdb137469527d88566872cb, type: 3}
+      propertyPath: m_BlendShapeWeights.Array.data[0]
+      value: 99.9
+      objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e072e94cbbdb137469527d88566872cb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1248,6 +1257,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: e072e94cbbdb137469527d88566872cb, type: 3}
       propertyPath: m_Name
       value: Clipper_Ship_Animated
+      objectReference: {fileID: 0}
+    - target: {fileID: 1678298860306578062, guid: e072e94cbbdb137469527d88566872cb, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2484089006765815281, guid: e072e94cbbdb137469527d88566872cb, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -1544,13 +1557,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 14d4851c7e56a624a81a868926191645, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1402491698}
   m_SourcePrefab: {fileID: 100100000, guid: 14d4851c7e56a624a81a868926191645, type: 3}
 --- !u!4 &1402491697 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 14d4851c7e56a624a81a868926191645, type: 3}
   m_PrefabInstance: {fileID: 1402491696}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &1402491698
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 405843919}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 52c92ad1c4dffe745b18408ff980d926, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1413389038
 GameObject:
   m_ObjectHideFlags: 0
@@ -1682,6 +1719,7 @@ MonoBehaviour:
   - {fileID: 476429806}
   sailsUnfurled: {fileID: 1884877028}
   sailsFurled: {fileID: 810712628}
+  furlTrigger: 95
 --- !u!1 &1667175111
 GameObject:
   m_ObjectHideFlags: 0

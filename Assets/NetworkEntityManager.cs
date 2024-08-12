@@ -45,14 +45,13 @@ public class NetworkEntityManager : NetworkBehaviour
     private void Start()
     {
         allPlayerData = new NetworkList<PlayerData>();
-        //NetworkManager.Singleton.OnClientConnectedCallback += AddNewClientToList;
         combatLog = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
         localHealth = FindObjectOfType<LocalHealth>().GetComponent<TMP_Text>();
         localScore = FindObjectOfType<LocalScore>().GetComponent<TMP_Text>();
 
     }
 
-    [ServerRpc]
+    [ServerRpc (RequireOwnership = false)]
     public void AddNewClientToListServerRpc(ulong clientId, FixedString64Bytes name)
     {
         AddNewClientToList(clientId, name);
@@ -114,6 +113,7 @@ public class NetworkEntityManager : NetworkBehaviour
                     allPlayerData[i] = new PlayerData
                     {
                         clientId = allPlayerData[i].clientId,
+                        name = allPlayerData[i].name,
                         score = allPlayerData[i].score,
                         health = newHealth,
                         deaths = newDeaths,
@@ -131,8 +131,10 @@ public class NetworkEntityManager : NetworkBehaviour
                     allPlayerData[i] = new PlayerData
                     {
                         clientId = allPlayerData[i].clientId,
+                        name = allPlayerData[i].name,
                         score = allPlayerData[i].score,
                         health = newHealth,
+                        deaths = allPlayerData[i].deaths,
                         isDead = allPlayerData[i].isDead
                     };
                 }
@@ -155,8 +157,10 @@ public class NetworkEntityManager : NetworkBehaviour
                 allPlayerData[i] = new PlayerData
                 {
                     clientId = allPlayerData[i].clientId,
+                    name = allPlayerData[i].name,
                     score = newScore,
                     health = allPlayerData[i].health,
+                    deaths = allPlayerData[i].deaths,
                     isDead = allPlayerData[i].isDead
                 };
 

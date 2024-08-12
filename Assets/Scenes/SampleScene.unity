@@ -1570,6 +1570,7 @@ RectTransform:
   - {fileID: 666934406}
   - {fileID: 766680195}
   - {fileID: 336932866}
+  - {fileID: 829491744}
   m_Father: {fileID: 1445976198}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2753,11 +2754,11 @@ RectTransform:
   - {fileID: 1598256095}
   - {fileID: 227482283}
   - {fileID: 1248466131}
-  m_Father: {fileID: 1445976198}
+  m_Father: {fileID: 547806677}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 300.00012}
+  m_AnchoredPosition: {x: 0, y: 0.00024414062}
   m_SizeDelta: {x: 911, y: 478.11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &829491745
@@ -2942,6 +2943,7 @@ GameObject:
   m_Component:
   - component: {fileID: 915224705}
   - component: {fileID: 915224704}
+  - component: {fileID: 915224706}
   m_Layer: 0
   m_Name: ConnectionManager
   m_TagString: Untagged
@@ -3035,7 +3037,7 @@ MonoBehaviour:
       byte0061: 0
   _joinAsHostButton: {fileID: 666934407}
   _joinAsClientButton: {fileID: 766680196}
-  _roomCodeEnterButton: {fileID: 0}
+  _roomCodeEnterButton: {fileID: 1248466132}
   _sharedSpaceManager: {fileID: 135122425}
   arLocation: {fileID: 1804478174}
   hostJoinPanel: {fileID: 547806676}
@@ -3055,6 +3057,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &915224706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 915224703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1031480457
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &981953278
 GameObject:
   m_ObjectHideFlags: 0
@@ -3846,7 +3868,7 @@ GameObject:
   - component: {fileID: 1248466133}
   - component: {fileID: 1248466132}
   m_Layer: 5
-  m_Name: Button
+  m_Name: RoomCodeEnterButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4068,7 +4090,6 @@ RectTransform:
   - {fileID: 683463461}
   - {fileID: 2141284947}
   - {fileID: 547806677}
-  - {fileID: 829491744}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

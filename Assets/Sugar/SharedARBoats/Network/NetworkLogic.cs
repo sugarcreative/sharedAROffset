@@ -6,7 +6,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class NetworkLogic : MonoBehaviour
+public class NetworkLogic : NetworkBehaviour
 {
     [SerializeField]
     private TMP_Text _statusText, _roomNameDisplayText;
@@ -52,6 +52,7 @@ public class NetworkLogic : MonoBehaviour
         _joinAsHostButton.interactable = false;
 
 
+        NetworkManager.Singleton.OnClientConnectedCallback += AddName;
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectedCallback;
 
@@ -87,7 +88,6 @@ public class NetworkLogic : MonoBehaviour
 
     private void OnJoinAsClientClicked()
     {
-        hostJoinPanel?.SetActive(false);
         EnterRoomCode();
     }
 
@@ -132,10 +132,15 @@ public class NetworkLogic : MonoBehaviour
         var ropts = SetUpRoomAndUI(topts);
         StartSharedSpace(topts, ropts);
         NetworkManager.Singleton.StartClient();
-        NetworkEntityManager.Instance.AddNewClientToListServerRpc(NetworkManager.Singleton.LocalClientId, playerName);
-        //hostJoinPanel.SetActive(false);
+        hostJoinPanel.SetActive(false);
         _isJoined = true;
-    } 
+    }
+
+    private void AddName(ulong clientId)
+    {
+        if (IsServer) return;
+        NetworkEntityManager.Instance.AddNewClientToListServerRpc(clientId, playerName);
+    }
 
     private void HideButtons()
     {

@@ -32,6 +32,8 @@ public class NetworkLogic : NetworkBehaviour
 
     [SerializeField] private GameObject hostJoinPanel, enterRoomCodePanel;
 
+    //[SerializeField] private Sprite[] buttonImages;
+
     private string _roomName;
 
     private bool _isJoined;
@@ -101,6 +103,7 @@ public class NetworkLogic : NetworkBehaviour
         if(!string.IsNullOrEmpty(text))
         {
             _roomCodeEnterButton.interactable = true;
+            //_roomCodeEnterButton.GetComponent<Image>().sprite = buttonImages[2];
         }
         else
         {
@@ -112,6 +115,8 @@ public class NetworkLogic : NetworkBehaviour
     {
         if (!string.IsNullOrEmpty(displayName))
         {
+            //_joinAsHostButton.GetComponent<Image>().sprite = buttonImages[0];
+            //_joinAsClientButton.GetComponent<Image>().sprite = buttonImages[1];
             _joinAsHostButton.interactable = true;
             _joinAsClientButton.interactable = true;
         }
@@ -140,17 +145,6 @@ public class NetworkLogic : NetworkBehaviour
     {
         if (IsServer) return;
         NetworkEntityManager.Instance.AddNewClientToListServerRpc(clientId, playerName);
-    }
-
-    private void HideButtons()
-    {
-        _joinAsHostButton.gameObject.SetActive(false);
-        _joinAsClientButton.gameObject.SetActive(false);
-    }
-
-    private void HideHostJoinPanel()
-    {
-        hostJoinPanel.SetActive(false);
     }
 
     private void OnClientConnectedCallback(ulong clientId)

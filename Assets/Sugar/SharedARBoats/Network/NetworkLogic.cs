@@ -1,6 +1,7 @@
 using Niantic.Lightship.AR.LocationAR;
 using Niantic.Lightship.SharedAR.Colocalization;
 using TMPro;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +12,8 @@ public class NetworkLogic : MonoBehaviour
     private TMP_Text _statusText, _roomNameDisplayText;
 
     [SerializeField] private TMP_InputField displayNameInputField, roomCodeInputField;
+
+    [SerializeField] private FixedString64Bytes playerName;
 
     [SerializeField]
     private Button _joinAsHostButton;
@@ -37,12 +40,8 @@ public class NetworkLogic : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
 
-        //_roomName = "Hello"; // have room name become random number generation, then host only has to enter name.
         hostJoinPanel.SetActive(false);
         enterRoomCodePanel.SetActive(false);
-        //roomCodeInputField.gameObject.SetActive(false);
-        //_joinAsClientButton.gameObject.SetActive(false);
-        //_joinAsHostButton.gameObject.SetActive(false);
 
         roomCodeInputField.onValueChanged.AddListener(OnRoomCodeChanged);
         displayNameInputField.onValueChanged.AddListener(OnDiplayNameChanged);
@@ -68,8 +67,6 @@ public class NetworkLogic : MonoBehaviour
         if (args.Tracking)
         {
             if (_isJoined) return;
-            //_joinAsHostButton.gameObject.SetActive(true);
-            //_joinAsClientButton.gameObject.SetActive(true);
             hostJoinPanel.SetActive(true);
         }
     }
@@ -77,42 +74,21 @@ public class NetworkLogic : MonoBehaviour
     private void OnJoinAsHostClicked()
     {
         if (displayNameInputField.text.Equals("")) return;
-        //Maybe have some popup that tells them to input a name.
         _roomName = Random.Range(0, 9999).ToString();
-
+        playerName = new FixedString64Bytes(displayNameInputField.text);
         var topts = ISharedSpaceTrackingOptions.CreateVpsTrackingOptions(arLocation);
         var ropts = SetUpRoomAndUI(topts);
         StartSharedSpace(topts, ropts);
         NetworkManager.Singleton.StartHost();
-        //_joinAsHostButton.gameObject.SetActive(false);
-        //_joinAsClientButton.gameObject.SetActive(false);
         hostJoinPanel.SetActive(false);
         _isJoined = true;
+        NetworkEntityManager.Instance.AddNewClientToList(NetworkManager.Singleton.LocalClientId, playerName);
     }
 
     private void OnJoinAsClientClicked()
     {
-
+        hostJoinPanel?.SetActive(false);
         EnterRoomCode();
-        //Maybe have some popup that tells them to input a name.
-
-        //Press the join button, a window pops up and prompts them for a room code, once entered then continue
-
-
-
-        //var topts = ISharedSpaceTrackingOptions.CreateVpsTrackingOptions(arLocation);
-        //var ropts = SetUpRoomAndUI(topts);
-        //StartSharedSpace(topts, ropts);
-        //NetworkManager.Singleton.StartClient();
-
-
-        // DO SOME CHECK HERE TO SEE IF A LOBBY WITH THE PIN EXISTS
-        //_joinAsHostButton.gameObject.SetActive(false);
-        //_joinAsClientButton.gameObject.SetActive(false);
-
-
-        //hostJoinPanel.SetActive(false);
-        //_isJoined = true;
     }
 
     private void EnterRoomCode()
@@ -150,19 +126,14 @@ public class NetworkLogic : MonoBehaviour
     {
         _roomName = roomCodeInputField.text;
         enterRoomCodePanel.SetActive(false);
+        playerName = new FixedString64Bytes(displayNameInputField.text);
 
         var topts = ISharedSpaceTrackingOptions.CreateVpsTrackingOptions(arLocation);
         var ropts = SetUpRoomAndUI(topts);
         StartSharedSpace(topts, ropts);
         NetworkManager.Singleton.StartClient();
-
-
-        // DO SOME CHECK HERE TO SEE IF A LOBBY WITH THE PIN EXISTS
-        //_joinAsHostButton.gameObject.SetActive(false);
-        //_joinAsClientButton.gameObject.SetActive(false);
-
-
-        hostJoinPanel.SetActive(false);
+        NetworkEntityManager.Instance.AddNewClientToListServerRpc(NetworkManager.Singleton.LocalClientId, playerName);
+        //hostJoinPanel.SetActive(false);
         _isJoined = true;
     } 
 

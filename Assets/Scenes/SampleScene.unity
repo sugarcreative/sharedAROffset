@@ -1570,7 +1570,6 @@ RectTransform:
   - {fileID: 666934406}
   - {fileID: 766680195}
   - {fileID: 336932866}
-  - {fileID: 829491744}
   m_Father: {fileID: 1445976198}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2746,7 +2745,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 829491743}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2754,11 +2753,11 @@ RectTransform:
   - {fileID: 1598256095}
   - {fileID: 227482283}
   - {fileID: 1248466131}
-  m_Father: {fileID: 547806677}
+  m_Father: {fileID: 1445976198}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 300.00012}
   m_SizeDelta: {x: 911, y: 478.11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &829491745
@@ -2966,6 +2965,74 @@ MonoBehaviour:
   _roomNameDisplayText: {fileID: 302115831}
   displayNameInputField: {fileID: 336932867}
   roomCodeInputField: {fileID: 1598256096}
+  playerName:
+    utf8LengthInBytes: 0
+    bytes:
+      offset0000:
+        byte0000: 0
+        byte0001: 0
+        byte0002: 0
+        byte0003: 0
+        byte0004: 0
+        byte0005: 0
+        byte0006: 0
+        byte0007: 0
+        byte0008: 0
+        byte0009: 0
+        byte0010: 0
+        byte0011: 0
+        byte0012: 0
+        byte0013: 0
+        byte0014: 0
+        byte0015: 0
+      offset0016:
+        byte0000: 0
+        byte0001: 0
+        byte0002: 0
+        byte0003: 0
+        byte0004: 0
+        byte0005: 0
+        byte0006: 0
+        byte0007: 0
+        byte0008: 0
+        byte0009: 0
+        byte0010: 0
+        byte0011: 0
+        byte0012: 0
+        byte0013: 0
+        byte0014: 0
+        byte0015: 0
+      offset0032:
+        byte0000: 0
+        byte0001: 0
+        byte0002: 0
+        byte0003: 0
+        byte0004: 0
+        byte0005: 0
+        byte0006: 0
+        byte0007: 0
+        byte0008: 0
+        byte0009: 0
+        byte0010: 0
+        byte0011: 0
+        byte0012: 0
+        byte0013: 0
+        byte0014: 0
+        byte0015: 0
+      byte0048: 0
+      byte0049: 0
+      byte0050: 0
+      byte0051: 0
+      byte0052: 0
+      byte0053: 0
+      byte0054: 0
+      byte0055: 0
+      byte0056: 0
+      byte0057: 0
+      byte0058: 0
+      byte0059: 0
+      byte0060: 0
+      byte0061: 0
   _joinAsHostButton: {fileID: 666934407}
   _joinAsClientButton: {fileID: 766680196}
   _roomCodeEnterButton: {fileID: 0}
@@ -4001,6 +4068,7 @@ RectTransform:
   - {fileID: 683463461}
   - {fileID: 2141284947}
   - {fileID: 547806677}
+  - {fileID: 829491744}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4973,7 +5041,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2141284947
 RectTransform:
   m_ObjectHideFlags: 0

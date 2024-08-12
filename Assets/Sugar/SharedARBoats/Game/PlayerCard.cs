@@ -1,13 +1,14 @@
 using TMPro;
+using Unity.Collections;
 using UnityEngine;
 
 public class PlayerCard : MonoBehaviour
 {
     [SerializeField] private TMP_Text nameText, killsText, deathsText;
 
-    public void Initialize(string name)
+    public void Initialize(FixedString64Bytes name)
     {
-        nameText.text = name;
+        nameText.text = name.ToString();
         killsText.text = "0";
         deathsText.text = "0";
     }

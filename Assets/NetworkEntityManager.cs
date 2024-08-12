@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -44,14 +45,20 @@ public class NetworkEntityManager : NetworkBehaviour
     private void Start()
     {
         allPlayerData = new NetworkList<PlayerData>();
-        NetworkManager.Singleton.OnClientConnectedCallback += AddNewClientToList;
+        //NetworkManager.Singleton.OnClientConnectedCallback += AddNewClientToList;
         combatLog = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
         localHealth = FindObjectOfType<LocalHealth>().GetComponent<TMP_Text>();
         localScore = FindObjectOfType<LocalScore>().GetComponent<TMP_Text>();
 
     }
 
-    private void AddNewClientToList(ulong clientId)
+    [ServerRpc]
+    public void AddNewClientToListServerRpc(ulong clientId, FixedString64Bytes name)
+    {
+        AddNewClientToList(clientId, name);
+    } 
+
+    public void AddNewClientToList(ulong clientId, FixedString64Bytes name)
     {
         if (!IsServer) return;
 
@@ -63,6 +70,7 @@ public class NetworkEntityManager : NetworkBehaviour
         PlayerData newPlayerData = new PlayerData
         {
             clientId = clientId,
+            name = name,
             score = STARTSCORE,
             health = MAXHEALTH,
             deaths = 0,
@@ -75,7 +83,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
         foreach (var playerData in allPlayerData)
         {
-            SetScoreboardClientRpc(playerData.clientId, playerData.score, playerData.deaths);
+            SetScoreboardClientRpc(playerData.clientId, playerData.name, playerData.score, playerData.deaths);
         }
 
 
@@ -163,11 +171,11 @@ public class NetworkEntityManager : NetworkBehaviour
         }
     }
 
-    public void CreatePlayerCard(ulong clientId, int kills, int deaths)
+    public void CreatePlayerCard(ulong clientId, FixedString64Bytes name, int kills, int deaths)
     {
         PlayerCard newCard = Instantiate(playerCardPrefab, playerCardParent);
         playerCards.Add(clientId, newCard);
-        newCard.Initialize(clientId.ToString());
+        newCard.Initialize(name);
     }
 
     [ClientRpc]
@@ -183,11 +191,11 @@ public class NetworkEntityManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void SetScoreboardClientRpc(ulong clientId, int score, int deaths)
+    public void SetScoreboardClientRpc(ulong clientId, FixedString64Bytes name, int score, int deaths)
     {
         if (playerCards.ContainsKey(clientId)) return;
 
-        CreatePlayerCard(clientId, score, deaths);
+        CreatePlayerCard(clientId, name, score, deaths);
     }
 
     [ClientRpc]

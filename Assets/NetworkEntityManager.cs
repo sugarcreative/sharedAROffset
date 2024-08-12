@@ -30,6 +30,8 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private Dictionary<ulong, PlayerCard> playerCards = new Dictionary<ulong, PlayerCard>(); 
 
+    public bool shootingDebug = false;
+
 
     private void Awake()
     {
@@ -88,6 +90,20 @@ public class NetworkEntityManager : NetworkBehaviour
 
     }
 
+    [ClientRpc]
+    private void TargetDebugClientRpc(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        combatLog.text = "you have been hit";
+    }
+
+    [ClientRpc]
+    private void ShooterDebugClientRpc(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        combatLog.text = "you have shot someone";
+    }
+
 
     [ServerRpc(RequireOwnership = false)]
     public void ReduceHealthServerRpc(ulong shooterId, ulong target)
@@ -95,6 +111,16 @@ public class NetworkEntityManager : NetworkBehaviour
         if (!IsServer) return;
 
         //Reduce the health of target
+        if (shootingDebug)
+        {
+            //UpdateLocalTextClientRpc(shooterId, target);
+            for (int i = 0; i < allPlayerData.Count; i++)
+            {
+                ShooterDebugClientRpc(shooterId);
+                TargetDebugClientRpc(target);
+            }
+                    return;
+        }
 
         for (int i = 0; i < allPlayerData.Count; i++)
         {
@@ -103,17 +129,18 @@ public class NetworkEntityManager : NetworkBehaviour
 
                 if (allPlayerData[i].isDead) return;
 
-                int newDeaths = allPlayerData[i].deaths + 1;
                 int newHealth = allPlayerData[i].health - DAMAGE;
 
                 if (newHealth <= 0)
                 {
+                    int newDeaths = allPlayerData[i].deaths + 1;
                     newHealth = 0;
                     
                     allPlayerData[i] = new PlayerData
                     {
                         clientId = allPlayerData[i].clientId,
                         name = allPlayerData[i].name,
+                        //name = new FixedString64Bytes(allPlayerData[i].name),
                         score = allPlayerData[i].score,
                         health = newHealth,
                         deaths = newDeaths,
@@ -132,6 +159,7 @@ public class NetworkEntityManager : NetworkBehaviour
                     {
                         clientId = allPlayerData[i].clientId,
                         name = allPlayerData[i].name,
+                        //name = new FixedString64Bytes(allPlayerData[i].name),
                         score = allPlayerData[i].score,
                         health = newHealth,
                         deaths = allPlayerData[i].deaths,
@@ -158,6 +186,7 @@ public class NetworkEntityManager : NetworkBehaviour
                 {
                     clientId = allPlayerData[i].clientId,
                     name = allPlayerData[i].name,
+                    //name = new FixedString64Bytes(allPlayerData[i].name),
                     score = newScore,
                     health = allPlayerData[i].health,
                     deaths = allPlayerData[i].deaths,
@@ -178,6 +207,8 @@ public class NetworkEntityManager : NetworkBehaviour
     public void CreatePlayerCard(ulong clientId, FixedString64Bytes name, int kills, int deaths)
     {
         PlayerCard newCard = Instantiate(playerCardPrefab, playerCardParent);
+        newCard.SetScore(kills);
+        newCard.SetDeaths(deaths);
         playerCards.Add(clientId, newCard);
         newCard.Initialize(name);
     }

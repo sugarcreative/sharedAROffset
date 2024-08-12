@@ -31,7 +31,7 @@ public class RaycastCannon : NetworkBehaviour
             {
                 SpawnLocalHitParticles(_hitParticles, hit.point, hit.normal);
                 ulong targetId = hit.collider.GetComponent<NetworkObject>().OwnerClientId;
-                combatLog.text = $"you have hit {targetId}!";
+                //combatLog.text = $"you have hit {targetId}!";
                 NetworkEntityManager.Instance.ReduceHealthServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
                 //SendHitMessageServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
             }

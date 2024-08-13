@@ -6,7 +6,7 @@ public class ScoreboardToggle : MonoBehaviour
     [SerializeField] GameObject scoreBoard;
     public void SetActive()
     {
-        if (scoreBoard.activeInHierarchy)
+        if (scoreBoard.activeSelf)
         {
             scoreBoard.SetActive(false);
         } else

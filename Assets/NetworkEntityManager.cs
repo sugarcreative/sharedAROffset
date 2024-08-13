@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Collections;
@@ -9,6 +10,10 @@ public class NetworkEntityManager : NetworkBehaviour
     public static NetworkEntityManager Instance;
 
     private NetworkList<PlayerData> allPlayerData;
+
+    [SerializeField] private GameObject scoreboardPanel;
+
+    private ScoreboardLogic scoreboardLogic;
 
     private const int MAXHEALTH = 10;
 
@@ -28,9 +33,11 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private List<ulong> clientIds = new List<ulong>();
 
-    private Dictionary<ulong, PlayerCard> playerCards = new Dictionary<ulong, PlayerCard>(); 
+    private Dictionary<ulong, PlayerCard> playerCards = new Dictionary<ulong, PlayerCard>();
 
     public bool shootingDebug = false;
+
+    public FixedString64Bytes[] colorList = new FixedString64Bytes[] { "#AD3232", "#A59622", "#285D27", "#28A5A7", "#29447D", "#A5579E", "#00FF6E" };
 
 
     private void Awake()
@@ -50,14 +57,20 @@ public class NetworkEntityManager : NetworkBehaviour
         combatLog = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
         localHealth = FindObjectOfType<LocalHealth>().GetComponent<TMP_Text>();
         localScore = FindObjectOfType<LocalScore>().GetComponent<TMP_Text>();
-
     }
 
-    [ServerRpc (RequireOwnership = false)]
+    [ClientRpc]
+    private void ShowLobbyClientRpc(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        scoreboardPanel.SetActive(true);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
     public void AddNewClientToListServerRpc(ulong clientId, FixedString64Bytes name)
     {
         AddNewClientToList(clientId, name);
-    } 
+    }
 
     public void AddNewClientToList(ulong clientId, FixedString64Bytes name)
     {
@@ -68,14 +81,15 @@ public class NetworkEntityManager : NetworkBehaviour
             if (playerData.clientId == clientId) return;
         }
 
-        PlayerData newPlayerData = new PlayerData
+        PlayerData newPlayerData = new()
         {
             clientId = clientId,
             name = name,
             score = STARTSCORE,
             health = MAXHEALTH,
             deaths = 0,
-            isDead = false
+            isDead = false,
+            color = colorList[allPlayerData.Count],
         };
 
 
@@ -84,25 +98,13 @@ public class NetworkEntityManager : NetworkBehaviour
 
         foreach (var playerData in allPlayerData)
         {
-            SetScoreboardClientRpc(playerData.clientId, playerData.name, playerData.score, playerData.deaths);
+            SetScoreboardClientRpc(playerData.clientId, playerData.name, playerData.score, playerData.deaths, playerData.color);
         }
 
+        ShowLobbyClientRpc(clientId);
 
     }
 
-    [ClientRpc]
-    private void TargetDebugClientRpc(ulong clientId)
-    {
-        if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        combatLog.text = "you have been hit";
-    }
-
-    [ClientRpc]
-    private void ShooterDebugClientRpc(ulong clientId)
-    {
-        if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        combatLog.text = "you have shot someone";
-    }
 
 
     [ServerRpc(RequireOwnership = false)]
@@ -113,13 +115,12 @@ public class NetworkEntityManager : NetworkBehaviour
         //Reduce the health of target
         if (shootingDebug)
         {
-            //UpdateLocalTextClientRpc(shooterId, target);
             for (int i = 0; i < allPlayerData.Count; i++)
             {
                 ShooterDebugClientRpc(shooterId);
                 TargetDebugClientRpc(target);
             }
-                    return;
+            return;
         }
 
         for (int i = 0; i < allPlayerData.Count; i++)
@@ -135,16 +136,16 @@ public class NetworkEntityManager : NetworkBehaviour
                 {
                     int newDeaths = allPlayerData[i].deaths + 1;
                     newHealth = 0;
-                    
+
                     allPlayerData[i] = new PlayerData
                     {
                         clientId = allPlayerData[i].clientId,
                         name = allPlayerData[i].name,
-                        //name = new FixedString64Bytes(allPlayerData[i].name),
                         score = allPlayerData[i].score,
                         health = newHealth,
                         deaths = newDeaths,
-                        isDead = true
+                        isDead = true,
+                        color = allPlayerData[i].color,
                     };
                     UpdateLocalHealthClientRpc(target, newHealth);
                     ConveyDeathClientRpc(shooterId, target);
@@ -159,11 +160,11 @@ public class NetworkEntityManager : NetworkBehaviour
                     {
                         clientId = allPlayerData[i].clientId,
                         name = allPlayerData[i].name,
-                        //name = new FixedString64Bytes(allPlayerData[i].name),
                         score = allPlayerData[i].score,
                         health = newHealth,
                         deaths = allPlayerData[i].deaths,
-                        isDead = allPlayerData[i].isDead
+                        isDead = allPlayerData[i].isDead,
+                        color = allPlayerData[i].color,
                     };
                 }
                 break;
@@ -172,7 +173,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
         //Increment the Score of the shooter 
 
-        for (int i = 0;i < allPlayerData.Count; i++)
+        for (int i = 0; i < allPlayerData.Count; i++)
         {
             if ((allPlayerData[i].clientId == shooterId))
             {
@@ -186,11 +187,11 @@ public class NetworkEntityManager : NetworkBehaviour
                 {
                     clientId = allPlayerData[i].clientId,
                     name = allPlayerData[i].name,
-                    //name = new FixedString64Bytes(allPlayerData[i].name),
                     score = newScore,
                     health = allPlayerData[i].health,
                     deaths = allPlayerData[i].deaths,
-                    isDead = allPlayerData[i].isDead
+                    isDead = allPlayerData[i].isDead,
+                    color = allPlayerData[i].color,
                 };
 
             }
@@ -204,11 +205,12 @@ public class NetworkEntityManager : NetworkBehaviour
         }
     }
 
-    public void CreatePlayerCard(ulong clientId, FixedString64Bytes name, int kills, int deaths)
+    public void CreatePlayerCard(ulong clientId, FixedString64Bytes name, int kills, int deaths, FixedString64Bytes colorArg)
     {
         PlayerCard newCard = Instantiate(playerCardPrefab, playerCardParent);
         newCard.SetScore(kills);
         newCard.SetDeaths(deaths);
+        newCard.SetColor(colorArg);
         playerCards.Add(clientId, newCard);
         newCard.Initialize(name);
     }
@@ -226,12 +228,36 @@ public class NetworkEntityManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void SetScoreboardClientRpc(ulong clientId, FixedString64Bytes name, int score, int deaths)
+    public void UpdateScoreBoardColorClientRpc(ulong clientId, FixedString64Bytes newCol)
+    {
+        playerCards[clientId].SetColor(newCol);
+    }
+
+    [ClientRpc]
+    public void SetScoreboardClientRpc(ulong clientId, FixedString64Bytes name, int score, int deaths, FixedString64Bytes colorArg)
     {
         if (playerCards.ContainsKey(clientId)) return;
 
-        CreatePlayerCard(clientId, name, score, deaths);
+        CreatePlayerCard(clientId, name, score, deaths, colorArg);
     }
+
+
+    #region Debugging texts
+
+    [ClientRpc]
+    private void TargetDebugClientRpc(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        combatLog.text = "you have been hit";
+    }
+
+    [ClientRpc]
+    private void ShooterDebugClientRpc(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        combatLog.text = "you have shot someone";
+    }
+
 
     [ClientRpc]
     void UpdateLocalTextClientRpc(ulong shooterId, ulong targetId)
@@ -262,4 +288,6 @@ public class NetworkEntityManager : NetworkBehaviour
             combatLog.text = $"{shooterId} has sunk your boat!";
         }
     }
+
+    #endregion
 }

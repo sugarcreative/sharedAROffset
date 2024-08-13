@@ -53,11 +53,9 @@ public class NetworkLogic : NetworkBehaviour
         _joinAsClientButton.interactable = false;
         _joinAsHostButton.interactable = false;
 
-
-        NetworkManager.Singleton.OnClientConnectedCallback += AddName;
+        NetworkManager.Singleton.OnClientConnectedCallback += OnConnection;
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectedCallback;
-
 
         _sharedSpaceManager.sharedSpaceManagerStateChanged += OnColocalizationTrackingStateChanged;
     }
@@ -103,7 +101,6 @@ public class NetworkLogic : NetworkBehaviour
         if(!string.IsNullOrEmpty(text))
         {
             _roomCodeEnterButton.interactable = true;
-            //_roomCodeEnterButton.GetComponent<Image>().sprite = buttonImages[2];
         }
         else
         {
@@ -115,8 +112,6 @@ public class NetworkLogic : NetworkBehaviour
     {
         if (!string.IsNullOrEmpty(displayName))
         {
-            //_joinAsHostButton.GetComponent<Image>().sprite = buttonImages[0];
-            //_joinAsClientButton.GetComponent<Image>().sprite = buttonImages[1];
             _joinAsHostButton.interactable = true;
             _joinAsClientButton.interactable = true;
         }
@@ -138,13 +133,15 @@ public class NetworkLogic : NetworkBehaviour
         StartSharedSpace(topts, ropts);
         NetworkManager.Singleton.StartClient();
         hostJoinPanel.SetActive(false);
+        
         _isJoined = true;
     }
 
-    private void AddName(ulong clientId)
+    private void OnConnection(ulong clientId)
     {
         if (IsServer) return;
         NetworkEntityManager.Instance.AddNewClientToListServerRpc(clientId, playerName);
+
     }
 
     private void OnClientConnectedCallback(ulong clientId)

@@ -1,5 +1,6 @@
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ScoreboardLogic : NetworkBehaviour
 {
@@ -7,9 +8,16 @@ public class ScoreboardLogic : NetworkBehaviour
 
     public GameObject[] lobbyItems;
 
-    private void Start()
+    public Button readyButton;
+
+    public void Initialize()
     {
         ModeLobby();
+
+        if (IsServer)
+        {
+            readyButton.interactable = false;
+        }
     }
 
     public void ModeLobby()

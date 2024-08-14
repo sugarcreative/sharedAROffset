@@ -54,8 +54,8 @@ public class NetworkLogic : NetworkBehaviour
         _joinAsHostButton.interactable = false;
 
         NetworkManager.Singleton.OnClientConnectedCallback += OnConnection;
-        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
-        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectedCallback;
+        //NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
+        //NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectedCallback;
 
         _sharedSpaceManager.sharedSpaceManagerStateChanged += OnColocalizationTrackingStateChanged;
     }
@@ -144,15 +144,15 @@ public class NetworkLogic : NetworkBehaviour
 
     }
 
-    private void OnClientConnectedCallback(ulong clientId)
-    {
-        _statusText.text = $"{clientId} Connected";
-    }
+    //private void OnClientConnectedCallback(ulong clientId)
+    //{
+    //    _statusText.text = $"{clientId} Connected";
+    //}
 
-    private void OnClientDisconnectedCallback(ulong clientId)
-    {
-        _statusText.text = $"{clientId} Disconnected";
-    }
+    //private void OnClientDisconnectedCallback(ulong clientId)
+    //{
+    //    _statusText.text = $"{clientId} Disconnected";
+    //}
 
     private ISharedSpaceRoomOptions SetUpRoomAndUI(ISharedSpaceTrackingOptions topts)
     {

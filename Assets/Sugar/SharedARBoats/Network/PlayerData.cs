@@ -18,6 +18,8 @@ public struct PlayerData : IEquatable<PlayerData>, INetworkSerializable
 
     public FixedString64Bytes color;
 
+    public bool isReady;
+
     public PlayerData(ulong clientId, FixedString64Bytes name, int score, int health)
     {
         this.clientId = clientId;
@@ -27,6 +29,7 @@ public struct PlayerData : IEquatable<PlayerData>, INetworkSerializable
         deaths = 0;
         isDead = false;
         color = "#FFFFFF";
+        isReady = false;
     }
 
     public bool Equals(PlayerData other)
@@ -42,5 +45,6 @@ public struct PlayerData : IEquatable<PlayerData>, INetworkSerializable
         serializer.SerializeValue(ref health);
         serializer.SerializeValue(ref isDead);
         serializer.SerializeValue(ref color);
+        serializer.SerializeValue(ref isReady);
     }
 }

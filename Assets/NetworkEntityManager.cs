@@ -4,6 +4,7 @@ using TMPro;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NetworkEntityManager : NetworkBehaviour
 {
@@ -39,6 +40,14 @@ public class NetworkEntityManager : NetworkBehaviour
 
     public FixedString64Bytes[] colorList = new FixedString64Bytes[] { "#AD3232", "#A59622", "#285D27", "#28A5A7", "#29447D", "#A5579E", "#00FF6E" };
 
+    private bool isReadyLocal;
+
+    private bool gameStarted;
+
+    [SerializeField] private GameObject arScenery;
+
+    [SerializeField] private Button readyButton;
+
 
     private void Awake()
     {
@@ -53,17 +62,117 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void Start()
     {
+        gameStarted = false;
+        //allPlayerData.OnListChanged += OnPlayerListChanged;
         allPlayerData = new NetworkList<PlayerData>();
         combatLog = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
         localHealth = FindObjectOfType<LocalHealth>().GetComponent<TMP_Text>();
         localScore = FindObjectOfType<LocalScore>().GetComponent<TMP_Text>();
     }
 
+    //private void Update()
+    //{
+    //    if (IsServer)
+    //    {
+    //        combatLog.text = "I am the server";
+    //    }
+    //}
+
+
+    #region Ready
+
+    public void SetReady()
+    {
+        if (IsServer)
+        {
+            StartGameClientRpc();
+        }
+        else
+        {
+            isReadyLocal = !isReadyLocal;
+            //SendReady(isReadyLocal);
+        }
+    }
+
+
+    //public void SendReady(bool value)
+    //{
+    //    ulong clientId = NetworkManager.Singleton.LocalClientId;
+    //    SendReadyToServerRpc(clientId, value);
+    //}
+
+    //[ServerRpc (RequireOwnership = false)]
+    //private void SendReadyToServerRpc(ulong clientId, bool value)
+    //{
+    //    for (int i = 0; i < allPlayerData.Count; i++)
+    //    {
+    //        if (allPlayerData[i].clientId == clientId)
+    //        {
+    //            allPlayerData[i] = new PlayerData()
+    //            {
+    //                clientId = allPlayerData[i].clientId,
+    //                name = allPlayerData[i].name,
+    //                score = allPlayerData[i].score,
+    //                health = allPlayerData[i].health,
+    //                deaths = allPlayerData[i].deaths,
+    //                isDead = allPlayerData[i].isDead,
+    //                color = allPlayerData[i].color,
+    //                isReady = value
+    //            };
+    //        }
+    //    }
+    //}
+
+
+    //private void OnPlayerListChanged(NetworkListEvent<PlayerData> changeEvent)
+    //{
+    //    if (!IsServer || gameStarted) return;
+    //    UpdateHostReadyButton();
+    //    combatLog.text = isReadyLocal.ToString();
+    //}
+
+    //private void UpdateHostReadyButton()
+    //{
+    //    for (int i = 0; i < allPlayerData.Count; i++)
+    //    {
+    //        if (!allPlayerData[i].isReady)
+    //        {
+    //            if (allPlayerData[i].Equals(allPlayerData[0]))
+    //            {
+
+    //            }
+    //            else
+    //            {
+    //                readyButton.interactable = false;
+    //                combatLog.text = "not ready";
+    //                return;
+    //            }
+    //        }
+    //    }
+    //    readyButton.interactable = true;
+    //    combatLog.text = "ready";
+    //}
+
+    [ClientRpc]
+    private void StartGameClientRpc()
+    {
+        //arScenery.SetActive(true);
+        scoreboardPanel.SetActive(false);
+    }
+
+    #endregion
+
+    private void ShowLobby(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        scoreboardPanel.GetComponent<ScoreboardLogic>().Initialize();
+        scoreboardPanel.SetActive(true);
+    }
+
     [ClientRpc]
     private void ShowLobbyClientRpc(ulong clientId)
     {
-        if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        scoreboardPanel.SetActive(true);
+        ShowLobby(clientId);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -90,6 +199,7 @@ public class NetworkEntityManager : NetworkBehaviour
             deaths = 0,
             isDead = false,
             color = colorList[allPlayerData.Count],
+            isReady = false,
         };
 
 
@@ -146,6 +256,7 @@ public class NetworkEntityManager : NetworkBehaviour
                         deaths = newDeaths,
                         isDead = true,
                         color = allPlayerData[i].color,
+                        isReady = allPlayerData[i].isReady,
                     };
                     UpdateLocalHealthClientRpc(target, newHealth);
                     ConveyDeathClientRpc(shooterId, target);
@@ -165,6 +276,7 @@ public class NetworkEntityManager : NetworkBehaviour
                         deaths = allPlayerData[i].deaths,
                         isDead = allPlayerData[i].isDead,
                         color = allPlayerData[i].color,
+                        isReady = allPlayerData[i].isReady,
                     };
                 }
                 break;
@@ -192,6 +304,7 @@ public class NetworkEntityManager : NetworkBehaviour
                     deaths = allPlayerData[i].deaths,
                     isDead = allPlayerData[i].isDead,
                     color = allPlayerData[i].color,
+                    isReady = allPlayerData[i].isReady,
                 };
 
             }

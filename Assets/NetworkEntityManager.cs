@@ -48,6 +48,10 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private Button readyButton;
 
+    private bool gettingReady;
+
+    private ulong latestClientId;
+
 
     private void Awake()
     {
@@ -63,21 +67,12 @@ public class NetworkEntityManager : NetworkBehaviour
     private void Start()
     {
         gameStarted = false;
-        //allPlayerData.OnListChanged += OnPlayerListChanged;
         allPlayerData = new NetworkList<PlayerData>();
+        allPlayerData.OnListChanged += OnPlayerListChanged;
         combatLog = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
         localHealth = FindObjectOfType<LocalHealth>().GetComponent<TMP_Text>();
         localScore = FindObjectOfType<LocalScore>().GetComponent<TMP_Text>();
     }
-
-    //private void Update()
-    //{
-    //    if (IsServer)
-    //    {
-    //        combatLog.text = "I am the server";
-    //    }
-    //}
-
 
     #region Ready
 
@@ -86,42 +81,64 @@ public class NetworkEntityManager : NetworkBehaviour
         if (IsServer)
         {
             StartGameClientRpc();
+            combatLog.text = "the ready button has been pressed";
+            SendReadyInner(NetworkManager.Singleton.LocalClientId, true);
         }
         else
         {
             isReadyLocal = !isReadyLocal;
-            //SendReady(isReadyLocal);
+            SendReady(isReadyLocal);
         }
     }
 
+    private void OnPlayerListChanged(NetworkListEvent<PlayerData> e)
+    {
+        //combatLog.text = "The player list has changed";
+        GenericTestClientRpc($"{latestClientId} is {gettingReady}");
+    }
 
-    //public void SendReady(bool value)
-    //{
-    //    ulong clientId = NetworkManager.Singleton.LocalClientId;
-    //    SendReadyToServerRpc(clientId, value);
-    //}
+    public void SendReady(bool value)
+    {
+        ulong clientId = NetworkManager.Singleton.LocalClientId;
+        SendReadyToServerRpc(clientId, value);
+    }
 
-    //[ServerRpc (RequireOwnership = false)]
-    //private void SendReadyToServerRpc(ulong clientId, bool value)
-    //{
-    //    for (int i = 0; i < allPlayerData.Count; i++)
-    //    {
-    //        if (allPlayerData[i].clientId == clientId)
-    //        {
-    //            allPlayerData[i] = new PlayerData()
-    //            {
-    //                clientId = allPlayerData[i].clientId,
-    //                name = allPlayerData[i].name,
-    //                score = allPlayerData[i].score,
-    //                health = allPlayerData[i].health,
-    //                deaths = allPlayerData[i].deaths,
-    //                isDead = allPlayerData[i].isDead,
-    //                color = allPlayerData[i].color,
-    //                isReady = value
-    //            };
-    //        }
-    //    }
-    //}
+    [ServerRpc(RequireOwnership = false)]
+    private void SendReadyToServerRpc(ulong clientId, bool value)
+    {
+        SendReadyInner(clientId, value);
+
+        foreach (PlayerData player in allPlayerData)
+        {
+            if (player.clientId == clientId)
+            {
+                gettingReady = player.isReady;
+                latestClientId = player.clientId;
+            }
+        }
+        
+    }
+
+    private void SendReadyInner(ulong clientId, bool value)
+    {
+        for (int i = 0; i < allPlayerData.Count; i++)
+        {
+            if (allPlayerData[i].clientId == clientId)
+            {
+                allPlayerData[i] = new PlayerData()
+                {
+                    clientId = allPlayerData[i].clientId,
+                    name = allPlayerData[i].name,
+                    score = allPlayerData[i].score,
+                    health = allPlayerData[i].health,
+                    deaths = allPlayerData[i].deaths,
+                    isDead = allPlayerData[i].isDead,
+                    color = allPlayerData[i].color,
+                    isReady = value
+                };
+            }
+        }
+    }
 
 
     //private void OnPlayerListChanged(NetworkListEvent<PlayerData> changeEvent)
@@ -356,6 +373,11 @@ public class NetworkEntityManager : NetworkBehaviour
 
 
     #region Debugging texts
+    [ClientRpc] private void GenericTestClientRpc(string somethingToPrint)
+    {
+        combatLog.text = somethingToPrint;
+    }
+
 
     [ClientRpc]
     private void TargetDebugClientRpc(ulong clientId)

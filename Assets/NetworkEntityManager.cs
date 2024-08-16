@@ -93,8 +93,28 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void OnPlayerListChanged(NetworkListEvent<PlayerData> e)
     {
-        //combatLog.text = "The player list has changed";
         GenericTestClientRpc($"{latestClientId} is {gettingReady}");
+        if (IsServer)
+        {
+            int numOfPlayers = allPlayerData.Count - 1;
+            int count = 0;
+            foreach (PlayerData playerData in allPlayerData)
+            {
+                if (playerData.isReady)
+                {
+                    count++;
+                }
+            }
+
+            if (count == numOfPlayers)
+            {
+                readyButton.interactable = true;
+            }
+            else
+            {
+                readyButton.interactable = false;
+            }
+        }
     }
 
     public void SendReady(bool value)
@@ -116,7 +136,6 @@ public class NetworkEntityManager : NetworkBehaviour
                 latestClientId = player.clientId;
             }
         }
-        
     }
 
     private void SendReadyInner(ulong clientId, bool value)
@@ -139,36 +158,6 @@ public class NetworkEntityManager : NetworkBehaviour
             }
         }
     }
-
-
-    //private void OnPlayerListChanged(NetworkListEvent<PlayerData> changeEvent)
-    //{
-    //    if (!IsServer || gameStarted) return;
-    //    UpdateHostReadyButton();
-    //    combatLog.text = isReadyLocal.ToString();
-    //}
-
-    //private void UpdateHostReadyButton()
-    //{
-    //    for (int i = 0; i < allPlayerData.Count; i++)
-    //    {
-    //        if (!allPlayerData[i].isReady)
-    //        {
-    //            if (allPlayerData[i].Equals(allPlayerData[0]))
-    //            {
-
-    //            }
-    //            else
-    //            {
-    //                readyButton.interactable = false;
-    //                combatLog.text = "not ready";
-    //                return;
-    //            }
-    //        }
-    //    }
-    //    readyButton.interactable = true;
-    //    combatLog.text = "ready";
-    //}
 
     [ClientRpc]
     private void StartGameClientRpc()

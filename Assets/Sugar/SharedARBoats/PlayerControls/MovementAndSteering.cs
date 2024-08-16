@@ -19,7 +19,7 @@ public class MovementAndSteering : MonoBehaviour
     #endregion
 
     #region Steering
-    private float _wheelRotation = 0f;
+    [SerializeField] private float _wheelRotation = 0f;
     private Vector2 _wheelRotationClamp = new Vector2(-170f, 170f);
     [SerializeField] private float _steeringMultiplier = 0.1f;
     [SerializeField] private float _rotationSpeed = 80f;
@@ -44,7 +44,9 @@ public class MovementAndSteering : MonoBehaviour
     [SerializeField] private bool _pauseDebug = true;
     #endregion
 
-    public Image _theWheel;
+    //public Image _theWheel;
+
+    public GameObject _wheelAsset;
 
     #region DEFAULT FUNCTIONS
     private void Awake()
@@ -157,7 +159,9 @@ public class MovementAndSteering : MonoBehaviour
         }
 
         _wheelRotation = Mathf.Clamp(_wheelRotation, _wheelRotationClamp.x, _wheelRotationClamp.y);
-        _theWheel.transform.rotation = Quaternion.Euler(0f, 0f, _wheelRotation);
+        _wheelAsset.transform.rotation = Quaternion.Euler(_wheelAsset.transform.rotation.eulerAngles.x, _wheelAsset.transform.rotation.eulerAngles.y, -_wheelRotation);
+        //_theWheel.transform.rotation = Quaternion.Euler(0f, 0f, _wheelRotation);
+
 
         transform.Rotate(0f, -_wheelRotation * _steeringMultiplier * Time.deltaTime, 0f);
     }

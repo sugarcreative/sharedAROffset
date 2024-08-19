@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class WheelLogic : MonoBehaviour
 {
-
+    [SerializeField] private Camera wheelCam;
     // Update is called once per frame
     void Update()
     {
-        transform.LookAt(Camera.main.transform.position);
+        transform.LookAt(wheelCam.transform.position);
     }
 }

@@ -21,11 +21,11 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private const int DAMAGE = 1;
 
-    private TMP_Text combatLog;
+    [SerializeField] private TMP_Text combatLog;
 
-    private TMP_Text localHealth;
+    [SerializeField] private TMP_Text localHealth;
 
-    private TMP_Text localScore;
+    [SerializeField] private TMP_Text localScore;
 
     [SerializeField] private PlayerCard playerCardPrefab;
 
@@ -69,9 +69,6 @@ public class NetworkEntityManager : NetworkBehaviour
         gameStarted = false;
         allPlayerData = new NetworkList<PlayerData>();
         allPlayerData.OnListChanged += OnPlayerListChanged;
-        combatLog = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
-        localHealth = FindObjectOfType<LocalHealth>().GetComponent<TMP_Text>();
-        localScore = FindObjectOfType<LocalScore>().GetComponent<TMP_Text>();
     }
 
     #region Ready
@@ -164,6 +161,7 @@ public class NetworkEntityManager : NetworkBehaviour
     {
         //arScenery.SetActive(true);
         scoreboardPanel.SetActive(false);
+        scoreboardPanel.GetComponent<ScoreboardLogic>().ModeScoreboard();
         foreach (GameObject g in playStateObjects)
         {
             g.SetActive(true);

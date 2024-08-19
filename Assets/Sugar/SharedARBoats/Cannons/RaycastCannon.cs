@@ -8,20 +8,16 @@ public class RaycastCannon : NetworkBehaviour
 
     public LayerMask _hitLayers;
 
-    public TMP_Text combatLog;
+    [SerializeField] private TMP_Text combatLog;
 
     [SerializeField] private GameObject _hitParticles;
 
     [SerializeField] private GameObject _shootParticles;
 
-    private void Awake()
-    {
-        combatLog = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
-    }
 
     public void FireCannon()
     {
-        SpawnLocalHitParticles(_shootParticles, transform.position, transform.forward);
+        SpawnLocalShootingParticles(_shootParticles, transform.position, transform.forward);
 
         RaycastHit hit;
 
@@ -38,7 +34,7 @@ public class RaycastCannon : NetworkBehaviour
         }
         else
         {
-            combatLog.text = $"{NetworkManager.Singleton.LocalClientId} has hit nothing!";
+            combatLog.text = $"{NetworkManager.Singleton.LocalClientId} has hit nothing with {gameObject.name}!";
         }
     }
 
@@ -48,7 +44,6 @@ public class RaycastCannon : NetworkBehaviour
         
         Quaternion rotationQ = Quaternion.Euler(rotation);
         GameObject instantiatedParticles = Instantiate(particles, position, rotationQ);
-        Destroy(instantiatedParticles.gameObject, 0.8f);
     }
 
 
@@ -56,7 +51,6 @@ public class RaycastCannon : NetworkBehaviour
     {
         Quaternion rotationQ = Quaternion.Euler(rotation);
         GameObject instantiatedParticles = Instantiate(shootParticles, position, rotationQ);
-        Destroy(instantiatedParticles.gameObject, 0.2f);
     }
 
     [ServerRpc(RequireOwnership = false)]

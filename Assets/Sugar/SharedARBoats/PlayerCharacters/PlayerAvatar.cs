@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerAvatar : NetworkBehaviour
 {
-    private LocalPlayer _localPlayer;
+    [SerializeField] private LocalPlayer _localPlayer;
 
     public MeshRenderer[] mesh;
 
@@ -26,7 +26,7 @@ public class PlayerAvatar : NetworkBehaviour
                 smr.enabled=false;
             }
 
-            _localPlayer = FindObjectOfType<LocalPlayer>();
+            _localPlayer = FindObjectOfType<LocalPlayer>(true);
         }
 
         base.OnNetworkSpawn();

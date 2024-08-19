@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Collections;
@@ -52,6 +51,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private ulong latestClientId;
 
+    [SerializeField]private GameObject[] playStateObjects;
 
     private void Awake()
     {
@@ -82,7 +82,7 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             StartGameClientRpc();
             combatLog.text = "the ready button has been pressed";
-            SendReadyInner(NetworkManager.Singleton.LocalClientId, true);
+            //SendReadyInner(NetworkManager.Singleton.LocalClientId, true);
         }
         else
         {
@@ -164,6 +164,10 @@ public class NetworkEntityManager : NetworkBehaviour
     {
         //arScenery.SetActive(true);
         scoreboardPanel.SetActive(false);
+        foreach (GameObject g in playStateObjects)
+        {
+            g.SetActive(true);
+        }
     }
 
     #endregion
@@ -218,7 +222,6 @@ public class NetworkEntityManager : NetworkBehaviour
         }
 
         ShowLobbyClientRpc(clientId);
-
     }
 
 

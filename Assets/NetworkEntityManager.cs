@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,13 +15,15 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private GameObject scoreboardPanel;
 
-    private ScoreboardLogic scoreboardLogic;
+    [SerializeField] private ScoreboardLogic scoreboardLogic;
 
     private const int MAXHEALTH = 10;
 
     private const int STARTSCORE = 0;
 
     private const int DAMAGE = 1;
+
+    [SerializeField] private GameObject localPlayer;
 
     [SerializeField] private TMP_Text combatLog;
 
@@ -51,7 +55,13 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private ulong latestClientId;
 
-    [SerializeField]private GameObject[] playStateObjects;
+    [SerializeField] private GameObject[] playStateObjects;
+
+    [SerializeField] private Transform spawnAroundObject;
+
+    private float radius = 0.6f;
+
+    private bool isFirstGo = true;
 
     private void Awake()
     {
@@ -67,7 +77,6 @@ public class NetworkEntityManager : NetworkBehaviour
     private void Start()
     {
         Timer.onGameEnd += EndGame;
-
         gameStarted = false;
         allPlayerData = new NetworkList<PlayerData>();
         allPlayerData.OnListChanged += OnPlayerListChanged;
@@ -77,8 +86,35 @@ public class NetworkEntityManager : NetworkBehaviour
 
     public void SetReady()
     {
+        gameStarted = true;
+
         if (IsServer)
         {
+            if (isFirstGo)
+            {
+                isFirstGo = false;
+            }
+            else
+            {
+                positionPlayers();
+            }
+
+            for (int i = 0; i < allPlayerData.Count; i++)
+            {
+
+                allPlayerData[i] = new PlayerData()
+                {
+                    clientId = allPlayerData[i].clientId,
+                    name = allPlayerData[i].name,
+                    score = STARTSCORE,
+                    health = MAXHEALTH,
+                    deaths = 0,
+                    isDead = false,
+                    color = allPlayerData[i].color,
+                    isReady = false
+                };
+
+            }
             StartGameClientRpc();
             combatLog.text = "the ready button has been pressed";
         }
@@ -91,6 +127,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void OnPlayerListChanged(NetworkListEvent<PlayerData> e)
     {
+        if (gameStarted) return;
         GenericTestClientRpc($"{latestClientId} is {gettingReady}");
         if (IsServer)
         {
@@ -160,18 +197,38 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     private void StartGameClientRpc()
     {
-        //arScenery.SetActive(true);
+        isReadyLocal = false;
+        scoreboardLogic.ModeScoreboard();
         scoreboardPanel.SetActive(false);
-        scoreboardPanel.GetComponent<ScoreboardLogic>().ModeScoreboard();
+        //scoreboardPanel.GetComponent<ScoreboardLogic>().ModeScoreboard();
         SetScoreBoardModeScore();
+        Timer.Instance.StartTimer(15f);
+    }
+
+    #endregion
+
+    [ClientRpc]
+    private void SetUpSceneClientRpc(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        SetUpScene();
+    }
+
+    private void SetUpScene()
+    {
         foreach (GameObject g in playStateObjects)
         {
             g.SetActive(true);
         }
-        Timer.Instance.StartTimer(10f);
     }
 
-    #endregion
+    private void DestroyScene()
+    {
+        foreach (GameObject g in playStateObjects)
+        {
+            g?.SetActive(false);
+        }
+    }
 
     private void EndGame()
     {
@@ -182,18 +239,18 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     private void EndGameClientRpc()
     {
-
-        foreach (GameObject g in playStateObjects)
-        {
-            g?.SetActive(false);
-        }
+        DestroyScene();
+        gameStarted = false;
+        //scoreboardPanel.GetComponent<ScoreboardLogic>()?.ModeGameEnd();
+        scoreboardLogic.ModeGameEnd();
         scoreboardPanel?.SetActive(true);
     }
 
     private void ShowLobby(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        scoreboardPanel.GetComponent<ScoreboardLogic>().Initialize();
+        //scoreboardPanel.GetComponent<ScoreboardLogic>().Initialize();
+        scoreboardLogic.Initialize();
         scoreboardPanel.SetActive(true);
     }
 
@@ -239,10 +296,41 @@ public class NetworkEntityManager : NetworkBehaviour
             SetScoreboardClientRpc(playerData.clientId, playerData.name, playerData.score, playerData.deaths, playerData.color);
         }
 
+        positionPlayers();
         ShowLobbyClientRpc(clientId);
+        SetUpSceneClientRpc(clientId);
     }
 
+    private void positionPlayers()
+    {
+        int playerCount = allPlayerData.Count;
 
+        float angleStep = 360f / (float)playerCount;
+
+        for (int i = 0; i < playerCount; i++)
+        {
+            float angle = i * angleStep;
+
+            float angleInRadians = angle * Mathf.Deg2Rad;
+
+            Vector3 newPosition = new Vector3(Mathf.Cos(angleInRadians) * radius, 0f, Mathf.Sin(angleInRadians) * radius);
+
+            ulong clientId = Convert.ToUInt64(i);
+
+            PositionPlayerStartClientRpc(clientId, newPosition);
+
+        }
+    }
+
+    [ClientRpc]
+    private void PositionPlayerStartClientRpc(ulong clientId, Vector3 newPosition)
+    {
+        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        localPlayer.transform.position = spawnAroundObject.position + newPosition;
+        Vector3 directionAwayFromCenter = (localPlayer.transform.position - spawnAroundObject.position).normalized;
+        directionAwayFromCenter.y = 0f;
+        localPlayer.transform.rotation = Quaternion.LookRotation(directionAwayFromCenter);
+    }
 
     [ServerRpc(RequireOwnership = false)]
     public void ReduceHealthServerRpc(ulong shooterId, ulong target)
@@ -401,7 +489,8 @@ public class NetworkEntityManager : NetworkBehaviour
 
 
     #region Debugging texts
-    [ClientRpc] private void GenericTestClientRpc(string somethingToPrint)
+    [ClientRpc]
+    private void GenericTestClientRpc(string somethingToPrint)
     {
         combatLog.text = somethingToPrint;
     }

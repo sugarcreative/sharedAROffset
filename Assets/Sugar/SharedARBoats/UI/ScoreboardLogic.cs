@@ -45,4 +45,9 @@ public class ScoreboardLogic : NetworkBehaviour
             item.SetActive(true);
         }
     }
+
+    public void ModeGameEnd()
+    {
+        readyButton.gameObject.SetActive(true);
+    }
 }

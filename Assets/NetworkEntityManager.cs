@@ -66,6 +66,8 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void Start()
     {
+        Timer.onGameEnd += EndGame;
+
         gameStarted = false;
         allPlayerData = new NetworkList<PlayerData>();
         allPlayerData.OnListChanged += OnPlayerListChanged;
@@ -79,7 +81,6 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             StartGameClientRpc();
             combatLog.text = "the ready button has been pressed";
-            //SendReadyInner(NetworkManager.Singleton.LocalClientId, true);
         }
         else
         {
@@ -162,13 +163,32 @@ public class NetworkEntityManager : NetworkBehaviour
         //arScenery.SetActive(true);
         scoreboardPanel.SetActive(false);
         scoreboardPanel.GetComponent<ScoreboardLogic>().ModeScoreboard();
+        SetScoreBoardModeScore();
         foreach (GameObject g in playStateObjects)
         {
             g.SetActive(true);
         }
+        Timer.Instance.StartTimer(10f);
     }
 
     #endregion
+
+    private void EndGame()
+    {
+        if (!IsServer) return;
+        EndGameClientRpc();
+    }
+
+    [ClientRpc]
+    private void EndGameClientRpc()
+    {
+
+        foreach (GameObject g in playStateObjects)
+        {
+            g?.SetActive(false);
+        }
+        scoreboardPanel?.SetActive(true);
+    }
 
     private void ShowLobby(ulong clientId)
     {
@@ -335,6 +355,22 @@ public class NetworkEntityManager : NetworkBehaviour
         newCard.Initialize(name);
     }
 
+    private void SetScoreBoardModeScore()
+    {
+        foreach (KeyValuePair<ulong, PlayerCard> card in playerCards)
+        {
+            card.Value.ModeScoreboard();
+        }
+    }
+
+    private void SetScoreboardModeLobby()
+    {
+        foreach (KeyValuePair<ulong, PlayerCard> card in playerCards)
+        {
+            card.Value.ModeLobby();
+        }
+    }
+
     [ClientRpc]
     public void UpdateScoreboardScoreClientRpc(ulong clientId, int newScore)
     {
@@ -360,6 +396,8 @@ public class NetworkEntityManager : NetworkBehaviour
 
         CreatePlayerCard(clientId, name, score, deaths, colorArg);
     }
+
+
 
 
     #region Debugging texts

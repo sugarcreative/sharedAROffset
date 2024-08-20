@@ -113,10 +113,14 @@ public class NetworkEntityManager : NetworkBehaviour
                     color = allPlayerData[i].color,
                     isReady = false
                 };
-
+                UpdateScoreboardScoreClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].score);
+                UpdateScoreboardDeathsClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
+                UpdateLocalScoreClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].score);
+                UpdateLocalHealthClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
             }
             StartGameClientRpc();
             combatLog.text = "the ready button has been pressed";
+            readyButton.interactable = false;
         }
         else
         {
@@ -200,7 +204,7 @@ public class NetworkEntityManager : NetworkBehaviour
         isReadyLocal = false;
         scoreboardLogic.ModeScoreboard();
         scoreboardPanel.SetActive(false);
-        //scoreboardPanel.GetComponent<ScoreboardLogic>().ModeScoreboard();
+        SetUpScene();
         SetScoreBoardModeScore();
         Timer.Instance.StartTimer(15f);
     }
@@ -318,7 +322,6 @@ public class NetworkEntityManager : NetworkBehaviour
             ulong clientId = Convert.ToUInt64(i);
 
             PositionPlayerStartClientRpc(clientId, newPosition);
-
         }
     }
 

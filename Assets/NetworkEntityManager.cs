@@ -63,6 +63,8 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private bool isFirstGo = true;
 
+    [SerializeField] private Transform[] spawnPoints;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -119,7 +121,6 @@ public class NetworkEntityManager : NetworkBehaviour
                 UpdateLocalHealthClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
             }
             StartGameClientRpc();
-            combatLog.text = "the ready button has been pressed";
             readyButton.interactable = false;
         }
         else
@@ -300,37 +301,25 @@ public class NetworkEntityManager : NetworkBehaviour
             SetScoreboardClientRpc(playerData.clientId, playerData.name, playerData.score, playerData.deaths, playerData.color);
         }
 
-        positionPlayers();
+        PositionPlayerStartClientRpc(clientId);
         ShowLobbyClientRpc(clientId);
         SetUpSceneClientRpc(clientId);
     }
 
     private void positionPlayers()
     {
-        int playerCount = allPlayerData.Count;
-
-        float angleStep = 360f / (float)playerCount;
-
-        for (int i = 0; i < playerCount; i++)
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
-            float angle = i * angleStep;
-
-            float angleInRadians = angle * Mathf.Deg2Rad;
-
-            Vector3 newPosition = new Vector3(Mathf.Cos(angleInRadians) * radius, 0f, Mathf.Sin(angleInRadians) * radius);
-
-            ulong clientId = Convert.ToUInt64(i);
-
-            PositionPlayerStartClientRpc(clientId, newPosition);
+            PositionPlayerStartClientRpc(clientId);
         }
     }
 
     [ClientRpc]
-    private void PositionPlayerStartClientRpc(ulong clientId, Vector3 newPosition)
+    private void PositionPlayerStartClientRpc(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        localPlayer.transform.position = spawnAroundObject.position + newPosition;
-        Vector3 directionAwayFromCenter = (localPlayer.transform.position - spawnAroundObject.position).normalized;
+        localPlayer.transform.position = spawnPoints[clientId].transform.position;
+        Vector3 directionAwayFromCenter = (localPlayer.transform.position - spawnAroundObject.transform.position).normalized;
         directionAwayFromCenter.y = 0f;
         localPlayer.transform.rotation = Quaternion.LookRotation(directionAwayFromCenter);
     }

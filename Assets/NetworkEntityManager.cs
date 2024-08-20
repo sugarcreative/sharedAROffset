@@ -132,10 +132,13 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void OnPlayerListChanged(NetworkListEvent<PlayerData> e)
     {
-        if (gameStarted) return;
-        GenericTestClientRpc($"{latestClientId} is {gettingReady}");
+
         if (IsServer)
         {
+
+            if (gameStarted) return;
+            GenericTestClientRpc($"{latestClientId} is {gettingReady}");
+
             int numOfPlayers = allPlayerData.Count - 1;
             int count = 0;
             foreach (PlayerData playerData in allPlayerData)
@@ -207,7 +210,7 @@ public class NetworkEntityManager : NetworkBehaviour
         scoreboardPanel.SetActive(false);
         SetUpScene();
         SetScoreBoardModeScore();
-        Timer.Instance.StartTimer(15f);
+        Timer.Instance.StartTimer(30f);
     }
 
     #endregion
@@ -366,7 +369,9 @@ public class NetworkEntityManager : NetworkBehaviour
                         isReady = allPlayerData[i].isReady,
                     };
                     UpdateLocalHealthClientRpc(target, newHealth);
-                    ConveyDeathClientRpc(shooterId, target);
+                    
+                    //ConveyDeathClientRpc(shooterId, target);
+                    OnBoatDeathClientRpc(target);
                 }
 
                 if (!allPlayerData[i].isDead)
@@ -417,6 +422,34 @@ public class NetworkEntityManager : NetworkBehaviour
             }
         }
     }
+
+    [ClientRpc]
+    public void OnBoatDeathClientRpc(ulong clientId)
+    {
+        foreach (NetworkObject obj in NetworkManager.Singleton.SpawnManager.SpawnedObjectsList)
+        {
+            if (NetworkObject.OwnerClientId == clientId)
+            {
+                combatLog.text = $"owner is {clientId}";
+                //obj.GetComponent<Collider>().enabled = false;
+                MakeInvis(obj.gameObject, false);
+                break;
+            }
+        }
+    }
+
+    private void MakeInvis(GameObject obj, bool isVisible)
+    {
+        MeshRenderer[] meshes = obj.GetComponentsInChildren<MeshRenderer>(true);
+
+        combatLog.text = "we are in make invis subfunction";
+        foreach (MeshRenderer mesh in meshes)
+        {
+            mesh.enabled = isVisible;
+        }
+
+    }
+
     public void ReduceHealth(ulong shooterId, ulong targetId)
     {
         if (IsOwner)

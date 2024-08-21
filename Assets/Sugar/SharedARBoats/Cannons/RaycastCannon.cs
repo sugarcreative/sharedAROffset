@@ -17,7 +17,7 @@ public class RaycastCannon : NetworkBehaviour
 
     public void FireCannon()
     {
-        SpawnLocalShootingParticles(_shootParticles, transform.position, transform.forward);
+        SpawnLocalShootingParticles(_shootParticles);
 
         RaycastHit hit;
 
@@ -47,10 +47,9 @@ public class RaycastCannon : NetworkBehaviour
     }
 
 
-    private void SpawnLocalShootingParticles(GameObject shootParticles, Vector3 position, Vector3 rotation)
+    private void SpawnLocalShootingParticles(GameObject shootParticles)
     {
-        Quaternion rotationQ = Quaternion.Euler(rotation);
-        GameObject instantiatedParticles = Instantiate(shootParticles, position, rotationQ);
+        GameObject instantiatedParticles = Instantiate(shootParticles, transform.position, transform.rotation);
     }
 
     [ServerRpc(RequireOwnership = false)]

@@ -426,6 +426,11 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     public void OnBoatDeathClientRpc(ulong clientId)
     {
+        if (NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            localPlayer.GetComponentInChildren<ShipEffectController>(true).IsSunk();
+        }
+
         foreach (NetworkObject obj in NetworkManager.Singleton.SpawnManager.SpawnedObjectsList)
         {
             if (NetworkObject.OwnerClientId == clientId)
@@ -443,6 +448,7 @@ public class NetworkEntityManager : NetworkBehaviour
         MeshRenderer[] meshes = obj.GetComponentsInChildren<MeshRenderer>(true);
 
         combatLog.text = "we are in make invis subfunction";
+
         foreach (MeshRenderer mesh in meshes)
         {
             mesh.enabled = isVisible;

@@ -17,14 +17,22 @@ public class ShipEffectController : MonoBehaviour
 
     public float waterHeight;
 
+    private MeshRenderer mr;
+
+    public float respawnDuration = 2.0f;
+    private float lerpValue;
+
+    public List<Renderer> allRenderers = new List<Renderer>();
+
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
 
+        mr = GetComponent<MeshRenderer>();
+
         if (sailsFurled != null && sailsUnfurled != null)
         {
-            sailsUnfurled.gameObject.SetActive(false);
             sailsFurled.SetActive(false);
 
             float a = sailsUnfurled.GetBlendShapeWeight(0);
@@ -37,9 +45,13 @@ public class ShipEffectController : MonoBehaviour
             {
                 sailsUnfurled.gameObject.SetActive(true);
             }
-
-            Debug.Log(a + " is the value");
         }
+
+        MeshRenderer[] meshRenderers = GetComponentsInChildren<MeshRenderer>();
+        allRenderers.AddRange(meshRenderers);
+
+        SkinnedMeshRenderer[] skinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+        allRenderers.AddRange(skinnedMeshRenderers);
     }
 
 
@@ -68,16 +80,18 @@ public class ShipEffectController : MonoBehaviour
 
     public void FireLeft()
     {
-        anim.Play("FireLeft", 0 , 0);
-        StartCoroutine(FireCannons(cannonFirePositionsLeft));
+        //anim.Play("FireLeft", 0 , 0);
+        anim.CrossFade("FireLeft", 0.1f, 0, 0);
 
+        StartCoroutine(FireCannons(cannonFirePositionsLeft));
     }
 
     public void FireRight()
     {
-        anim.Play("FireRight", 0, 0);
-        StartCoroutine(FireCannons(cannonFirePositionsRight));
+        //anim.Play("FireRight", 0, 0);
+        anim.CrossFade("FireRight", 0.1f, 0, 0);
 
+        StartCoroutine(FireCannons(cannonFirePositionsRight));
     }
 
 
@@ -103,11 +117,51 @@ public class ShipEffectController : MonoBehaviour
         }
 
 
-        anim.Play("Sink", 0, 0);
+        anim.CrossFade("Sink", 0.05f, 0, 0);
     }
 
     public void IsRespawn()
     {
-        anim.Play("NoAnim", 0, 0);
+
+        if (mr != null)
+        {
+            StopAllCoroutines();
+
+            mr.material.SetFloat("_FadeShift", 0);
+
+            StartCoroutine(StartRespawn());
+        }
+
+        anim.Play("Spawn", 0, 0);
+    }
+
+    IEnumerator StartRespawn()
+    {
+        if (mr != null)
+        {
+            float startValue = 0f;
+            float endValue = 1f;
+            float elapsedTime = 0f;
+
+            while (elapsedTime < respawnDuration)
+            {
+                lerpValue = Mathf.Lerp(startValue, endValue, elapsedTime / respawnDuration);
+                foreach (Renderer r in allRenderers)
+                {
+                    r.material.SetFloat("_FadeShift", lerpValue);
+                }
+
+                elapsedTime += Time.deltaTime;
+
+                yield return null;
+            }
+
+            // Ensure the final value is exactly the end value
+            lerpValue = endValue;
+            foreach (Renderer r in allRenderers)
+            {
+                r.material.SetFloat("_FadeShift", lerpValue);
+            }
+        }
     }
 }

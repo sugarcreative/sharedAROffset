@@ -32,7 +32,10 @@ public class RaycastCannon : MonoBehaviour
         }
         else
         {
-            combatLog.text = $"{NetworkManager.Singleton.LocalClientId} has hit nothing with {gameObject.name}!";
+            if (combatLog != null)
+            {
+                combatLog.text = $"{NetworkManager.Singleton.LocalClientId} has hit nothing with {gameObject.name}!";
+            }
         }
     }
 

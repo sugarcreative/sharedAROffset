@@ -8,7 +8,7 @@ public class RaycastCannon : NetworkBehaviour
 
     public LayerMask _hitLayers;
 
-    public TMP_Text combatLog;
+    //public TMP_Text combatLog;
 
     [SerializeField] private GameObject _hitParticles;
 
@@ -16,12 +16,12 @@ public class RaycastCannon : NetworkBehaviour
 
     private void Awake()
     {
-        combatLog = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
+        //combatLog = FindObjectOfType<CombatLog>().GetComponent<TMP_Text>();
     }
 
     public void FireCannon()
     {
-        SpawnLocalHitParticles(_shootParticles, transform.position, transform.forward);
+        SpawnLocalShootingParticles(_shootParticles, transform.position, transform.forward);
 
         RaycastHit hit;
 
@@ -31,14 +31,14 @@ public class RaycastCannon : NetworkBehaviour
             {
                 SpawnLocalHitParticles(_hitParticles, hit.point, hit.normal);
                 ulong targetId = hit.collider.GetComponent<NetworkObject>().OwnerClientId;
-                combatLog.text = $"you have hit {targetId}!";
+                //combatLog.text = $"you have hit {targetId}!";
                 NetworkEntityManager.Instance.ReduceHealthServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
                 //SendHitMessageServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
             }
         }
         else
         {
-            combatLog.text = $"{NetworkManager.Singleton.LocalClientId} has hit nothing!";
+            //combatLog.text = $"{NetworkManager.Singleton.LocalClientId} has hit nothing!";
         }
     }
 
@@ -54,9 +54,8 @@ public class RaycastCannon : NetworkBehaviour
 
     private void SpawnLocalShootingParticles(GameObject shootParticles, Vector3 position, Vector3 rotation)
     {
-        Quaternion rotationQ = Quaternion.Euler(rotation);
-        GameObject instantiatedParticles = Instantiate(shootParticles, position, rotationQ);
-        Destroy(instantiatedParticles.gameObject, 0.2f);
+        GameObject instantiatedParticles = Instantiate(shootParticles, transform.position, transform.rotation);
+        //Destroy(instantiatedParticles.gameObject, 0.2f);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -76,6 +75,6 @@ public class RaycastCannon : NetworkBehaviour
     [ClientRpc]
     void UpdateCombatLogOnClientRpc(ulong shooterId, ClientRpcParams clientRpcParams)
     {
-        combatLog.text = $"You have been shot by {shooterId}!";
+        //combatLog.text = $"You have been shot by {shooterId}!";
     }
 }

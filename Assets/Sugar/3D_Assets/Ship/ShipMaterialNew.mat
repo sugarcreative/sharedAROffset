@@ -102,7 +102,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AOTEST: 0.26
-    - _AlphaClip: 0
+    - _AlphaClip: 0.1
     - _AlphaCutoff: 0.5
     - _AlphaToMask: 0
     - _Blend: 0
@@ -115,6 +115,8 @@ Material:
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
+    - _Dissolve: 0
+    - _DissolveScale: 15.3
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EmblemScale: -4

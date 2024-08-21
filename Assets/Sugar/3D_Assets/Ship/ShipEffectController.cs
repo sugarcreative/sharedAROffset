@@ -7,34 +7,51 @@ public class ShipEffectController : MonoBehaviour
 {
     private Animator anim;
 
-    public GameObject fireParticles;
-    public Transform[] cannonFirePositionsLeft, cannonFirePositionsRight;
+    public GameObject shipDeathParticles, waterDeathParticles;
+    public RaycastCannon[] cannonFirePositionsLeft, cannonFirePositionsRight;
+    public Transform deathExplosionPosition;
 
     public SkinnedMeshRenderer sailsUnfurled;
     public GameObject sailsFurled;
     public float furlTrigger = 95;
+
+    public float waterHeight;
 
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
 
-        if (sailsFurled != null)
+        if (sailsFurled != null && sailsUnfurled != null)
         {
+            sailsUnfurled.gameObject.SetActive(false);
             sailsFurled.SetActive(false);
+
+            float a = sailsUnfurled.GetBlendShapeWeight(0);
+
+            if (a > furlTrigger)
+            {
+                sailsFurled.SetActive(true);
+            }
+            else
+            {
+                sailsUnfurled.gameObject.SetActive(true);
+            }
+
+            Debug.Log(a + " is the value");
         }
     }
 
 
     public void CheckFurl(float value)
     {
-        if (sailsFurled != null)
+        if (sailsFurled != null && sailsUnfurled != null)
         {
             if (value > furlTrigger)
             {
                 if (sailsFurled.activeInHierarchy == false)
                 {
-                    //turn off sailsunfurl
+                    sailsUnfurled.gameObject.SetActive(false);
                     sailsFurled.SetActive(true);
                 }
             }
@@ -42,7 +59,7 @@ public class ShipEffectController : MonoBehaviour
             {
                 if (sailsFurled.activeInHierarchy)
                 {
-                    //turn on sailsunfurl
+                    sailsUnfurled.gameObject.SetActive(true);
                     sailsFurled.SetActive(false);
                 }
             }
@@ -51,19 +68,41 @@ public class ShipEffectController : MonoBehaviour
 
     public void FireLeft()
     {
-        // insert particle spawning
-        anim.Play("FireLeft", 0);
+        anim.Play("FireLeft", 0 , 0);
+        StartCoroutine(FireCannons(cannonFirePositionsLeft));
+
     }
 
     public void FireRight()
     {
-        // insert particle spawning
-        anim.Play("FireRight", 0);
+        anim.Play("FireRight", 0, 0);
+        StartCoroutine(FireCannons(cannonFirePositionsRight));
+
+    }
+
+
+    IEnumerator FireCannons( RaycastCannon[] t)
+    {
+        foreach (var cannon in t)
+        {
+            cannon.FireCannon();
+            yield return new WaitForSeconds(0.3f);
+        }
     }
 
     public void IsSunk()
     {
-        // insert particle spawning
-        anim.Play("Sink", 0);
+        if (deathExplosionPosition != null && shipDeathParticles != null)
+        {
+            Instantiate(shipDeathParticles, deathExplosionPosition);
+        }
+
+        if (waterDeathParticles != null)
+        {
+            Instantiate(waterDeathParticles, new Vector3(transform.position.x, waterHeight + 0.01f, transform.position.z), transform.rotation);
+        }
+
+
+        anim.Play("Sink", 0, 0);
     }
 }

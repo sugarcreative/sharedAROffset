@@ -105,4 +105,9 @@ public class ShipEffectController : MonoBehaviour
 
         anim.Play("Sink", 0, 0);
     }
+
+    public void IsRespawn()
+    {
+        anim.Play("NoAnim", 0, 0);
+    }
 }

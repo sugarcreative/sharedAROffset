@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -375,7 +376,7 @@ public class NetworkEntityManager : NetworkBehaviour
                         isReady = allPlayerData[i].isReady,
                     };
                     UpdateLocalHealthClientRpc(target, newHealth);
-                    
+                    UpdateScoreboardDeathsClientRpc(target, newDeaths);
                     //ConveyDeathClientRpc(shooterId, target);
                     OnBoatDeathClientRpc(target);
                 }
@@ -435,6 +436,7 @@ public class NetworkEntityManager : NetworkBehaviour
         if (NetworkManager.Singleton.LocalClientId == clientId)
         {
             localPlayer.GetComponentInChildren<ShipEffectController>(true).IsSunk();
+            SinkIntoRespawnFunction(localPlayer);
         }
 
         foreach (PlayerAvatar player in networkedGameObjects)
@@ -442,6 +444,7 @@ public class NetworkEntityManager : NetworkBehaviour
             if (player.gameObject.GetComponent<NetworkObject>().OwnerClientId == clientId)
             {
                 player.gameObject.GetComponentInChildren<ShipEffectController>().IsSunk();
+                SinkIntoRespawnFunction(player);
             }
         }
     }
@@ -478,6 +481,28 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             card.Value.ModeLobby();
         }
+    }
+
+    private void SinkIntoRespawnFunction(PlayerAvatar player)
+    {
+        StartCoroutine(SinkIntoRespawn(player));
+    }
+
+    private IEnumerator SinkIntoRespawn(PlayerAvatar player)
+    {
+        yield return new WaitForSeconds(6);
+        player.gameObject.GetComponentInChildren<ShipEffectController>().IsRespawn();
+    }
+
+    private void SinkIntoRespawnFunction(GameObject player)
+    {
+        StartCoroutine(SinkIntoRespawn(player));
+    }
+
+    private IEnumerator SinkIntoRespawn(GameObject player)
+    {
+        yield return new WaitForSeconds(6);
+        player.GetComponentInChildren<ShipEffectController>().IsRespawn();
     }
 
     [ClientRpc]

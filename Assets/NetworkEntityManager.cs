@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.Collections;
 using Unity.Netcode;
@@ -64,6 +65,8 @@ public class NetworkEntityManager : NetworkBehaviour
     private bool isFirstGo = true;
 
     [SerializeField] private Transform[] spawnPoints;
+
+    [SerializeField] private PlayerAvatar[] networkedGameObjects;
 
     private void Awake()
     {
@@ -205,6 +208,9 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     private void StartGameClientRpc()
     {
+        networkedGameObjects = FindObjectsOfType<PlayerAvatar>(true);
+
+        combatLog.text = $"there are {networkedGameObjects.Count()} networkObjects in scene";
         isReadyLocal = false;
         scoreboardLogic.ModeScoreboard();
         scoreboardPanel.SetActive(false);
@@ -431,29 +437,13 @@ public class NetworkEntityManager : NetworkBehaviour
             localPlayer.GetComponentInChildren<ShipEffectController>(true).IsSunk();
         }
 
-        foreach (NetworkObject obj in NetworkManager.Singleton.SpawnManager.SpawnedObjectsList)
+        foreach (PlayerAvatar player in networkedGameObjects)
         {
-            if (NetworkObject.OwnerClientId == clientId)
+            if (player.gameObject.GetComponent<NetworkObject>().OwnerClientId == clientId)
             {
-                combatLog.text = $"owner is {clientId}";
-                //obj.GetComponent<Collider>().enabled = false;
-                MakeInvis(obj.gameObject, false);
-                break;
+                player.gameObject.GetComponentInChildren<ShipEffectController>().IsSunk();
             }
         }
-    }
-
-    private void MakeInvis(GameObject obj, bool isVisible)
-    {
-        MeshRenderer[] meshes = obj.GetComponentsInChildren<MeshRenderer>(true);
-
-        combatLog.text = "we are in make invis subfunction";
-
-        foreach (MeshRenderer mesh in meshes)
-        {
-            mesh.enabled = isVisible;
-        }
-
     }
 
     public void ReduceHealth(ulong shooterId, ulong targetId)
@@ -523,7 +513,7 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     private void GenericTestClientRpc(string somethingToPrint)
     {
-        combatLog.text = somethingToPrint;
+        //combatLog.text = somethingToPrint;
     }
 
 
@@ -531,14 +521,14 @@ public class NetworkEntityManager : NetworkBehaviour
     private void TargetDebugClientRpc(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        combatLog.text = "you have been hit";
+        //combatLog.text = "you have been hit";
     }
 
     [ClientRpc]
     private void ShooterDebugClientRpc(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        combatLog.text = "you have shot someone";
+        //combatLog.text = "you have shot someone";
     }
 
 
@@ -546,7 +536,7 @@ public class NetworkEntityManager : NetworkBehaviour
     void UpdateLocalTextClientRpc(ulong shooterId, ulong targetId)
     {
         if (NetworkManager.Singleton.LocalClientId != targetId) return;
-        combatLog.text = $"You have been shot by {shooterId}";
+        //combatLog.text = $"You have been shot by {shooterId}";
     }
 
     [ClientRpc]
@@ -568,7 +558,7 @@ public class NetworkEntityManager : NetworkBehaviour
     {
         if (NetworkManager.Singleton.LocalClientId == targetId)
         {
-            combatLog.text = $"{shooterId} has sunk your boat!";
+            //combatLog.text = $"{shooterId} has sunk your boat!";
         }
     }
 

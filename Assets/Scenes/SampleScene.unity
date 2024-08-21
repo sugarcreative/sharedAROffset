@@ -1018,7 +1018,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   combatLog: {fileID: 212654709}
-  _hitParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
+  _hitParticles: {fileID: 1126799166507225401, guid: 46a4d057c9848a64ab3d2576efa3c7ce, type: 3}
   _shootParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
 --- !u!1 &252028359
 GameObject:
@@ -1095,78 +1095,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 252028359}
   m_CullTransparentMesh: 1
---- !u!1 &263945421
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 263945422}
-  - component: {fileID: 263945424}
-  - component: {fileID: 263945423}
-  m_Layer: 0
-  m_Name: PortMiddleCannon (4)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &263945422
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 263945421}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.0492, y: 0.0095, z: 0.0761}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1878759629844085187}
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!114 &263945423
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 263945421}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3978217830
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
---- !u!114 &263945424
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 263945421}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 977fba669c60d694d8e31be0a003ccb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cannonRange: 300
-  _hitLayers:
-    serializedVersion: 2
-    m_Bits: 128
-  combatLog: {fileID: 212654709}
-  _hitParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
-  _shootParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
 --- !u!1 &302115829
 GameObject:
   m_ObjectHideFlags: 0
@@ -2345,7 +2273,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   combatLog: {fileID: 212654709}
-  _hitParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
+  _hitParticles: {fileID: 1126799166507225401, guid: 46a4d057c9848a64ab3d2576efa3c7ce, type: 3}
   _shootParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
 --- !u!1 &563924876
 GameObject:
@@ -3739,7 +3667,7 @@ Transform:
   m_GameObject: {fileID: 807112708}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.0492, y: -0.001, z: -0.0384}
+  m_LocalPosition: {x: 0.0492, y: 0.0328, z: -0.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3782,7 +3710,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   combatLog: {fileID: 212654709}
-  _hitParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
+  _hitParticles: {fileID: 1126799166507225401, guid: 46a4d057c9848a64ab3d2576efa3c7ce, type: 3}
   _shootParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
 --- !u!1 &829491743
 GameObject:
@@ -4126,78 +4054,6 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!1 &980318495
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 980318496}
-  - component: {fileID: 980318498}
-  - component: {fileID: 980318497}
-  m_Layer: 0
-  m_Name: StarboardMiddleCannon (3)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &980318496
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 980318495}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.0447, y: 0.0205, z: -0.1678}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4115902054353951391}
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!114 &980318497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 980318495}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4155206725
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
---- !u!114 &980318498
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 980318495}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 977fba669c60d694d8e31be0a003ccb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cannonRange: 300
-  _hitLayers:
-    serializedVersion: 2
-    m_Bits: 128
-  combatLog: {fileID: 212654709}
-  _hitParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
-  _shootParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
 --- !u!1 &1044940401
 GameObject:
   m_ObjectHideFlags: 0
@@ -4282,8 +4138,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1095947344}
-  - component: {fileID: 1095947345}
   - component: {fileID: 1095947346}
+  - component: {fileID: 1095947345}
   m_Layer: 0
   m_Name: NetworkEntityManager
   m_TagString: Untagged
@@ -4812,6 +4668,7 @@ MonoBehaviour:
   - {fileID: 1699933316}
   - {fileID: 2136642687}
   - {fileID: 1737974976}
+  networkedGameObjects: []
 --- !u!114 &1095947346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5618,7 +5475,7 @@ Transform:
   m_GameObject: {fileID: 1335606203}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.0492, y: 0.0145, z: -0.1037}
+  m_LocalPosition: {x: 0.0531, y: 0.0343, z: -0.0013}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5661,7 +5518,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   combatLog: {fileID: 212654709}
-  _hitParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
+  _hitParticles: {fileID: 1126799166507225401, guid: 46a4d057c9848a64ab3d2576efa3c7ce, type: 3}
   _shootParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
 --- !u!1 &1445976194
 GameObject:
@@ -6029,7 +5886,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1579703631
 Transform:
   m_ObjectHideFlags: 0
@@ -6297,78 +6154,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1613650751}
   m_CullTransparentMesh: 1
---- !u!1 &1623243258
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1623243259}
-  - component: {fileID: 1623243261}
-  - component: {fileID: 1623243260}
-  m_Layer: 0
-  m_Name: PortMiddleCannon (3)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1623243259
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1623243258}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.0492, y: -0.0042, z: 0.0231}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1878759629844085187}
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!114 &1623243260
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1623243258}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2483015409
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
---- !u!114 &1623243261
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1623243258}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 977fba669c60d694d8e31be0a003ccb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cannonRange: 300
-  _hitLayers:
-    serializedVersion: 2
-    m_Bits: 128
-  combatLog: {fileID: 212654709}
-  _hitParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
-  _shootParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
 --- !u!1 &1670288206
 GameObject:
   m_ObjectHideFlags: 0
@@ -6973,78 +6758,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1762960690}
   m_CullTransparentMesh: 1
---- !u!1 &1765436171
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1765436172}
-  - component: {fileID: 1765436174}
-  - component: {fileID: 1765436173}
-  m_Layer: 0
-  m_Name: PortMiddleCannon (5)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1765436172
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1765436171}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.0492, y: 0.0177, z: 0.1378}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1878759629844085187}
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!114 &1765436173
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1765436171}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1156154990
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
---- !u!114 &1765436174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1765436171}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 977fba669c60d694d8e31be0a003ccb0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cannonRange: 300
-  _hitLayers:
-    serializedVersion: 2
-    m_Bits: 128
-  combatLog: {fileID: 212654709}
-  _hitParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
-  _shootParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
 --- !u!1 &1804478172
 GameObject:
   m_ObjectHideFlags: 0
@@ -8317,10 +8030,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 873b7fdbcc7557543b87c0ea1e4e9936, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cannons:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 4790259716175447598}
   newCannons: []
 --- !u!4 &1545007695507631301
 Transform:
@@ -8382,10 +8091,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 873b7fdbcc7557543b87c0ea1e4e9936, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cannons:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 8693131201171859911}
   newCannons: []
 --- !u!1 &1741504637686531498
 GameObject:
@@ -8437,9 +8142,6 @@ Transform:
   - {fileID: 6768355998046075258}
   - {fileID: 1335606204}
   - {fileID: 807112709}
-  - {fileID: 1623243259}
-  - {fileID: 263945422}
-  - {fileID: 1765436172}
   m_Father: {fileID: 6324356468617492562}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &1922694813200500831
@@ -8825,7 +8527,7 @@ RectTransform:
   m_Father: {fileID: 6222156628909625115}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -9279,8 +8981,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5034254814077124319}
-  - component: {fileID: 4790259716175447598}
   - component: {fileID: 2704974750150728730}
+  - component: {fileID: 4790259716175447598}
   m_Layer: 0
   m_Name: StarboardMiddleCannon
   m_TagString: Untagged
@@ -9320,7 +9022,6 @@ Transform:
   - {fileID: 5034254814077124319}
   - {fileID: 555814873}
   - {fileID: 240919362}
-  - {fileID: 980318496}
   m_Father: {fileID: 6324356468617492562}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &4149017852290087163
@@ -9638,7 +9339,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   combatLog: {fileID: 212654709}
-  _hitParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
+  _hitParticles: {fileID: 1126799166507225401, guid: 46a4d057c9848a64ab3d2576efa3c7ce, type: 3}
   _shootParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
 --- !u!4 &4799715174182750040
 Transform:
@@ -9999,12 +9700,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ba087b999580254ea3e52c758057117, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
+  shipDeathParticles: {fileID: 0}
+  waterDeathParticles: {fileID: 0}
   cannonFirePositionsLeft: []
   cannonFirePositionsRight: []
+  deathExplosionPosition: {fileID: 0}
   sailsUnfurled: {fileID: 6301453105899976172}
   sailsFurled: {fileID: 5117384563892086071}
   furlTrigger: 95
+  waterHeight: 0
 --- !u!1 &5850489705084268279
 GameObject:
   m_ObjectHideFlags: 0
@@ -10332,7 +10036,7 @@ Transform:
   m_GameObject: {fileID: 5150196152343835104}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.0492, y: 0.033599995, z: 0.0011}
+  m_LocalPosition: {x: 0.0523, y: 0.0349, z: 0.0564}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10775,7 +10479,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   combatLog: {fileID: 212654709}
-  _hitParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
+  _hitParticles: {fileID: 1126799166507225401, guid: 46a4d057c9848a64ab3d2576efa3c7ce, type: 3}
   _shootParticles: {fileID: 1990676459051594800, guid: 38ccecbaa89771e49816cde5eefdd429, type: 3}
 --- !u!1 &8753101324165136146
 GameObject:
@@ -10810,7 +10514,7 @@ RectTransform:
   m_Father: {fileID: 5661195804632706899}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}

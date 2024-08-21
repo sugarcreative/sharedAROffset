@@ -4,24 +4,27 @@ using UnityEngine;
 
 public class CannonLogic : MonoBehaviour
 {
-
-    [SerializeField] private RaycastCannon[] cannons;
-
     [SerializeField] private RaycastCannon[] newCannons;
 
-    private void Awake()
-    {
-        newCannons = GetComponentsInChildren<RaycastCannon>(true);
-    }
+    //private void Awake()
+    //{
+    //    newCannons = GetComponentsInChildren<RaycastCannon>(true);
+    //}
+
+    //private void Start()
+    //{
+    //    newCannons = GetComponentsInChildren<RaycastCannon>(true);
+    //}
 
     public void ShootCannons()
     {
+        newCannons = GetComponentsInChildren<RaycastCannon>(true);
         StartCoroutine(FireCannons());
     }
 
     IEnumerator FireCannons()
     {
-        foreach (var cannon in newCannons)
+        foreach (RaycastCannon cannon in newCannons)
         {
             cannon.FireCannon();
             yield return new WaitForSeconds(0.3f);

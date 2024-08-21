@@ -2,6 +2,7 @@ using System;
 using Unity.Collections;
 using Unity.Netcode;
 
+[Serializable]
 public struct PlayerData : IEquatable<PlayerData>, INetworkSerializable
 {
     public ulong clientId;

@@ -102,7 +102,7 @@ public class NetworkEntityManager : NetworkBehaviour
             }
             else
             {
-                positionPlayers();
+                PositionPlayers();
             }
 
             for (int i = 0; i < allPlayerData.Count; i++)
@@ -140,28 +140,44 @@ public class NetworkEntityManager : NetworkBehaviour
         if (IsServer)
         {
 
-            if (gameStarted) return;
-            GenericTestClientRpc($"{latestClientId} is {gettingReady}");
-
-            int numOfPlayers = allPlayerData.Count - 1;
-            int count = 0;
-            foreach (PlayerData playerData in allPlayerData)
+            if (gameStarted)
             {
-                if (playerData.isReady)
+                foreach (PlayerData playerData in allPlayerData)
                 {
-                    count++;
+                    TestClientRpc(playerData);
                 }
-            }
-
-            if (count == numOfPlayers)
-            {
-                readyButton.interactable = true;
             }
             else
             {
-                readyButton.interactable = false;
+                GenericTestClientRpc($"{latestClientId} is {gettingReady}");
+
+                int numOfPlayers = allPlayerData.Count - 1;
+                int count = 0;
+                foreach (PlayerData playerData in allPlayerData)
+                {
+                    if (playerData.isReady)
+                    {
+                        count++;
+                    }
+                }
+
+                if (count == numOfPlayers)
+                {
+                    readyButton.interactable = true;
+                }
+                else
+                {
+                    readyButton.interactable = false;
+                }
             }
         }
+    }
+
+
+    [ClientRpc]
+    private void TestClientRpc(PlayerData playerdata)
+    {
+        playerCards[playerdata.clientId].SetPlayerData(playerdata);
     }
 
     public void SendReady(bool value)
@@ -316,7 +332,7 @@ public class NetworkEntityManager : NetworkBehaviour
         SetUpSceneClientRpc(clientId);
     }
 
-    private void positionPlayers()
+    private void PositionPlayers()
     {
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
@@ -376,7 +392,7 @@ public class NetworkEntityManager : NetworkBehaviour
                         isReady = allPlayerData[i].isReady,
                     };
                     UpdateLocalHealthClientRpc(target, newHealth);
-                    UpdateScoreboardDeathsClientRpc(target, newDeaths);
+                    //UpdateScoreboardDeathsClientRpc(target, newDeaths);
                     //ConveyDeathClientRpc(shooterId, target);
                     OnBoatDeathClientRpc(target);
                 }
@@ -412,7 +428,7 @@ public class NetworkEntityManager : NetworkBehaviour
                 int newScore = allPlayerData[i].score + 1;
 
                 UpdateLocalScoreClientRpc(shooterId, newScore);
-                UpdateScoreboardScoreClientRpc(shooterId, newScore);
+                //UpdateScoreboardScoreClientRpc(shooterId, newScore);
 
                 allPlayerData[i] = new PlayerData
                 {
@@ -425,7 +441,6 @@ public class NetworkEntityManager : NetworkBehaviour
                     color = allPlayerData[i].color,
                     isReady = allPlayerData[i].isReady,
                 };
-
             }
         }
     }

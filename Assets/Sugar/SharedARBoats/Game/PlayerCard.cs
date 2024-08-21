@@ -66,4 +66,11 @@ public class PlayerCard : MonoBehaviour
     public void SetDeaths(int deaths) { 
         deathsText.text = deaths.ToString();
     }
+
+    public void SetPlayerData(PlayerData data)
+    {
+        nameText.text = data.name.ToString();
+        killsText.text = data.score.ToString();
+        deathsText.text = data.deaths.ToString();
+    }
 }

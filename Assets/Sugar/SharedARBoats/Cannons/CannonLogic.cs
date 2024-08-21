@@ -6,10 +6,10 @@ public class CannonLogic : MonoBehaviour
 {
     [SerializeField] private RaycastCannon[] newCannons;
 
-    //private void Awake()
-    //{
-    //    newCannons = GetComponentsInChildren<RaycastCannon>(true);
-    //}
+    private void Awake()
+    {
+        newCannons = GetComponentsInChildren<RaycastCannon>(true);
+    }
 
     //private void Start()
     //{
@@ -18,7 +18,7 @@ public class CannonLogic : MonoBehaviour
 
     public void ShootCannons()
     {
-        newCannons = GetComponentsInChildren<RaycastCannon>(true);
+        //newCannons = GetComponentsInChildren<RaycastCannon>(true);
         StartCoroutine(FireCannons());
     }
 

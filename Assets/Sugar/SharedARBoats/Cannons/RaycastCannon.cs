@@ -1,8 +1,9 @@
+using System;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
-public class RaycastCannon : NetworkBehaviour
+public class RaycastCannon : MonoBehaviour
 {
     [SerializeField] private float _cannonRange;
 
@@ -13,7 +14,6 @@ public class RaycastCannon : NetworkBehaviour
     [SerializeField] private GameObject _hitParticles;
 
     [SerializeField] private GameObject _shootParticles;
-
 
     public void FireCannon()
     {
@@ -27,9 +27,7 @@ public class RaycastCannon : NetworkBehaviour
             {
                 SpawnLocalHitParticles(_hitParticles, hit.point, hit.normal);
                 ulong targetId = hit.collider.GetComponent<NetworkObject>().OwnerClientId;
-                //combatLog.text = $"you have hit {targetId}!";
                 NetworkEntityManager.Instance.ReduceHealthServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
-                //SendHitMessageServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
             }
         }
         else
@@ -50,25 +48,5 @@ public class RaycastCannon : NetworkBehaviour
     private void SpawnLocalShootingParticles(GameObject shootParticles)
     {
         GameObject instantiatedParticles = Instantiate(shootParticles, transform.position, transform.rotation);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    void SendHitMessageServerRpc(ulong shooterId, ulong targetId)
-    {
-        ClientRpcParams clientRpcParams = new ClientRpcParams
-        {
-            Send = new ClientRpcSendParams
-            {
-                TargetClientIds = new ulong[] { targetId },
-            }
-        };
-
-        UpdateCombatLogOnClientRpc(shooterId, clientRpcParams);
-    }
-
-    [ClientRpc]
-    void UpdateCombatLogOnClientRpc(ulong shooterId, ClientRpcParams clientRpcParams)
-    {
-        combatLog.text = $"You have been shot by {shooterId}!";
     }
 }

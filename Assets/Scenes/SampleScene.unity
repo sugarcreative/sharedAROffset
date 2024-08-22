@@ -5802,7 +5802,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1579703631
 Transform:
   m_ObjectHideFlags: 0
@@ -8172,6 +8172,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 5695983532221460035}
+        m_TargetAssemblyTypeName: ShipEffectController, Assembly-CSharp
+        m_MethodName: FireLeft
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &2153237508328088872
 Transform:
   m_ObjectHideFlags: 0
@@ -8423,7 +8435,7 @@ RectTransform:
   m_Father: {fileID: 6222156628909625115}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -9576,13 +9588,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shipDeathParticles: {fileID: 0}
   waterDeathParticles: {fileID: 0}
-  cannonFirePositionsLeft: []
-  cannonFirePositionsRight: []
   deathExplosionPosition: {fileID: 0}
   sailsUnfurled: {fileID: 6301453105899976172}
   sailsFurled: {fileID: 5117384563892086071}
   furlTrigger: 95
   waterHeight: 0
+  respawnDuration: 2
+  allRenderers: []
 --- !u!1 &5850489705084268279
 GameObject:
   m_ObjectHideFlags: 0
@@ -10012,6 +10024,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 5695983532221460035}
+        m_TargetAssemblyTypeName: ShipEffectController, Assembly-CSharp
+        m_MethodName: FireRight
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!224 &7148148967606572404
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10388,7 +10412,7 @@ RectTransform:
   m_Father: {fileID: 5661195804632706899}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}

@@ -8,7 +8,7 @@ public class ShipEffectController : MonoBehaviour
     private Animator anim;
 
     public GameObject shipDeathParticles, waterDeathParticles;
-    public RaycastCannon[] cannonFirePositionsLeft, cannonFirePositionsRight;
+    //public RaycastCannon[] cannonFirePositionsLeft, cannonFirePositionsRight;
     public Transform deathExplosionPosition;
 
     public SkinnedMeshRenderer sailsUnfurled;
@@ -83,7 +83,7 @@ public class ShipEffectController : MonoBehaviour
         //anim.Play("FireLeft", 0 , 0);
         anim.CrossFade("FireLeft", 0.1f, 0, 0);
 
-        StartCoroutine(FireCannons(cannonFirePositionsLeft));
+        //StartCoroutine(FireCannons(cannonFirePositionsLeft));
     }
 
     public void FireRight()
@@ -91,7 +91,7 @@ public class ShipEffectController : MonoBehaviour
         //anim.Play("FireRight", 0, 0);
         anim.CrossFade("FireRight", 0.1f, 0, 0);
 
-        StartCoroutine(FireCannons(cannonFirePositionsRight));
+        //StartCoroutine(FireCannons(cannonFirePositionsRight));
     }
 
 

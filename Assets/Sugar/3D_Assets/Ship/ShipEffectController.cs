@@ -16,7 +16,7 @@ public class ShipEffectController : MonoBehaviour
     public GameObject sailsFurled;
     public float furlTrigger = 95;
 
-    public Transform water;
+    //public Transform water;
 
     public float waterHeight;
 
@@ -32,12 +32,7 @@ public class ShipEffectController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (!gameObject.GetComponent<PlayerAvatar>())
-        {
-            slider.onValueChanged.AddListener(CheckFurl);
-        }
-
-        water = FindObjectOfType<Water>(true).transform;
+        //water = FindObjectOfType<Water>(true).transform;
 
         anim = GetComponent<Animator>();
 
@@ -87,11 +82,6 @@ public class ShipEffectController : MonoBehaviour
                     sailsFurled.SetActive(false);
                 }
             }
-
-            foreach (SkinnedMeshRenderer skinnedMeshRenderer in allRenderers)
-            {
-                skinnedMeshRenderer.SetBlendShapeWeight(0, 100 - value);
-            }
         }
     }
 
@@ -132,7 +122,7 @@ public class ShipEffectController : MonoBehaviour
 
         if (waterDeathParticles != null)
         {
-            Instantiate(waterDeathParticles, new Vector3(transform.position.x, water.position.y + 0.1f, transform.position.z), transform.rotation);
+            Instantiate(waterDeathParticles, new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z), transform.rotation);
         }
 
 

@@ -9587,7 +9587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shipDeathParticles: {fileID: 0}
-  waterDeathParticles: {fileID: 0}
+  waterDeathParticles: {fileID: 7055872451937364414, guid: 1f4258ba47ee1e2429fd20a793f93d57, type: 3}
   deathExplosionPosition: {fileID: 0}
   sailsUnfurled: {fileID: 6301453105899976172}
   sailsFurled: {fileID: 5117384563892086071}

@@ -44,6 +44,7 @@ public struct PlayerData : IEquatable<PlayerData>, INetworkSerializable
         serializer.SerializeValue(ref name);
         serializer.SerializeValue(ref score);
         serializer.SerializeValue(ref health);
+        serializer.SerializeValue(ref deaths);
         serializer.SerializeValue(ref isDead);
         serializer.SerializeValue(ref color);
         serializer.SerializeValue(ref isReady);

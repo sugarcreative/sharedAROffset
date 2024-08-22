@@ -144,8 +144,10 @@ public class NetworkEntityManager : NetworkBehaviour
             {
                 foreach (PlayerData playerData in allPlayerData)
                 {
-                    TestClientRpc(playerData);
+                    UpdateScoreboardClientRpc(playerData);
                 }
+
+                //TestClientRpc(allPlayerData);
             }
             else
             {
@@ -173,12 +175,15 @@ public class NetworkEntityManager : NetworkBehaviour
         }
     }
 
+    //[ClientRpc]
+    //private void TestClientRpc(NetworkList<PlayerData> e)
+    //{
+    //    for (int i = 0; i < e.Count; i++)
+    //    {
+    //        playerCards[i.ConvertTo<UInt64>()].SetPlayerData(e[i]);
+    //    }
+    //}
 
-    [ClientRpc]
-    private void TestClientRpc(PlayerData playerdata)
-    {
-        playerCards[playerdata.clientId].SetPlayerData(playerdata);
-    }
 
     public void SendReady(bool value)
     {
@@ -392,15 +397,40 @@ public class NetworkEntityManager : NetworkBehaviour
                         isReady = allPlayerData[i].isReady,
                     };
                     UpdateLocalHealthClientRpc(target, newHealth);
+                    //UpdateLocalHealthClientRpc(target, allPlayerData[i].deaths);
                     //UpdateScoreboardDeathsClientRpc(target, newDeaths);
                     //ConveyDeathClientRpc(shooterId, target);
                     OnBoatDeathClientRpc(target);
+
+                    for (int j = 0; j < allPlayerData.Count; j++)
+                    {
+                        if ((allPlayerData[j].clientId == shooterId))
+                        {
+
+                            int newScore = allPlayerData[j].score + 1;
+
+                            UpdateLocalScoreClientRpc(shooterId, newScore);
+
+                            allPlayerData[j] = new PlayerData
+                            {
+                                clientId = allPlayerData[j].clientId,
+                                name = allPlayerData[j].name,
+                                score = newScore,
+                                health = allPlayerData[j].health,
+                                deaths = allPlayerData[j].deaths,
+                                isDead = allPlayerData[j].isDead,
+                                color = allPlayerData[j].color,
+                                isReady = allPlayerData[j].isReady,
+                            };
+                        }
+                    }
+                    break;
                 }
 
                 if (!allPlayerData[i].isDead)
                 {
                     UpdateLocalTextClientRpc(shooterId, target);
-                    UpdateLocalHealthClientRpc(target, newHealth);
+                    //UpdateLocalHealthClientRpc(target, newHealth);
 
                     allPlayerData[i] = new PlayerData
                     {
@@ -536,6 +566,12 @@ public class NetworkEntityManager : NetworkBehaviour
     public void UpdateScoreBoardColorClientRpc(ulong clientId, FixedString64Bytes newCol)
     {
         playerCards[clientId].SetColor(newCol);
+    }
+
+    [ClientRpc]
+    public void UpdateScoreboardClientRpc(PlayerData playerdata)
+    {
+        playerCards[playerdata.clientId].SetPlayerData(playerdata);
     }
 
     [ClientRpc]

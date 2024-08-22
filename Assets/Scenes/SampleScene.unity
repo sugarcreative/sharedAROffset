@@ -5803,7 +5803,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1579703631
 Transform:
   m_ObjectHideFlags: 0
@@ -6433,7 +6433,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1757336887
 Transform:
   m_ObjectHideFlags: 0
@@ -8552,7 +8552,7 @@ RectTransform:
   m_Father: {fileID: 6222156628909625115}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -9709,7 +9709,6 @@ MonoBehaviour:
   sailsUnfurled: {fileID: 6301453105899976172}
   sailsFurled: {fileID: 5117384563892086071}
   furlTrigger: 95
-  water: {fileID: 1757336887}
   waterHeight: 0
   respawnDuration: 2
   allRenderers: []
@@ -10531,7 +10530,7 @@ RectTransform:
   m_Father: {fileID: 5661195804632706899}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}

@@ -64,7 +64,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private Transform spawnAroundObject;
 
-    private float radius = 0.6f;
+    //private float radius = 0.6f;
 
     private bool isFirstGo = true;
 
@@ -438,6 +438,54 @@ public class NetworkEntityManager : NetworkBehaviour
             }
         }
     }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void OnShootServerRpc(ulong shooterId, ulong objectId)
+    {
+        
+        OnShootClientRpc(shooterId, objectId);
+        foreach (PlayerAvatar player in networkedGameObjects)
+        {
+            if (player.gameObject.GetComponent<NetworkObject>().OwnerClientId == shooterId)
+            {
+                if (objectId == 0)
+                {
+                    player.gameObject.GetComponentInChildren<NetworkCannonsStarboard>().ShootCannons();
+                    player.gameObject.GetComponentInChildren<ShipEffectController>().FireRight();
+                }
+                else if (objectId == 1)
+                {
+                    player.gameObject.GetComponentInChildren<NetworkCannonsPort>().ShootCannons();
+                    player.gameObject.GetComponentInChildren<ShipEffectController>().FireLeft();
+                }
+                break;
+            }
+        }
+    }
+
+    [ClientRpc]
+    public void OnShootClientRpc(ulong shooterId, ulong objectId)
+    {
+        if (IsServer) return;
+        foreach (PlayerAvatar player in networkedGameObjects)
+        {
+            if (player.gameObject.GetComponent<NetworkObject>().OwnerClientId == shooterId)
+            {
+                if (objectId == 0)
+                {
+                    player.gameObject.GetComponentInChildren<NetworkCannonsStarboard>().ShootCannons();
+                    player.gameObject.GetComponentInChildren<ShipEffectController>().FireRight();
+                }
+                else
+                {
+                    player.gameObject.GetComponentInChildren<NetworkCannonsPort>().ShootCannons();
+                    player.gameObject.GetComponentInChildren<ShipEffectController>().FireLeft();
+                }
+                break;
+            }
+        }
+    }
+
 
     #region Death and Respawn
 

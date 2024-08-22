@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,14 +9,30 @@ public class CannonLogic : MonoBehaviour
 
     [SerializeField] private Button Button;
 
+    [SerializeField] private ulong objectId;
+
     private void Awake()
     {
         newCannons = GetComponentsInChildren<RaycastCannon>(true);
+        if (gameObject.name == "StarboardCannons")
+        {
+            objectId = 0;
+        } else if (gameObject.name == "PortCannons")
+        {
+            objectId = 1;
+        }
     }
 
     public void ShootCannons()
     {
         StartCoroutine(FireCannons());
+        NetworkEntityManager.Instance.OnShootServerRpc(NetworkManager.Singleton.LocalClientId, objectId);
+    }
+
+    [ContextMenu("printName")]
+    private void printName()
+    {
+        Debug.Log(gameObject.name);
     }
 
     IEnumerator FireCannons()
@@ -26,7 +43,7 @@ public class CannonLogic : MonoBehaviour
             cannon.FireCannon();
             yield return new WaitForSeconds(0.3f);
         }
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
         Button.enabled = true;
     }
 }

@@ -27,7 +27,7 @@ public class RaycastCannon : MonoBehaviour
             {
                 SpawnLocalHitParticles(_hitParticles, hit.point, hit.normal);
                 ulong targetId = hit.collider.GetComponent<NetworkObject>().OwnerClientId;
-                NetworkEntityManager.Instance.ReduceHealthServerRpc(NetworkManager.Singleton.LocalClientId, targetId);
+                NetworkEntityManager.Instance.ReduceHealthServerRpc(NetworkManager.Singleton.LocalClientId, targetId);   
             }
         }
         else

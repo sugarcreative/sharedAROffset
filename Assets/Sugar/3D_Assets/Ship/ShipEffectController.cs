@@ -102,14 +102,14 @@ public class ShipEffectController : MonoBehaviour
     }
 
 
-    IEnumerator FireCannons( RaycastCannon[] t)
-    {
-        foreach (var cannon in t)
-        {
-            cannon.FireCannon();
-            yield return new WaitForSeconds(0.3f);
-        }
-    }
+    //IEnumerator FireCannons( RaycastCannon[] t)
+    //{
+    //    foreach (var cannon in t)
+    //    {
+    //        cannon.FireCannon();
+    //        yield return new WaitForSeconds(0.3f);
+    //    }
+    //}
 
     public void IsSunk()
     {

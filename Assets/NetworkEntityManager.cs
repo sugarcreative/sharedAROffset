@@ -11,6 +11,9 @@ using UnityEngine.UI;
 
 public class NetworkEntityManager : NetworkBehaviour
 {
+
+    #region Class Fields
+
     public static NetworkEntityManager Instance;
 
     private NetworkList<PlayerData> allPlayerData;
@@ -69,6 +72,10 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private PlayerAvatar[] networkedGameObjects;
 
+    #endregion
+
+    #region Default Functions
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -87,6 +94,8 @@ public class NetworkEntityManager : NetworkBehaviour
         allPlayerData = new NetworkList<PlayerData>();
         allPlayerData.OnListChanged += OnPlayerListChanged;
     }
+
+    #endregion
 
     #region Ready
 
@@ -146,8 +155,6 @@ public class NetworkEntityManager : NetworkBehaviour
                 {
                     UpdateScoreboardClientRpc(playerData);
                 }
-
-                //TestClientRpc(allPlayerData);
             }
             else
             {
@@ -174,16 +181,6 @@ public class NetworkEntityManager : NetworkBehaviour
             }
         }
     }
-
-    //[ClientRpc]
-    //private void TestClientRpc(NetworkList<PlayerData> e)
-    //{
-    //    for (int i = 0; i < e.Count; i++)
-    //    {
-    //        playerCards[i.ConvertTo<UInt64>()].SetPlayerData(e[i]);
-    //    }
-    //}
-
 
     public void SendReady(bool value)
     {
@@ -277,7 +274,6 @@ public class NetworkEntityManager : NetworkBehaviour
     {
         DestroyScene();
         gameStarted = false;
-        //scoreboardPanel.GetComponent<ScoreboardLogic>()?.ModeGameEnd();
         scoreboardLogic.ModeGameEnd();
         scoreboardPanel?.SetActive(true);
     }
@@ -285,7 +281,6 @@ public class NetworkEntityManager : NetworkBehaviour
     private void ShowLobby(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        //scoreboardPanel.GetComponent<ScoreboardLogic>().Initialize();
         scoreboardLogic.Initialize();
         scoreboardPanel.SetActive(true);
     }
@@ -375,7 +370,6 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             if (allPlayerData[i].clientId == target)
             {
-
                 if (allPlayerData[i].isDead) return;
 
                 int newHealth = allPlayerData[i].health - DAMAGE;
@@ -396,17 +390,14 @@ public class NetworkEntityManager : NetworkBehaviour
                         color = allPlayerData[i].color,
                         isReady = allPlayerData[i].isReady,
                     };
-                    UpdateLocalHealthClientRpc(target, newHealth);
-                    //UpdateLocalHealthClientRpc(target, allPlayerData[i].deaths);
-                    //UpdateScoreboardDeathsClientRpc(target, newDeaths);
-                    //ConveyDeathClientRpc(shooterId, target);
+
+                    UpdateLocalHealthClientRpc(target, allPlayerData[i].deaths);
                     OnBoatDeathClientRpc(target);
 
                     for (int j = 0; j < allPlayerData.Count; j++)
                     {
                         if ((allPlayerData[j].clientId == shooterId))
                         {
-
                             int newScore = allPlayerData[j].score + 1;
 
                             UpdateLocalScoreClientRpc(shooterId, newScore);
@@ -430,7 +421,6 @@ public class NetworkEntityManager : NetworkBehaviour
                 if (!allPlayerData[i].isDead)
                 {
                     UpdateLocalTextClientRpc(shooterId, target);
-                    //UpdateLocalHealthClientRpc(target, newHealth);
 
                     allPlayerData[i] = new PlayerData
                     {
@@ -447,41 +437,19 @@ public class NetworkEntityManager : NetworkBehaviour
                 break;
             }
         }
-
-        //Increment the Score of the shooter 
-
-        for (int i = 0; i < allPlayerData.Count; i++)
-        {
-            if ((allPlayerData[i].clientId == shooterId))
-            {
-
-                int newScore = allPlayerData[i].score + 1;
-
-                UpdateLocalScoreClientRpc(shooterId, newScore);
-                //UpdateScoreboardScoreClientRpc(shooterId, newScore);
-
-                allPlayerData[i] = new PlayerData
-                {
-                    clientId = allPlayerData[i].clientId,
-                    name = allPlayerData[i].name,
-                    score = newScore,
-                    health = allPlayerData[i].health,
-                    deaths = allPlayerData[i].deaths,
-                    isDead = allPlayerData[i].isDead,
-                    color = allPlayerData[i].color,
-                    isReady = allPlayerData[i].isReady,
-                };
-            }
-        }
     }
+
+    #region Death and Respawn
 
     [ClientRpc]
     public void OnBoatDeathClientRpc(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId == clientId)
         {
+            localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = true;
             localPlayer.GetComponentInChildren<ShipEffectController>(true).IsSunk();
-            SinkIntoRespawnFunction(localPlayer);
+            SinkIntoRespawnFunction(localPlayer, clientId);
+
         }
 
         foreach (PlayerAvatar player in networkedGameObjects)
@@ -489,45 +457,49 @@ public class NetworkEntityManager : NetworkBehaviour
             if (player.gameObject.GetComponent<NetworkObject>().OwnerClientId == clientId)
             {
                 player.gameObject.GetComponentInChildren<ShipEffectController>().IsSunk();
+                player.gameObject.GetComponent<Collider>().enabled = false;
                 SinkIntoRespawnFunction(player);
             }
         }
     }
 
-    public void ReduceHealth(ulong shooterId, ulong targetId)
+    private void SinkIntoRespawnFunction(GameObject player, ulong clientId)
     {
-        if (IsOwner)
+        StartCoroutine(SinkIntoRespawn(player, clientId));
+    }
+
+    [ServerRpc]
+    private void SetNotDeadServerRpc(ulong clientId)
+    {
+        for (int i = 0; i < allPlayerData.Count; i++)
         {
-            ReduceHealthServerRpc(shooterId, targetId);
+            if (allPlayerData[i].clientId == clientId)
+            {
+                allPlayerData[i] = new PlayerData
+                {
+                    clientId = allPlayerData[i].clientId,
+                    name = allPlayerData[i].name,
+                    score = allPlayerData[i].score,
+                    health = MAXHEALTH,
+                    deaths = allPlayerData[i].deaths,
+                    isDead = false,
+                    color = allPlayerData[i].color,
+                    isReady = allPlayerData[i].isReady,
+                };
+                break;
+            }
         }
     }
 
-    public void CreatePlayerCard(ulong clientId, FixedString64Bytes name, int kills, int deaths, FixedString64Bytes colorArg)
+    private IEnumerator SinkIntoRespawn(GameObject player, ulong clientId)
     {
-        PlayerCard newCard = Instantiate(playerCardPrefab, playerCardParent);
-        newCard.SetScore(kills);
-        newCard.SetDeaths(deaths);
-        newCard.SetColor(colorArg);
-        playerCards.Add(clientId, newCard);
-        newCard.Initialize(name);
+        yield return new WaitForSeconds(6);
+        player.GetComponentInChildren<ShipEffectController>().IsRespawn();
+        player.GetComponent<MovementAndSteering>()._pauseUpdate = false;
+        SetNotDeadServerRpc(clientId);
     }
 
-    private void SetScoreBoardModeScore()
-    {
-        foreach (KeyValuePair<ulong, PlayerCard> card in playerCards)
-        {
-            card.Value.ModeScoreboard();
-        }
-    }
-
-    private void SetScoreboardModeLobby()
-    {
-        foreach (KeyValuePair<ulong, PlayerCard> card in playerCards)
-        {
-            card.Value.ModeLobby();
-        }
-    }
-
+    #region Death and Respawn for NetworkObjects
     private void SinkIntoRespawnFunction(PlayerAvatar player)
     {
         StartCoroutine(SinkIntoRespawn(player));
@@ -537,18 +509,17 @@ public class NetworkEntityManager : NetworkBehaviour
     {
         yield return new WaitForSeconds(6);
         player.gameObject.GetComponentInChildren<ShipEffectController>().IsRespawn();
+        player.gameObject.GetComponent<Collider>().enabled = true;
     }
 
-    private void SinkIntoRespawnFunction(GameObject player)
-    {
-        StartCoroutine(SinkIntoRespawn(player));
-    }
+    #endregion
 
-    private IEnumerator SinkIntoRespawn(GameObject player)
-    {
-        yield return new WaitForSeconds(6);
-        player.GetComponentInChildren<ShipEffectController>().IsRespawn();
-    }
+
+
+    #endregion
+
+
+    #region Scoreboard
 
     [ClientRpc]
     public void UpdateScoreboardScoreClientRpc(ulong clientId, int newScore)
@@ -582,7 +553,33 @@ public class NetworkEntityManager : NetworkBehaviour
         CreatePlayerCard(clientId, name, score, deaths, colorArg);
     }
 
+    private void SetScoreBoardModeScore()
+    {
+        foreach (KeyValuePair<ulong, PlayerCard> card in playerCards)
+        {
+            card.Value.ModeScoreboard();
+        }
+    }
 
+    private void SetScoreboardModeLobby()
+    {
+        foreach (KeyValuePair<ulong, PlayerCard> card in playerCards)
+        {
+            card.Value.ModeLobby();
+        }
+    }
+
+    public void CreatePlayerCard(ulong clientId, FixedString64Bytes name, int kills, int deaths, FixedString64Bytes colorArg)
+    {
+        PlayerCard newCard = Instantiate(playerCardPrefab, playerCardParent);
+        newCard.SetScore(kills);
+        newCard.SetDeaths(deaths);
+        newCard.SetColor(colorArg);
+        playerCards.Add(clientId, newCard);
+        newCard.Initialize(name);
+    }
+
+    #endregion
 
 
     #region Debugging texts

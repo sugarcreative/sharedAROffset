@@ -40,7 +40,7 @@ public class MovementAndSteering : MonoBehaviour
     public Slider _slider;
 
     #region debugging
-    [SerializeField] private bool _pauseUpdate = false;
+    public bool _pauseUpdate = false;
     [SerializeField] private bool _pauseDebug = true;
     #endregion
 

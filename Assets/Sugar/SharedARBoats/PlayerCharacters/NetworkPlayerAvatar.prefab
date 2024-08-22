@@ -282,6 +282,18 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0.057
       objectReference: {fileID: 0}
+    - target: {fileID: 2955561978952055791, guid: dc44c1361d5139a4bbbedb4f02686025, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2955561978952055791, guid: dc44c1361d5139a4bbbedb4f02686025, type: 3}
+      propertyPath: m_BlendShapeWeights.Array.data[0]
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3251495393343307895, guid: dc44c1361d5139a4bbbedb4f02686025, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3444082552351563722, guid: dc44c1361d5139a4bbbedb4f02686025, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 339037878
@@ -350,6 +362,10 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 339037878
       objectReference: {fileID: 0}
+    - target: {fileID: 8095715225101902222, guid: dc44c1361d5139a4bbbedb4f02686025, type: 3}
+      propertyPath: shipDeathParticles
+      value: 
+      objectReference: {fileID: 1126799166507225401, guid: e15263fc9250afd45897abf384499cd8, type: 3}
     - target: {fileID: 8095715225101902222, guid: dc44c1361d5139a4bbbedb4f02686025, type: 3}
       propertyPath: waterDeathParticles
       value: 

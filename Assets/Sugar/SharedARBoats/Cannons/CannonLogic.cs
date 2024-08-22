@@ -1,33 +1,32 @@
 using System.Collections;
-using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CannonLogic : MonoBehaviour
 {
     [SerializeField] private RaycastCannon[] newCannons;
+
+    [SerializeField] private Button Button;
 
     private void Awake()
     {
         newCannons = GetComponentsInChildren<RaycastCannon>(true);
     }
 
-    //private void Start()
-    //{
-    //    newCannons = GetComponentsInChildren<RaycastCannon>(true);
-    //}
-
     public void ShootCannons()
     {
-        //newCannons = GetComponentsInChildren<RaycastCannon>(true);
         StartCoroutine(FireCannons());
     }
 
     IEnumerator FireCannons()
     {
+        Button.enabled = false;
         foreach (RaycastCannon cannon in newCannons)
         {
             cannon.FireCannon();
             yield return new WaitForSeconds(0.3f);
         }
+        yield return new WaitForSeconds(2f);
+        Button.enabled = true;
     }
 }

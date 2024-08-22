@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Animator))]
 public class ShipEffectController : MonoBehaviour
@@ -15,6 +16,8 @@ public class ShipEffectController : MonoBehaviour
     public GameObject sailsFurled;
     public float furlTrigger = 95;
 
+    public Transform water;
+
     public float waterHeight;
 
     private MeshRenderer mr;
@@ -24,9 +27,18 @@ public class ShipEffectController : MonoBehaviour
 
     public List<Renderer> allRenderers = new List<Renderer>();
 
+    public Slider slider;
+
     // Start is called before the first frame update
     void Start()
     {
+        if (!gameObject.GetComponent<PlayerAvatar>())
+        {
+            slider.onValueChanged.AddListener(CheckFurl);
+        }
+
+        water = FindObjectOfType<Water>(true).transform;
+
         anim = GetComponent<Animator>();
 
         mr = GetComponent<MeshRenderer>();
@@ -75,6 +87,11 @@ public class ShipEffectController : MonoBehaviour
                     sailsFurled.SetActive(false);
                 }
             }
+
+            foreach (SkinnedMeshRenderer skinnedMeshRenderer in allRenderers)
+            {
+                skinnedMeshRenderer.SetBlendShapeWeight(0, 100 - value);
+            }
         }
     }
 
@@ -106,6 +123,8 @@ public class ShipEffectController : MonoBehaviour
 
     public void IsSunk()
     {
+        deathExplosionPosition = transform;
+
         if (deathExplosionPosition != null && shipDeathParticles != null)
         {
             Instantiate(shipDeathParticles, deathExplosionPosition);
@@ -113,7 +132,7 @@ public class ShipEffectController : MonoBehaviour
 
         if (waterDeathParticles != null)
         {
-            Instantiate(waterDeathParticles, new Vector3(transform.position.x, waterHeight + 0.01f, transform.position.z), transform.rotation);
+            Instantiate(waterDeathParticles, new Vector3(transform.position.x, water.position.y + 0.1f, transform.position.z), transform.rotation);
         }
 
 

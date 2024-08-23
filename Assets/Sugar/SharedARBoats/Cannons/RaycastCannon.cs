@@ -15,6 +15,8 @@ public class RaycastCannon : MonoBehaviour
 
     [SerializeField] private GameObject _shootParticles;
 
+    [SerializeField] private GameObject _missParticles;
+
     public void FireCannon()
     {
         SpawnLocalShootingParticles(_shootParticles);
@@ -32,9 +34,13 @@ public class RaycastCannon : MonoBehaviour
         }
         else
         {
-            if (combatLog != null)
+            Vector3 missPoint = transform.position + transform.forward * _cannonRange;
+
+            RaycastHit groundHit;
+
+            if (Physics.Raycast(missPoint, Vector3.down, out groundHit, Mathf.Infinity))
             {
-                combatLog.text = $"{NetworkManager.Singleton.LocalClientId} has hit nothing with {gameObject.name}!";
+                SpawnLocalMissParticles(_missParticles, groundHit.point, groundHit.normal);
             }
         }
     }
@@ -47,6 +53,12 @@ public class RaycastCannon : MonoBehaviour
         GameObject instantiatedParticles = Instantiate(particles, position, rotationQ);
     }
 
+    void SpawnLocalMissParticles(GameObject particles, Vector3 rayCast, Vector3 rotation)
+    {
+        if (particles == null) return;
+        Quaternion rotationQ = Quaternion.Euler(rotation);
+        GameObject instantiatedParticles = Instantiate(particles, rayCast, rotationQ);
+    }
 
     private void SpawnLocalShootingParticles(GameObject shootParticles)
     {

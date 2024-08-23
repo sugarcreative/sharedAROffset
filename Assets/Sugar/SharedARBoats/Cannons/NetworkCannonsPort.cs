@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class NetworkCannonsPort : MonoBehaviour
 {
-    [SerializeField] private RaycastCannon[] newCannons;
+    [SerializeField] private NetworkRaycastCannon[] newCannons;
     [SerializeField] private GameObject shootinParticles;
 
     private void Awake()
     {
-        //newCannons = GetComponentsInChildren<RaycastCannon>(true);
+        newCannons = GetComponentsInChildren<NetworkRaycastCannon>(true);
     }
 
     public void ShootCannons()
@@ -19,9 +19,10 @@ public class NetworkCannonsPort : MonoBehaviour
 
     IEnumerator FireCannons()
     {
-        foreach (RaycastCannon cannon in newCannons)
+        foreach (NetworkRaycastCannon cannon in newCannons)
         {
-            Instantiate(shootinParticles, cannon.gameObject.transform.position, cannon.gameObject.transform.rotation);
+            //Instantiate(shootinParticles, cannon.gameObject.transform.position, cannon.gameObject.transform.rotation);
+            cannon.FireCannon();
             yield return new WaitForSeconds(0.3f);
         }
     }

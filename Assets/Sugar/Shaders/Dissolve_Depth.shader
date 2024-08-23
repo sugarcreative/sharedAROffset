@@ -1,4 +1,4 @@
-// Made with Amplify Shader Editor v1.9.6.2
+// Made with Amplify Shader Editor v1.9.6.3
 // Available at the Unity Asset Store - http://u3d.as/y3X 
 Shader "Dissolve_Depth"
 {
@@ -182,7 +182,7 @@ Shader "Dissolve_Depth"
 			#pragma multi_compile_fog
 			#define ASE_FOG 1
 			#define _ALPHATEST_ON 1
-			#define ASE_SRP_VERSION 140010
+			#define ASE_SRP_VERSION 140008
 
 
 			
@@ -222,12 +222,10 @@ Shader "Dissolve_Depth"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
 			
-			#if ASE_SRP_VERSION >=140010
-			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
-			#endif
-		
 
 			
+			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+		
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DBuffer.hlsl"
@@ -535,7 +533,7 @@ Shader "Dissolve_Depth"
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
 			#define ASE_FOG 1
 			#define _ALPHATEST_ON 1
-			#define ASE_SRP_VERSION 140010
+			#define ASE_SRP_VERSION 140008
 
 
 			
@@ -852,7 +850,7 @@ Shader "Dissolve_Depth"
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
 			#define ASE_FOG 1
 			#define _ALPHATEST_ON 1
-			#define ASE_SRP_VERSION 140010
+			#define ASE_SRP_VERSION 140008
 
 
 			
@@ -1138,7 +1136,7 @@ Shader "Dissolve_Depth"
 
 			#define ASE_FOG 1
 			#define _ALPHATEST_ON 1
-			#define ASE_SRP_VERSION 140010
+			#define ASE_SRP_VERSION 140008
 
 
 			
@@ -1169,12 +1167,10 @@ Shader "Dissolve_Depth"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
 			
-			#if ASE_SRP_VERSION >=140010
-			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
-			#endif
-		
 
 			
+			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+		
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -1421,7 +1417,7 @@ Shader "Dissolve_Depth"
 
 			#define ASE_FOG 1
 			#define _ALPHATEST_ON 1
-			#define ASE_SRP_VERSION 140010
+			#define ASE_SRP_VERSION 140008
 
 
 			
@@ -1453,12 +1449,10 @@ Shader "Dissolve_Depth"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
 			
-			#if ASE_SRP_VERSION >=140010
-			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
-			#endif
-		
 
 			
+			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+		
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -1712,7 +1706,7 @@ Shader "Dissolve_Depth"
         	#pragma multi_compile _ LOD_FADE_CROSSFADE
         	#define ASE_FOG 1
         	#define _ALPHATEST_ON 1
-        	#define ASE_SRP_VERSION 140010
+        	#define ASE_SRP_VERSION 140008
 
 
 			
@@ -1749,12 +1743,10 @@ Shader "Dissolve_Depth"
 			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/TextureStack.hlsl"
 
 			
-			#if ASE_SRP_VERSION >=140010
-			#include_with_pragmas "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl"
-			#endif
-		
 
 			
+			#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
+		
 
 			#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 			#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/ShaderPass.hlsl"
@@ -2019,7 +2011,7 @@ Shader "Dissolve_Depth"
 	Fallback Off
 }
 /*ASEBEGIN
-Version=19602
+Version=19603
 Node;AmplifyShaderEditor.Vector2Node;141;-1696,176;Inherit;False;Property;_ObjectMinMaxAdjust;Object MinMax Adjust;5;0;Create;True;0;0;0;False;0;False;0,0;-0.25,0.25;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
 Node;AmplifyShaderEditor.PosVertexDataNode;144;-1488,-160;Inherit;False;0;0;5;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.Vector3Node;145;-1488,-304;Inherit;False;Property;_FadeDirection;Fade Direction;2;0;Create;True;0;0;0;False;0;False;0,-1,0;0,1,0;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
@@ -2084,4 +2076,4 @@ WireConnection;139;0;136;0
 WireConnection;127;3;124;0
 WireConnection;127;4;82;0
 ASEEND*/
-//CHKSM=61754254B4B1C324BE3E6A0F7CF2EB9193EC61DF
+//CHKSM=74210831D350AAC454B48EEAA551D533F1CDAF0B

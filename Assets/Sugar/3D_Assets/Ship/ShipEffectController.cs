@@ -148,7 +148,7 @@ public class ShipEffectController : MonoBehaviour
 
         if (waterDeathParticles != null)
         {
-            Instantiate(waterDeathParticles, new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z), transform.rotation);
+            Instantiate(waterDeathParticles, new Vector3(transform.position.x, transform.position.y + 0.01f, transform.position.z), transform.rotation);
         }
 
 

@@ -444,6 +444,7 @@ public class NetworkEntityManager : NetworkBehaviour
     {
         
         OnShootClientRpc(shooterId, objectId);
+        if (NetworkManager.Singleton.LocalClientId == shooterId) return;
         foreach (PlayerAvatar player in networkedGameObjects)
         {
             if (player.gameObject.GetComponent<NetworkObject>().OwnerClientId == shooterId)
@@ -466,7 +467,7 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     public void OnShootClientRpc(ulong shooterId, ulong objectId)
     {
-        if (IsServer) return;
+        if (IsServer || shooterId == NetworkManager.Singleton.LocalClientId) return;
         foreach (PlayerAvatar player in networkedGameObjects)
         {
             if (player.gameObject.GetComponent<NetworkObject>().OwnerClientId == shooterId)

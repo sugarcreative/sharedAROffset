@@ -11,8 +11,8 @@ public class LocalPlayer : MonoBehaviour
 
     void Awake()
     {
-        skinnedMeshRenderer = GetComponentsInChildren<SkinnedMeshRenderer>();
-        meshRenderer = GetComponentsInChildren<MeshRenderer>();
+        skinnedMeshRenderer = GetComponentsInChildren<SkinnedMeshRenderer>(true);
+        meshRenderer = GetComponentsInChildren<MeshRenderer>(true);
     }
 
     // Update is called once per frame
@@ -23,7 +23,8 @@ public class LocalPlayer : MonoBehaviour
 
     public void SetColor(FixedString64Bytes colorArg)
     {
-
+        skinnedMeshRenderer = GetComponentsInChildren<SkinnedMeshRenderer>(true);
+        meshRenderer = GetComponentsInChildren<MeshRenderer>(true);
         Color newCol;
         if (ColorUtility.TryParseHtmlString(colorArg.ToString(), out newCol))
         {

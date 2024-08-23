@@ -144,6 +144,13 @@ public class NetworkEntityManager : NetworkBehaviour
         }
     }
 
+
+    [ClientRpc]
+    private void SetSailColorClientRpc()
+    {
+        SetSailColor();
+    }
+
     private void SetSailColor()
     {
         foreach (PlayerAvatar player in networkedGameObjects)
@@ -151,6 +158,11 @@ public class NetworkEntityManager : NetworkBehaviour
             player.SetColor(colorList[player.gameObject.GetComponent<NetworkObject>().OwnerClientId]);
         }
 
+        //localPlayer.GetComponent<LocalPlayer>().SetColor(colorList[NetworkManager.Singleton.LocalClientId]);
+    }
+
+    public void SetLocalColor()
+    {
         localPlayer.GetComponent<LocalPlayer>().SetColor(colorList[NetworkManager.Singleton.LocalClientId]);
     }
 
@@ -192,6 +204,7 @@ public class NetworkEntityManager : NetworkBehaviour
             }
         }
     }
+
 
     public void SendReady(bool value)
     {
@@ -236,14 +249,20 @@ public class NetworkEntityManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void StartGameClientRpc()
+    private void GetNetworkedObjectsClientRpc()
     {
         networkedGameObjects = FindObjectsOfType<PlayerAvatar>(true);
+    }
+
+    [ClientRpc]
+    private void StartGameClientRpc()
+    {
+        //networkedGameObjects = FindObjectsOfType<PlayerAvatar>(true);
         combatLog.text = $"there are {networkedGameObjects.Count()} networkObjects in scene";
         isReadyLocal = false;
         scoreboardLogic.ModeScoreboard();
         scoreboardPanel.SetActive(false);
-        SetSailColor();
+        //SetSailColor();
         SetUpScene();
         SetScoreBoardModeScore();
         Timer.Instance.StartTimer(30f);
@@ -312,6 +331,7 @@ public class NetworkEntityManager : NetworkBehaviour
     {
         if (!IsServer) return;
 
+        GetNetworkedObjectsClientRpc();
         foreach (var playerData in allPlayerData)
         {
             if (playerData.clientId == clientId) return;
@@ -338,9 +358,11 @@ public class NetworkEntityManager : NetworkBehaviour
             SetScoreboardClientRpc(playerData.clientId, playerData.name, playerData.score, playerData.deaths, playerData.color);
         }
 
+        SetSailColorClientRpc();
         PositionPlayerStartClientRpc(clientId);
         ShowLobbyClientRpc(clientId);
         SetUpSceneClientRpc(clientId);
+        
     }
 
     private void PositionPlayers()
@@ -359,6 +381,7 @@ public class NetworkEntityManager : NetworkBehaviour
         Vector3 directionAwayFromCenter = (localPlayer.transform.position - spawnAroundObject.transform.position).normalized;
         directionAwayFromCenter.y = 0f;
         localPlayer.transform.rotation = Quaternion.LookRotation(directionAwayFromCenter);
+        SetSailColor();
     }
 
     [ServerRpc(RequireOwnership = false)]

@@ -84,6 +84,7 @@ public class NetworkLogic : NetworkBehaviour
         hostJoinPanel.SetActive(false);
         _isJoined = true;
         NetworkEntityManager.Instance.AddNewClientToList(NetworkManager.Singleton.LocalClientId, playerName);
+        NetworkEntityManager.Instance.SetLocalColor();
     }
 
     private void OnJoinAsClientClicked()
@@ -133,7 +134,7 @@ public class NetworkLogic : NetworkBehaviour
         StartSharedSpace(topts, ropts);
         NetworkManager.Singleton.StartClient();
         hostJoinPanel.SetActive(false);
-        
+
         _isJoined = true;
     }
 
@@ -141,6 +142,7 @@ public class NetworkLogic : NetworkBehaviour
     {
         if (IsServer) return;
         NetworkEntityManager.Instance.AddNewClientToListServerRpc(clientId, playerName);
+        NetworkEntityManager.Instance.SetLocalColor();
 
     }
 

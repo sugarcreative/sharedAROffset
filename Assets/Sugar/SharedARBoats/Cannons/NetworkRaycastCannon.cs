@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NetworkRaycastCannon : MonoBehaviour
@@ -11,6 +9,8 @@ public class NetworkRaycastCannon : MonoBehaviour
     [SerializeField] private GameObject _hitParticles;
 
     [SerializeField] private GameObject _shootParticles;
+
+    [SerializeField] private GameObject _missParticles;
 
     public void FireCannon()
     {
@@ -28,7 +28,14 @@ public class NetworkRaycastCannon : MonoBehaviour
         }
         else
         {
+            Vector3 missPoint = transform.position + transform.forward * _cannonRange;
 
+            RaycastHit groundHit;
+
+            if (Physics.Raycast(missPoint, Vector3.down, out groundHit, Mathf.Infinity))
+            {
+                SpawnLocalMissParticles(_missParticles, groundHit.point, groundHit.normal);
+            }
         }
     }
 
@@ -40,6 +47,12 @@ public class NetworkRaycastCannon : MonoBehaviour
         GameObject instantiatedParticles = Instantiate(particles, position, rotationQ);
     }
 
+    void SpawnLocalMissParticles(GameObject particles, Vector3 rayCast, Vector3 rotation)
+    {
+        if (particles == null) return;
+        Quaternion rotationQ = Quaternion.Euler(rotation);
+        GameObject instantiatedParticles = Instantiate(particles, rayCast, rotationQ);
+    }
 
     private void SpawnLocalShootingParticles(GameObject shootParticles)
     {

@@ -5520,7 +5520,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 26
   m_TargetDisplay: 0
 --- !u!224 &1445976198
 RectTransform:
@@ -7493,8 +7493,8 @@ GameObject:
   - component: {fileID: 2141284947}
   - component: {fileID: 2141284949}
   - component: {fileID: 2141284948}
-  - component: {fileID: 2141284951}
   - component: {fileID: 2141284950}
+  - component: {fileID: 2141284951}
   m_Layer: 5
   m_Name: Scoreboard
   m_TagString: Untagged
@@ -9917,7 +9917,7 @@ SkinnedMeshRenderer:
   m_Mesh: {fileID: -9151976083251152156, guid: e072e94cbbdb137469527d88566872cb, type: 3}
   m_Bones: []
   m_BlendShapeWeights:
-  - 0
+  - 100
   m_RootBone: {fileID: 0}
   m_AABB:
     m_Center: {x: 0, y: 0, z: 0.25}

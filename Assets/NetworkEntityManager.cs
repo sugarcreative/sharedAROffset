@@ -93,6 +93,7 @@ public class NetworkEntityManager : NetworkBehaviour
         gameStarted = false;
         allPlayerData = new NetworkList<PlayerData>();
         allPlayerData.OnListChanged += OnPlayerListChanged;
+        localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = true;
     }
 
     #endregion
@@ -258,6 +259,7 @@ public class NetworkEntityManager : NetworkBehaviour
     private void StartGameClientRpc()
     {
         //networkedGameObjects = FindObjectsOfType<PlayerAvatar>(true);
+        localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = false;
         combatLog.text = $"there are {networkedGameObjects.Count()} networkObjects in scene";
         isReadyLocal = false;
         scoreboardLogic.ModeScoreboard();
@@ -302,6 +304,7 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     private void EndGameClientRpc()
     {
+        localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = true;
         DestroyScene();
         gameStarted = false;
         scoreboardLogic.ModeGameEnd();

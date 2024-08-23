@@ -132,6 +132,7 @@ public class NetworkEntityManager : NetworkBehaviour
                 UpdateScoreboardDeathsClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
                 UpdateLocalScoreClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].score);
                 UpdateLocalHealthClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
+                
             }
             StartGameClientRpc();
             readyButton.interactable = false;
@@ -141,6 +142,16 @@ public class NetworkEntityManager : NetworkBehaviour
             isReadyLocal = !isReadyLocal;
             SendReady(isReadyLocal);
         }
+    }
+
+    private void SetSailColor()
+    {
+        foreach (PlayerAvatar player in networkedGameObjects)
+        {
+            player.SetColor(colorList[player.gameObject.GetComponent<NetworkObject>().OwnerClientId]);
+        }
+
+        localPlayer.GetComponent<LocalPlayer>().SetColor(colorList[NetworkManager.Singleton.LocalClientId]);
     }
 
     private void OnPlayerListChanged(NetworkListEvent<PlayerData> e)
@@ -228,11 +239,11 @@ public class NetworkEntityManager : NetworkBehaviour
     private void StartGameClientRpc()
     {
         networkedGameObjects = FindObjectsOfType<PlayerAvatar>(true);
-
         combatLog.text = $"there are {networkedGameObjects.Count()} networkObjects in scene";
         isReadyLocal = false;
         scoreboardLogic.ModeScoreboard();
         scoreboardPanel.SetActive(false);
+        SetSailColor();
         SetUpScene();
         SetScoreBoardModeScore();
         Timer.Instance.StartTimer(30f);
@@ -485,6 +496,35 @@ public class NetworkEntityManager : NetworkBehaviour
                 break;
             }
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void OnSailServerRpc(ulong clientId, float value)
+    {
+        OnSailClientRpc(clientId, value);
+        if (NetworkManager.Singleton.LocalClientId == clientId) return;
+        foreach (PlayerAvatar player in networkedGameObjects)
+        {
+            if (player.gameObject.GetComponent<NetworkObject>().OwnerClientId == clientId)
+            {
+                player.GetComponentInChildren<ShipEffectController>().SetFurl(value);
+            }
+        }
+
+    }
+
+    [ClientRpc]
+    private void OnSailClientRpc(ulong clientId, float value)
+    {
+        if (IsServer || clientId == NetworkManager.Singleton.LocalClientId) return;
+        foreach (PlayerAvatar player in networkedGameObjects)
+        {
+            if (player.gameObject.GetComponent<NetworkObject>().OwnerClientId == clientId)
+            {
+                player.GetComponentInChildren<ShipEffectController>().SetFurl(value);
+            }
+        }
+
     }
 
 

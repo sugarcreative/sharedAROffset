@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,8 +17,6 @@ public class ShipEffectController : MonoBehaviour
     public GameObject sailsFurled;
     public float furlTrigger = 95;
 
-    //public Transform water;
-
     public float waterHeight;
 
     private MeshRenderer mr;
@@ -32,8 +31,7 @@ public class ShipEffectController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //water = FindObjectOfType<Water>(true).transform;
-
+       
         anim = GetComponent<Animator>();
 
         mr = GetComponent<MeshRenderer>();
@@ -80,7 +78,35 @@ public class ShipEffectController : MonoBehaviour
                 {
                     sailsUnfurled.gameObject.SetActive(true);
                     sailsFurled.SetActive(false);
+                    
                 }
+                sailsUnfurled.SetBlendShapeWeight(0, 100 - value * 100);
+                NetworkEntityManager.Instance.OnSailServerRpc(NetworkManager.Singleton.LocalClientId, value);
+            }
+        }
+    }
+
+    public void SetFurl(float value)
+    {
+        if (sailsFurled != null && sailsUnfurled != null)
+        {
+            if (value > furlTrigger)
+            {
+                if (sailsFurled.activeInHierarchy == false)
+                {
+                    sailsUnfurled.gameObject.SetActive(false);
+                    sailsFurled.SetActive(true);
+                }
+            }
+            else
+            {
+                if (sailsFurled.activeInHierarchy)
+                {
+                    sailsUnfurled.gameObject.SetActive(true);
+                    sailsFurled.SetActive(false);
+
+                }
+                sailsUnfurled.SetBlendShapeWeight(0, 100 - value * 100);
             }
         }
     }

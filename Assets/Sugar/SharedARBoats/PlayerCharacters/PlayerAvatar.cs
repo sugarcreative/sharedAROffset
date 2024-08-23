@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -14,8 +15,8 @@ public class PlayerAvatar : NetworkBehaviour
     {
         if (IsOwner)
         {
-            mesh = GetComponentsInChildren<MeshRenderer>();
-            skinnedMeshRenderer = GetComponentsInChildren<SkinnedMeshRenderer>();
+            mesh = GetComponentsInChildren<MeshRenderer>(true);
+            skinnedMeshRenderer = GetComponentsInChildren<SkinnedMeshRenderer>(true);
             foreach (MeshRenderer mr in mesh)
             {
                 mr.enabled = false;
@@ -30,6 +31,25 @@ public class PlayerAvatar : NetworkBehaviour
         }
 
         base.OnNetworkSpawn();
+    }
+
+    public void SetColor(FixedString64Bytes colorArg)
+    {
+        mesh = GetComponentsInChildren<MeshRenderer>(true);
+        skinnedMeshRenderer = GetComponentsInChildren<SkinnedMeshRenderer>(true);
+        Color newCol;
+        if (ColorUtility.TryParseHtmlString(colorArg.ToString(), out newCol))
+        {
+            foreach (SkinnedMeshRenderer mr in skinnedMeshRenderer)
+            {
+                mr.material.SetColor("_Tint", newCol);
+            }
+
+            foreach (MeshRenderer mr in mesh)
+            {
+                mr.material.SetColor("_Tint", newCol);
+            }
+        }
     }
 
     void Update()

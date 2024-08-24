@@ -32,6 +32,8 @@ public class NetworkLogic : NetworkBehaviour
 
     [SerializeField] private GameObject hostJoinPanel, enterRoomCodePanel;
 
+    [SerializeField] private Button beginButton;
+
     //[SerializeField] private Sprite[] buttonImages;
 
     private string _roomName;
@@ -68,8 +70,19 @@ public class NetworkLogic : NetworkBehaviour
         if (args.Tracking)
         {
             if (_isJoined) return;
-            hostJoinPanel.SetActive(true);
+            //hostJoinPanel.SetActive(true);
+            //beginButton.interactable = true;
         }
+        else
+        {
+            //beginButton.interactable = false;
+        }
+    }
+
+    public void ShowHostJoinPanel()
+    {
+        //hostJoinPanel.GetComponent<ModalFade>().Show();
+        hostJoinPanel.SetActive(true);
     }
 
     private void OnJoinAsHostClicked()

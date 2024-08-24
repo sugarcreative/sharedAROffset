@@ -15,6 +15,7 @@ public class IntroLogic : MonoBehaviour
 
     void Start()
     {
+        prevButton.interactable = false;
         tabs[currentTab].Show();
         pips[currentTab].selected.enabled = true;
     }

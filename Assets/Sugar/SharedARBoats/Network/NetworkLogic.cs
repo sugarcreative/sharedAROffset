@@ -46,6 +46,7 @@ public class NetworkLogic : NetworkBehaviour
 
         hostJoinPanel.SetActive(false);
         enterRoomCodePanel.SetActive(false);
+        beginButton.interactable = false;
 
         roomCodeInputField.onValueChanged.AddListener(OnRoomCodeChanged);
         displayNameInputField.onValueChanged.AddListener(OnDiplayNameChanged);
@@ -71,11 +72,11 @@ public class NetworkLogic : NetworkBehaviour
         {
             if (_isJoined) return;
             //hostJoinPanel.SetActive(true);
-            //beginButton.interactable = true;
+            beginButton.interactable = true;
         }
         else
         {
-            //beginButton.interactable = false;
+            beginButton.interactable = false;
         }
     }
 

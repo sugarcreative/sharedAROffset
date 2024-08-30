@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Unity.Collections;
-using Unity.Netcode;
 using Unity.VisualScripting;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -133,6 +133,7 @@ public class NetworkEntityManager : NetworkBehaviour
                 UpdateScoreboardDeathsClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
                 UpdateLocalScoreClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].score);
                 UpdateLocalHealthClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
+                
                 
             }
             StartGameClientRpc();
@@ -281,17 +282,50 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void SetUpScene()
     {
+        //localPlayer.GetComponentInChildren<ShipEffectController>(true).IsRespawn();
+        //localPlayer.gameObject.SetActive(true);
         foreach (GameObject g in playStateObjects)
         {
             g.SetActive(true);
         }
+        //ToggleNetworkPlayerVisibilty(true);
     }
 
     private void DestroyScene()
     {
+        localPlayer.SetActive(false);
         foreach (GameObject g in playStateObjects)
         {
-            g?.SetActive(false);
+            g.SetActive(false);
+        }
+        //ToggleNetworkPlayerVisibilty(false);
+    }
+
+    private void ToggleNetworkPlayerVisibilty(bool active)
+    {
+        if (networkedGameObjects.Length == 0) return;
+
+        switch (active)
+        {
+            case true:
+                foreach(PlayerAvatar playerAvatar in networkedGameObjects)
+                {
+                    if (playerAvatar.gameObject.GetComponent<NetworkObject>().OwnerClientId != NetworkManager.Singleton.LocalClientId)
+                    {
+                        playerAvatar.gameObject.SetActive(true);
+                        playerAvatar.gameObject.GetComponentInChildren<ShipEffectController>(true).IsRespawn();
+                    }
+                }
+                break;
+            case false:
+                foreach(PlayerAvatar player in networkedGameObjects)
+                {
+                    if (player.gameObject.GetComponent<NetworkObject>().OwnerClientId != NetworkManager.Singleton.LocalClientId)
+                    {
+                        player.gameObject.SetActive(false);
+                    }
+                }
+                break;
         }
     }
 

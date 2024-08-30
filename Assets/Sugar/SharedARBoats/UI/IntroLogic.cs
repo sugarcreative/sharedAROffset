@@ -13,6 +13,10 @@ public class IntroLogic : MonoBehaviour
 
     [SerializeField] private Button nextButton, prevButton;
 
+    [SerializeField] private GameObject sphere;
+
+    //[SerializeField] private GameObject instructionsObject;
+
     void Start()
     {
         prevButton.interactable = false;
@@ -44,6 +48,11 @@ public class IntroLogic : MonoBehaviour
             prevButton.interactable = true;
         }
 
+    }
+
+    public void BeginExperience()
+    {
+        sphere.SetActive(true);
     }
 
     public void PrevTabButton()

@@ -59,6 +59,12 @@ public class MovementAndSteering : MonoBehaviour
         _slider.minValue = _minSlider;
         _slider.maxValue = _maxSlider;
         _slider.onValueChanged.AddListener(SliderChanged);
+
+    }
+
+    private void OnEnable()
+    {
+        _slider.value = 0;
     }
 
     private void FixedUpdate()

@@ -21,6 +21,11 @@ public class LocalPlayer : MonoBehaviour
         
     }
 
+    private void OnEnable()
+    {
+        GetComponentInChildren<ShipEffectController>().IsRespawn();
+    }
+
     public void SetColor(FixedString64Bytes colorArg)
     {
         skinnedMeshRenderer = GetComponentsInChildren<SkinnedMeshRenderer>(true);

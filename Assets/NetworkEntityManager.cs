@@ -282,13 +282,11 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void SetUpScene()
     {
-        //localPlayer.GetComponentInChildren<ShipEffectController>(true).IsRespawn();
-        //localPlayer.gameObject.SetActive(true);
         foreach (GameObject g in playStateObjects)
         {
             g.SetActive(true);
         }
-        //ToggleNetworkPlayerVisibilty(true);
+        ToggleNetworkPlayerVisibilty(true);
     }
 
     private void DestroyScene()
@@ -298,7 +296,7 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             g.SetActive(false);
         }
-        //ToggleNetworkPlayerVisibilty(false);
+        ToggleNetworkPlayerVisibilty(false);
     }
 
     private void ToggleNetworkPlayerVisibilty(bool active)

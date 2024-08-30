@@ -64,13 +64,17 @@ public class MovementAndSteering : MonoBehaviour
 
     private void OnEnable()
     {
+        _rb.velocity = Vector3.zero;
+        _rb.angularVelocity = Vector3.zero;
+        _wheelRotation = 0f;
+        _wheelAsset.transform.rotation = Quaternion.Euler(_wheelAsset.transform.rotation.eulerAngles.x, _wheelAsset.transform.rotation.eulerAngles.y, -_wheelRotation);
+        _wheelRotation = 
         _slider.value = 0;
     }
 
     private void FixedUpdate()
     {
         if (_pauseUpdate) return;
-
         Sailing();
     }
 

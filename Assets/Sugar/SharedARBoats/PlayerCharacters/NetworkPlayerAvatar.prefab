@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2.2, y: 2.2, z: 2.2}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6264408812831954738}
@@ -396,7 +396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a661d9497b2f30b42a98380a50c114f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cannonRange: 1
+  _cannonRange: 3
   _hitLayers:
     serializedVersion: 2
     m_Bits: 192
@@ -420,7 +420,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a661d9497b2f30b42a98380a50c114f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cannonRange: 1
+  _cannonRange: 3
   _hitLayers:
     serializedVersion: 2
     m_Bits: 192
@@ -444,7 +444,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a661d9497b2f30b42a98380a50c114f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cannonRange: 1
+  _cannonRange: 3
   _hitLayers:
     serializedVersion: 2
     m_Bits: 192
@@ -473,7 +473,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a661d9497b2f30b42a98380a50c114f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cannonRange: 1
+  _cannonRange: 3
   _hitLayers:
     serializedVersion: 2
     m_Bits: 192
@@ -497,7 +497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a661d9497b2f30b42a98380a50c114f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cannonRange: 1
+  _cannonRange: 3
   _hitLayers:
     serializedVersion: 2
     m_Bits: 192
@@ -521,7 +521,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a661d9497b2f30b42a98380a50c114f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cannonRange: 1
+  _cannonRange: 3
   _hitLayers:
     serializedVersion: 2
     m_Bits: 192

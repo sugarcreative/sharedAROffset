@@ -268,7 +268,7 @@ public class NetworkEntityManager : NetworkBehaviour
         //SetSailColor();
         SetUpScene();
         SetScoreBoardModeScore();
-        Timer.Instance.StartTimer(30f);
+        Timer.Instance.StartTimer(90f);
     }
 
     #endregion
@@ -341,6 +341,13 @@ public class NetworkEntityManager : NetworkBehaviour
         gameStarted = false;
         scoreboardLogic.ModeGameEnd();
         scoreboardPanel?.SetActive(true);
+        if (IsServer)
+        {
+            if (allPlayerData.Count == 1)
+            {
+                readyButton.interactable = true;
+            }
+        }
     }
 
     private void ShowLobby(ulong clientId)

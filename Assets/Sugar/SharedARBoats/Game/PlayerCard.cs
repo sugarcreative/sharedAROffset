@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Bson;
 using TMPro;
 using Unity.Collections;
 using UnityEngine;
@@ -13,6 +14,8 @@ public class PlayerCard : MonoBehaviour
 
     [SerializeField] private GameObject[] scoreboardItems;
 
+    [SerializeField] private GameObject playerReadyIcon;
+
     private void Start()
     {
         ModeLobby();
@@ -23,6 +26,7 @@ public class PlayerCard : MonoBehaviour
         nameText.text = name.ToString();
         killsText.text = "0";
         deathsText.text = "0";
+        playerReadyIcon.SetActive(false);
     }
 
     public void ModeLobby()
@@ -58,6 +62,11 @@ public class PlayerCard : MonoBehaviour
         }
     }
 
+    public void SetReady(bool ready)
+    {
+        playerReadyIcon.SetActive(ready);
+    }
+
     public void SetScore(int Score)
     {
         killsText.text = Score.ToString();
@@ -72,5 +81,6 @@ public class PlayerCard : MonoBehaviour
         nameText.text = data.name.ToString();
         killsText.text = data.score.ToString();
         deathsText.text = data.deaths.ToString();
+        playerReadyIcon.SetActive(data.isReady);
     }
 }

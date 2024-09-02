@@ -23,6 +23,11 @@ public class CannonLogic : MonoBehaviour
         }
     }
 
+    public void OnEnable()
+    {
+        Button.enabled = true;
+    }
+
     public void ShootCannons()
     {
         StartCoroutine(FireCannons());

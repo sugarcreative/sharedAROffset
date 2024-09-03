@@ -8363,6 +8363,7 @@ MonoBehaviour:
   hostJoinPanel: {fileID: 547806676}
   enterRoomCodePanel: {fileID: 829491743}
   beginButton: {fileID: 935534759}
+  CanvasDarkBG: {fileID: 1059205051}
 --- !u!4 &915224705
 Transform:
   m_ObjectHideFlags: 0
@@ -8863,7 +8864,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -170, y: 1023}
+  m_AnchoredPosition: {x: -170, y: 794}
   m_SizeDelta: {x: 219, y: 219}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1041850489
@@ -9144,7 +9145,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1059205052
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9769,6 +9770,7 @@ MonoBehaviour:
   - {fileID: 1102383815}
   - {fileID: 886008611}
   networkedGameObjects: []
+  CanvasDarkBG: {fileID: 1059205051}
 --- !u!114 &1095947346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11278,7 +11280,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1346752035
 Transform:
   m_ObjectHideFlags: 0
@@ -12483,9 +12485,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 181509327}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -170, y: 700.6}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 170, y: 794.0001}
   m_SizeDelta: {x: 219, y: 219}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1543712239
@@ -14789,7 +14791,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1815465738
 Transform:
   m_ObjectHideFlags: 0
@@ -16887,7 +16889,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2141284947
 RectTransform:
   m_ObjectHideFlags: 0

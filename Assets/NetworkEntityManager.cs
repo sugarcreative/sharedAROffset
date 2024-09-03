@@ -72,6 +72,8 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private PlayerAvatar[] networkedGameObjects;
 
+    [SerializeField] private GameObject CanvasDarkBG;
+
     #endregion
 
     #region Default Functions
@@ -353,6 +355,7 @@ public class NetworkEntityManager : NetworkBehaviour
     private void ShowLobby(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        CanvasDarkBG.SetActive(true);
         scoreboardLogic.Initialize();
         scoreboardPanel.SetActive(true);
     }

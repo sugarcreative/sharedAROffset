@@ -34,6 +34,8 @@ public class NetworkLogic : NetworkBehaviour
 
     [SerializeField] private Button beginButton;
 
+    [SerializeField] private GameObject CanvasDarkBG;
+
     //[SerializeField] private Sprite[] buttonImages;
 
     private string _roomName;
@@ -82,8 +84,9 @@ public class NetworkLogic : NetworkBehaviour
 
     public void ShowHostJoinPanel()
     {
-        //hostJoinPanel.GetComponent<ModalFade>().Show();
-        hostJoinPanel.SetActive(true);
+        hostJoinPanel.GetComponent<ModalFade>().Show();
+        CanvasDarkBG.GetComponent<ModalFade>().Show();
+        //hostJoinPanel.SetActive(true);
     }
 
     private void OnJoinAsHostClicked()

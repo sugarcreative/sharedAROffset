@@ -36,8 +36,6 @@ public class NetworkLogic : NetworkBehaviour
 
     [SerializeField] private GameObject CanvasDarkBG;
 
-    //[SerializeField] private Sprite[] buttonImages;
-
     private string _roomName;
 
     private bool _isJoined;
@@ -46,8 +44,6 @@ public class NetworkLogic : NetworkBehaviour
     {
         DontDestroyOnLoad(gameObject);
 
-        hostJoinPanel.SetActive(false);
-        enterRoomCodePanel.SetActive(false);
         beginButton.interactable = false;
 
         roomCodeInputField.onValueChanged.AddListener(OnRoomCodeChanged);
@@ -59,9 +55,6 @@ public class NetworkLogic : NetworkBehaviour
         _joinAsHostButton.interactable = false;
 
         NetworkManager.Singleton.OnClientConnectedCallback += OnConnection;
-        //NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
-        //NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectedCallback;
-
         _sharedSpaceManager.sharedSpaceManagerStateChanged += OnColocalizationTrackingStateChanged;
     }
 
@@ -73,7 +66,6 @@ public class NetworkLogic : NetworkBehaviour
         if (args.Tracking)
         {
             if (_isJoined) return;
-            //hostJoinPanel.SetActive(true);
             beginButton.interactable = true;
         }
         else
@@ -86,7 +78,6 @@ public class NetworkLogic : NetworkBehaviour
     {
         hostJoinPanel.GetComponent<ModalFade>().Show();
         CanvasDarkBG.GetComponent<ModalFade>().Show();
-        //hostJoinPanel.SetActive(true);
     }
 
     private void OnJoinAsHostClicked()
@@ -98,7 +89,7 @@ public class NetworkLogic : NetworkBehaviour
         var ropts = SetUpRoomAndUI(topts);
         StartSharedSpace(topts, ropts);
         NetworkManager.Singleton.StartHost();
-        hostJoinPanel.SetActive(false);
+        hostJoinPanel.GetComponent<ModalFade>().Hide();
         _isJoined = true;
         NetworkEntityManager.Instance.AddNewClientToList(NetworkManager.Singleton.LocalClientId, playerName);
         NetworkEntityManager.Instance.SetLocalColor();
@@ -111,7 +102,7 @@ public class NetworkLogic : NetworkBehaviour
 
     private void EnterRoomCode()
     {
-        enterRoomCodePanel.SetActive(true);
+        enterRoomCodePanel.GetComponent<ModalFade>().Show();
     }
 
     private void OnRoomCodeChanged(string text)
@@ -143,15 +134,13 @@ public class NetworkLogic : NetworkBehaviour
     public void OnConfirmButtonClicked()
     {
         _roomName = roomCodeInputField.text;
-        enterRoomCodePanel.SetActive(false);
         playerName = new FixedString64Bytes(displayNameInputField.text);
 
         var topts = ISharedSpaceTrackingOptions.CreateVpsTrackingOptions(arLocation);
         var ropts = SetUpRoomAndUI(topts);
         StartSharedSpace(topts, ropts);
         NetworkManager.Singleton.StartClient();
-        hostJoinPanel.SetActive(false);
-
+        hostJoinPanel.GetComponent<ModalFade>().Hide();
         _isJoined = true;
     }
 
@@ -163,19 +152,9 @@ public class NetworkLogic : NetworkBehaviour
 
     }
 
-    //private void OnClientConnectedCallback(ulong clientId)
-    //{
-    //    _statusText.text = $"{clientId} Connected";
-    //}
-
-    //private void OnClientDisconnectedCallback(ulong clientId)
-    //{
-    //    _statusText.text = $"{clientId} Disconnected";
-    //}
-
     private ISharedSpaceRoomOptions SetUpRoomAndUI(ISharedSpaceTrackingOptions topts)
     {
-        _roomNameDisplayText.text = $"Pin: {_roomName}";
+        _roomNameDisplayText.text = _roomName;
         _roomNameDisplayText.gameObject.SetActive(true);
 
         return ISharedSpaceRoomOptions.CreateVpsRoomOptions(topts, _roomName, 10, "vps_boats");

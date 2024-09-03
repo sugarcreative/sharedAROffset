@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 
 public class NetworkEntityManager : NetworkBehaviour
 {
@@ -22,7 +23,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private ScoreboardLogic scoreboardLogic;
 
-    private const int MAXHEALTH = 10;
+    private const int MAXHEALTH = 1;
 
     private const int STARTSCORE = 0;
 
@@ -40,8 +41,6 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] Transform playerCardParent;
 
-    private List<ulong> clientIds = new List<ulong>();
-
     private Dictionary<ulong, PlayerCard> playerCards = new Dictionary<ulong, PlayerCard>();
 
     public bool shootingDebug = false;
@@ -52,8 +51,6 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private bool gameStarted;
 
-    [SerializeField] private GameObject arScenery;
-
     [SerializeField] private Button readyButton;
 
     private bool gettingReady;
@@ -63,8 +60,6 @@ public class NetworkEntityManager : NetworkBehaviour
     [SerializeField] private GameObject[] playStateObjects;
 
     [SerializeField] private Transform spawnAroundObject;
-
-    //private float radius = 0.6f;
 
     private bool isFirstGo = true;
 
@@ -135,8 +130,8 @@ public class NetworkEntityManager : NetworkBehaviour
                 UpdateScoreboardDeathsClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
                 UpdateLocalScoreClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].score);
                 UpdateLocalHealthClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
-                
-                
+
+
             }
             StartGameClientRpc();
             readyButton.interactable = false;
@@ -261,16 +256,23 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     private void StartGameClientRpc()
     {
-        //networkedGameObjects = FindObjectsOfType<PlayerAvatar>(true);
         localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = false;
         combatLog.text = $"there are {networkedGameObjects.Count()} networkObjects in scene";
         isReadyLocal = false;
-        scoreboardLogic.ModeScoreboard();
-        scoreboardPanel.SetActive(false);
-        //SetSailColor();
         SetUpScene();
-        SetScoreBoardModeScore();
-        Timer.Instance.StartTimer(90f);
+        CanvasDarkBG.GetComponent<ModalFade>().Hide();
+        scoreboardPanel.GetComponent<ModalFade>().Hide();
+        StartCoroutine(WaitToExecute(0.27f, new Action[] {scoreboardLogic.ModeScoreboard, SetScoreBoardModeScore}));
+        Timer.Instance.StartTimer(15f);
+    }
+
+    IEnumerator WaitToExecute(float time, Action[] function)
+    {
+        yield return new WaitForSeconds(time);
+        foreach (Action action in function)
+        {
+            action();
+        }
     }
 
     #endregion
@@ -342,7 +344,8 @@ public class NetworkEntityManager : NetworkBehaviour
         DestroyScene();
         gameStarted = false;
         scoreboardLogic.ModeGameEnd();
-        scoreboardPanel?.SetActive(true);
+        //scoreboardPanel?.SetActive(true);
+        scoreboardPanel.GetComponent<ModalFade>().Show();
         if (IsServer)
         {
             if (allPlayerData.Count == 1)
@@ -355,9 +358,8 @@ public class NetworkEntityManager : NetworkBehaviour
     private void ShowLobby(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        CanvasDarkBG.SetActive(true);
         scoreboardLogic.Initialize();
-        scoreboardPanel.SetActive(true);
+        scoreboardPanel.GetComponent<ModalFade>().Show();
     }
 
     [ClientRpc]
@@ -395,7 +397,7 @@ public class NetworkEntityManager : NetworkBehaviour
         };
 
 
-        UpdateLocalHealthClientRpc(clientId, MAXHEALTH);
+        //UpdateLocalHealthClientRpc(clientId, MAXHEALTH);
         allPlayerData.Add(newPlayerData);
 
         foreach (var playerData in allPlayerData)
@@ -625,7 +627,7 @@ public class NetworkEntityManager : NetworkBehaviour
         StartCoroutine(SinkIntoRespawn(player, clientId));
     }
 
-    [ServerRpc]
+    [ServerRpc (RequireOwnership = false)]
     private void SetNotDeadServerRpc(ulong clientId)
     {
         for (int i = 0; i < allPlayerData.Count; i++)

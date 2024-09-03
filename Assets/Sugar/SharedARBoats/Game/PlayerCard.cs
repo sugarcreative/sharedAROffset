@@ -26,7 +26,7 @@ public class PlayerCard : MonoBehaviour
         nameText.text = name.ToString();
         killsText.text = "0";
         deathsText.text = "0";
-        playerReadyIcon.SetActive(false);
+        playerReadyIcon.GetComponent<Image>().enabled = false;
     }
 
     public void ModeLobby()
@@ -64,7 +64,8 @@ public class PlayerCard : MonoBehaviour
 
     public void SetReady(bool ready)
     {
-        playerReadyIcon.SetActive(ready);
+        playerReadyIcon.GetComponent<Image>().enabled = ready;
+
     }
 
     public void SetScore(int Score)
@@ -81,6 +82,6 @@ public class PlayerCard : MonoBehaviour
         nameText.text = data.name.ToString();
         killsText.text = data.score.ToString();
         deathsText.text = data.deaths.ToString();
-        playerReadyIcon.SetActive(data.isReady);
+        playerReadyIcon.GetComponent<Image>().enabled = data.isReady;
     }
 }

@@ -215,6 +215,7 @@ public class NetworkEntityManager : NetworkBehaviour
     private void SendReadyToServerRpc(ulong clientId, bool value)
     {
         SendReadyInner(clientId, value);
+        
 
         foreach (PlayerData player in allPlayerData)
         {
@@ -243,6 +244,7 @@ public class NetworkEntityManager : NetworkBehaviour
                     color = allPlayerData[i].color,
                     isReady = value
                 };
+                UpdateScoreboardReadyClientRpc(allPlayerData[i].clientId, allPlayerData[i].isReady);
             }
         }
     }
@@ -696,6 +698,12 @@ public class NetworkEntityManager : NetworkBehaviour
     public void UpdateScoreBoardColorClientRpc(ulong clientId, FixedString64Bytes newCol)
     {
         playerCards[clientId].SetColor(newCol);
+    }
+
+    [ClientRpc]
+    public void UpdateScoreboardReadyClientRpc(ulong clientId, bool newReady)
+    {
+        playerCards[clientId].SetReady(newReady);
     }
 
     [ClientRpc]

@@ -163,7 +163,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
         }
         StartGameClientRpc();
-        readyButton.interactable = false;
+        //readyButton.interactable = false;
     }
 
 
@@ -381,13 +381,13 @@ public class NetworkEntityManager : NetworkBehaviour
         scoreboardLogic.ModeGameEnd();
         //scoreboardPanel?.SetActive(true);
         scoreboardPanel.GetComponent<ModalFade>().Show();
-        if (IsServer)
-        {
-            if (allPlayerData.Count == 1)
-            {
-                readyButton.interactable = true;
-            }
-        }
+        //if (IsServer)
+        //{
+        //    if (allPlayerData.Count == 1)
+        //    {
+        //        readyButton.interactable = true;
+        //    }
+        //}
     }
 
     private void ShowLobby(ulong clientId)

@@ -69,6 +69,10 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private GameObject CanvasDarkBG;
 
+    [SerializeField] private Sprite[] ReadyButtonImages;
+
+    private int readyButtonImageIndex = 0;
+
     #endregion
 
     #region Default Functions
@@ -99,48 +103,67 @@ public class NetworkEntityManager : NetworkBehaviour
 
     public void SetReady()
     {
-        gameStarted = true;
-
-        if (IsServer)
+        if (readyButtonImageIndex == 0)
         {
-            if (isFirstGo)
-            {
-                isFirstGo = false;
-            }
-            else
-            {
-                PositionPlayers();
-            }
-
-            for (int i = 0; i < allPlayerData.Count; i++)
-            {
-
-                allPlayerData[i] = new PlayerData()
-                {
-                    clientId = allPlayerData[i].clientId,
-                    name = allPlayerData[i].name,
-                    score = STARTSCORE,
-                    health = MAXHEALTH,
-                    deaths = 0,
-                    isDead = false,
-                    color = allPlayerData[i].color,
-                    isReady = false
-                };
-                UpdateScoreboardScoreClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].score);
-                UpdateScoreboardDeathsClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
-                UpdateLocalScoreClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].score);
-                UpdateLocalHealthClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
-
-
-            }
-            StartGameClientRpc();
-            readyButton.interactable = false;
+            readyButtonImageIndex = 1;
         }
         else
         {
-            isReadyLocal = !isReadyLocal;
-            SendReady(isReadyLocal);
+            readyButtonImageIndex = 0;
         }
+
+        readyButton.image.sprite = ReadyButtonImages[readyButtonImageIndex];
+
+        //gameStarted = true;
+
+        isReadyLocal = !isReadyLocal;
+        SendReady(isReadyLocal);
+
+        //if (IsServer)
+        //{
+        //    ServerStartMatch();
+        //}
+        //else
+        //{
+        //    isReadyLocal = !isReadyLocal;
+        //    SendReady(isReadyLocal);
+        //}
+    }
+
+    private void ServerStartMatch()
+    {
+        if (isFirstGo)
+        {
+            isFirstGo = false;
+        }
+        else
+        {
+            PositionPlayers();
+        }
+
+        for (int i = 0; i < allPlayerData.Count; i++)
+        {
+
+            allPlayerData[i] = new PlayerData()
+            {
+                clientId = allPlayerData[i].clientId,
+                name = allPlayerData[i].name,
+                score = STARTSCORE,
+                health = MAXHEALTH,
+                deaths = 0,
+                isDead = false,
+                color = allPlayerData[i].color,
+                isReady = false
+            };
+            UpdateScoreboardScoreClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].score);
+            UpdateScoreboardDeathsClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
+            UpdateLocalScoreClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].score);
+            UpdateLocalHealthClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
+
+
+        }
+        StartGameClientRpc();
+        readyButton.interactable = false;
     }
 
 
@@ -180,9 +203,6 @@ public class NetworkEntityManager : NetworkBehaviour
             }
             else
             {
-                GenericTestClientRpc($"{latestClientId} is {gettingReady}");
-
-                int numOfPlayers = allPlayerData.Count - 1;
                 int count = 0;
                 foreach (PlayerData playerData in allPlayerData)
                 {
@@ -192,14 +212,15 @@ public class NetworkEntityManager : NetworkBehaviour
                     }
                 }
 
-                if (count == numOfPlayers)
+                if (count == allPlayerData.Count)
                 {
-                    readyButton.interactable = true;
+                    //readyButton.interactable = true;
+                    ServerStartMatch();
                 }
-                else
-                {
-                    readyButton.interactable = false;
-                }
+                //else
+                //{
+                //    readyButton.interactable = false;
+                //}
             }
         }
     }
@@ -208,7 +229,16 @@ public class NetworkEntityManager : NetworkBehaviour
     public void SendReady(bool value)
     {
         ulong clientId = NetworkManager.Singleton.LocalClientId;
-        SendReadyToServerRpc(clientId, value);
+
+        if (IsServer)
+        {
+            SendReadyInner(clientId, value);
+        }
+        else
+        {
+            SendReadyToServerRpc(clientId, value);
+        }
+        //SendReadyToServerRpc(clientId, value);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -217,14 +247,14 @@ public class NetworkEntityManager : NetworkBehaviour
         SendReadyInner(clientId, value);
         
 
-        foreach (PlayerData player in allPlayerData)
-        {
-            if (player.clientId == clientId)
-            {
-                gettingReady = player.isReady;
-                latestClientId = player.clientId;
-            }
-        }
+        //foreach (PlayerData player in allPlayerData)
+        //{
+        //    if (player.clientId == clientId)
+        //    {
+        //        gettingReady = player.isReady;
+        //        latestClientId = player.clientId;
+        //    }
+        //}
     }
 
     private void SendReadyInner(ulong clientId, bool value)
@@ -258,6 +288,7 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     private void StartGameClientRpc()
     {
+        gameStarted = true;
         localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = false;
         combatLog.text = $"there are {networkedGameObjects.Count()} networkObjects in scene";
         isReadyLocal = false;
@@ -265,6 +296,8 @@ public class NetworkEntityManager : NetworkBehaviour
         CanvasDarkBG.GetComponent<ModalFade>().Hide();
         scoreboardPanel.GetComponent<ModalFade>().Hide();
         StartCoroutine(WaitToExecute(0.27f, new Action[] {scoreboardLogic.ModeScoreboard, SetScoreBoardModeScore}));
+        readyButtonImageIndex = 0;
+        readyButton.image.sprite = ReadyButtonImages[readyButtonImageIndex];
         Timer.Instance.StartTimer(15f);
     }
 

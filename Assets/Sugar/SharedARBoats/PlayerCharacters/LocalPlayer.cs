@@ -9,6 +9,8 @@ public class LocalPlayer : MonoBehaviour
     public SkinnedMeshRenderer[] skinnedMeshRenderer;
     public MeshRenderer[] meshRenderer;
 
+    public GameObject canvas;
+
     void Awake()
     {
         skinnedMeshRenderer = GetComponentsInChildren<SkinnedMeshRenderer>(true);
@@ -42,5 +44,15 @@ public class LocalPlayer : MonoBehaviour
                 mr.material.SetColor("_Tint", newCol);
             }
         }
+    }
+
+    public void ShowCanvas()
+    {
+        canvas.GetComponent<ModalFade>().Show();
+    }
+
+    public void HideCanvas()
+    {
+        canvas.GetComponent<ModalFade>().Hide();
     }
 }

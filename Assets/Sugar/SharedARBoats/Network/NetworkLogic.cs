@@ -36,6 +36,8 @@ public class NetworkLogic : NetworkBehaviour
 
     [SerializeField] private GameObject CanvasDarkBG;
 
+    [SerializeField] private GameObject topBar;
+
     private string _roomName;
 
     private bool _isJoined;
@@ -90,6 +92,7 @@ public class NetworkLogic : NetworkBehaviour
         StartSharedSpace(topts, ropts);
         NetworkManager.Singleton.StartHost();
         hostJoinPanel.GetComponent<ModalFade>().Hide();
+        topBar.GetComponent<ModalFade>().Show();
         _isJoined = true;
         NetworkEntityManager.Instance.AddNewClientToList(NetworkManager.Singleton.LocalClientId, playerName);
         NetworkEntityManager.Instance.SetLocalColor();
@@ -141,6 +144,7 @@ public class NetworkLogic : NetworkBehaviour
         StartSharedSpace(topts, ropts);
         NetworkManager.Singleton.StartClient();
         hostJoinPanel.GetComponent<ModalFade>().Hide();
+        topBar.GetComponent<ModalFade>().Show();
         _isJoined = true;
     }
 

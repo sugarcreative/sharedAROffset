@@ -47,7 +47,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     public FixedString64Bytes[] colorList = new FixedString64Bytes[] { "#AD3232", "#A59622", "#285D27", "#28A5A7", "#29447D", "#A5579E", "#00FF6E" };
 
-    private bool isReadyLocal;
+    private bool isReadyLocal = false;
 
     private bool gameStarted;
 
@@ -69,9 +69,15 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private GameObject CanvasDarkBG;
 
-    [SerializeField] private Sprite[] ReadyButtonImages;
+    [SerializeField] private Sprite[] readyButtonImages;
+
+    [SerializeField] private GameObject TopBar;
 
     private int readyButtonImageIndex = 0;
+
+    [SerializeField] private Button[] shootingButtons;
+
+    private bool gameEnd = false;
 
     #endregion
 
@@ -103,31 +109,104 @@ public class NetworkEntityManager : NetworkBehaviour
 
     public void SetReady()
     {
-        if (readyButtonImageIndex == 0)
+        switch (readyButtonImageIndex)
         {
-            readyButtonImageIndex = 1;
-        }
-        else
-        {
-            readyButtonImageIndex = 0;
+            case 0:
+                readyButtonImageIndex = 1;
+                break;
+            case 2:
+                ServerStartMatch();
+                //readyButtonImageIndex = 3;
+                //break;
+                return;
+            case 3:
+                readyButtonImageIndex =1;
+                break;
         }
 
-        readyButton.image.sprite = ReadyButtonImages[readyButtonImageIndex];
-
-        //gameStarted = true;
+        readyButton.image.sprite = readyButtonImages[readyButtonImageIndex];
 
         isReadyLocal = !isReadyLocal;
         SendReady(isReadyLocal);
 
-        //if (IsServer)
-        //{
-        //    ServerStartMatch();
-        //}
-        //else
-        //{
-        //    isReadyLocal = !isReadyLocal;
-        //    SendReady(isReadyLocal);
-        //}
+    }
+
+    public void SendReady(bool value)
+    {
+        ulong clientId = NetworkManager.Singleton.LocalClientId;
+
+        if (IsServer)
+        {
+            SendReadyInner(clientId, value);
+        }
+        else
+        {
+            SendReadyToServerRpc(clientId, value);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SendReadyToServerRpc(ulong clientId, bool value)
+    {
+        SendReadyInner(clientId, value);
+    }
+
+    private void SendReadyInner(ulong clientId, bool value)
+    {
+        for (int i = 0; i < allPlayerData.Count; i++)
+        {
+            if (allPlayerData[i].clientId == clientId)
+            {
+                allPlayerData[i] = new PlayerData()
+                {
+                    clientId = allPlayerData[i].clientId,
+                    name = allPlayerData[i].name,
+                    score = allPlayerData[i].score,
+                    health = allPlayerData[i].health,
+                    deaths = allPlayerData[i].deaths,
+                    isDead = allPlayerData[i].isDead,
+                    color = allPlayerData[i].color,
+                    isReady = value
+                };
+                UpdateScoreboardReadyClientRpc(allPlayerData[i].clientId, allPlayerData[i].isReady);
+            }
+        }
+    }
+
+    private void OnPlayerListChanged(NetworkListEvent<PlayerData> e)
+    {
+
+        if (IsServer)
+        {
+
+            if (gameStarted)
+            {
+                foreach (PlayerData playerData in allPlayerData)
+                {
+                    UpdateScoreboardClientRpc(playerData);
+                }
+            }
+            else
+            {
+                int count = 0;
+                foreach (PlayerData playerData in allPlayerData)
+                {
+                    if (playerData.isReady)
+                    {
+                        count++;
+                    }
+                }
+
+                if (count == allPlayerData.Count)
+                {
+                    if (isReadyLocal)
+                    {
+                        readyButtonImageIndex = 2; // show the begin button
+                        readyButton.image.sprite = readyButtonImages[readyButtonImageIndex];
+                    }
+                }
+            }
+        }
     }
 
     private void ServerStartMatch()
@@ -158,14 +237,26 @@ public class NetworkEntityManager : NetworkBehaviour
             UpdateScoreboardScoreClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].score);
             UpdateScoreboardDeathsClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
             UpdateLocalScoreClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].score);
-            UpdateLocalHealthClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
-
-
+            UpdateLocalDeathsClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
         }
         StartGameClientRpc();
-        //readyButton.interactable = false;
     }
 
+    [ClientRpc]
+    private void StartGameClientRpc()
+    {
+        gameStarted = true;
+        localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = false;
+        isReadyLocal = false;
+        SetUpScene();
+        CanvasDarkBG.GetComponent<ModalFade>().Hide();
+        scoreboardPanel.GetComponent<ModalFade>().Hide();
+        StartCoroutine(WaitToExecute(0.27f, new Action[] { scoreboardLogic.ModeScoreboard, SetScoreBoardModeScore }));
+        readyButtonImageIndex = 0;
+        readyButton.image.sprite = readyButtonImages[readyButtonImageIndex];
+        Timer.Instance.StartTimer(15f);
+        gameEnd = false;
+    }
 
     [ClientRpc]
     private void SetSailColorClientRpc()
@@ -179,8 +270,6 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             player.SetColor(colorList[player.gameObject.GetComponent<NetworkObject>().OwnerClientId]);
         }
-
-        //localPlayer.GetComponent<LocalPlayer>().SetColor(colorList[NetworkManager.Singleton.LocalClientId]);
     }
 
     public void SetLocalColor()
@@ -188,117 +277,10 @@ public class NetworkEntityManager : NetworkBehaviour
         localPlayer.GetComponent<LocalPlayer>().SetColor(colorList[NetworkManager.Singleton.LocalClientId]);
     }
 
-    private void OnPlayerListChanged(NetworkListEvent<PlayerData> e)
-    {
-
-        if (IsServer)
-        {
-
-            if (gameStarted)
-            {
-                foreach (PlayerData playerData in allPlayerData)
-                {
-                    UpdateScoreboardClientRpc(playerData);
-                }
-            }
-            else
-            {
-                int count = 0;
-                foreach (PlayerData playerData in allPlayerData)
-                {
-                    if (playerData.isReady)
-                    {
-                        count++;
-                    }
-                }
-
-                if (count == allPlayerData.Count)
-                {
-                    //readyButton.interactable = true;
-                    ServerStartMatch();
-                }
-                //else
-                //{
-                //    readyButton.interactable = false;
-                //}
-            }
-        }
-    }
-
-
-    public void SendReady(bool value)
-    {
-        ulong clientId = NetworkManager.Singleton.LocalClientId;
-
-        if (IsServer)
-        {
-            SendReadyInner(clientId, value);
-        }
-        else
-        {
-            SendReadyToServerRpc(clientId, value);
-        }
-        //SendReadyToServerRpc(clientId, value);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void SendReadyToServerRpc(ulong clientId, bool value)
-    {
-        SendReadyInner(clientId, value);
-        
-
-        //foreach (PlayerData player in allPlayerData)
-        //{
-        //    if (player.clientId == clientId)
-        //    {
-        //        gettingReady = player.isReady;
-        //        latestClientId = player.clientId;
-        //    }
-        //}
-    }
-
-    private void SendReadyInner(ulong clientId, bool value)
-    {
-        for (int i = 0; i < allPlayerData.Count; i++)
-        {
-            if (allPlayerData[i].clientId == clientId)
-            {
-                allPlayerData[i] = new PlayerData()
-                {
-                    clientId = allPlayerData[i].clientId,
-                    name = allPlayerData[i].name,
-                    score = allPlayerData[i].score,
-                    health = allPlayerData[i].health,
-                    deaths = allPlayerData[i].deaths,
-                    isDead = allPlayerData[i].isDead,
-                    color = allPlayerData[i].color,
-                    isReady = value
-                };
-                UpdateScoreboardReadyClientRpc(allPlayerData[i].clientId, allPlayerData[i].isReady);
-            }
-        }
-    }
-
     [ClientRpc]
     private void GetNetworkedObjectsClientRpc()
     {
         networkedGameObjects = FindObjectsOfType<PlayerAvatar>(true);
-    }
-
-    [ClientRpc]
-    private void StartGameClientRpc()
-    {
-        gameStarted = true;
-        localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = false;
-        combatLog.text = $"there are {networkedGameObjects.Count()} networkObjects in scene";
-        isReadyLocal = false;
-        SetUpScene();
-        CanvasDarkBG.GetComponent<ModalFade>().Hide();
-        scoreboardPanel.GetComponent<ModalFade>().Hide();
-        StartCoroutine(WaitToExecute(0.27f, new Action[] {scoreboardLogic.ModeScoreboard, SetScoreBoardModeScore}));
-        readyButtonImageIndex = 0;
-        readyButton.image.sprite = ReadyButtonImages[readyButtonImageIndex];
-        Timer.Instance.StartTimer(15f);
     }
 
     IEnumerator WaitToExecute(float time, Action[] function)
@@ -325,6 +307,8 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             g.SetActive(true);
         }
+        localPlayer.GetComponent<LocalPlayer>().ShowCanvas();
+        TopBar.GetComponent<ModalFade>().Show();
         ToggleNetworkPlayerVisibilty(true);
     }
 
@@ -335,6 +319,8 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             g.SetActive(false);
         }
+        localPlayer.GetComponent<LocalPlayer>().HideCanvas();
+        TopBar.GetComponent<ModalFade>().Hide();
         ToggleNetworkPlayerVisibilty(false);
     }
 
@@ -345,7 +331,7 @@ public class NetworkEntityManager : NetworkBehaviour
         switch (active)
         {
             case true:
-                foreach(PlayerAvatar playerAvatar in networkedGameObjects)
+                foreach (PlayerAvatar playerAvatar in networkedGameObjects)
                 {
                     if (playerAvatar.gameObject.GetComponent<NetworkObject>().OwnerClientId != NetworkManager.Singleton.LocalClientId)
                     {
@@ -355,7 +341,7 @@ public class NetworkEntityManager : NetworkBehaviour
                 }
                 break;
             case false:
-                foreach(PlayerAvatar player in networkedGameObjects)
+                foreach (PlayerAvatar player in networkedGameObjects)
                 {
                     if (player.gameObject.GetComponent<NetworkObject>().OwnerClientId != NetworkManager.Singleton.LocalClientId)
                     {
@@ -376,18 +362,14 @@ public class NetworkEntityManager : NetworkBehaviour
     private void EndGameClientRpc()
     {
         localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = true;
+        gameEnd = true;
         DestroyScene();
         gameStarted = false;
+        readyButtonImageIndex = 3;
+        readyButton.image.sprite = readyButtonImages[readyButtonImageIndex];
         scoreboardLogic.ModeGameEnd();
-        //scoreboardPanel?.SetActive(true);
         scoreboardPanel.GetComponent<ModalFade>().Show();
-        //if (IsServer)
-        //{
-        //    if (allPlayerData.Count == 1)
-        //    {
-        //        readyButton.interactable = true;
-        //    }
-        //}
+        CanvasDarkBG.GetComponent<ModalFade>().Show();
     }
 
     private void ShowLobby(ulong clientId)
@@ -444,7 +426,7 @@ public class NetworkEntityManager : NetworkBehaviour
         PositionPlayerStartClientRpc(clientId);
         ShowLobbyClientRpc(clientId);
         SetUpSceneClientRpc(clientId);
-        
+
     }
 
     private void PositionPlayers()
@@ -507,7 +489,7 @@ public class NetworkEntityManager : NetworkBehaviour
                         isReady = allPlayerData[i].isReady,
                     };
 
-                    UpdateLocalHealthClientRpc(target, allPlayerData[i].deaths);
+                    UpdateLocalDeathsClientRpc(target, allPlayerData[i].deaths);
                     OnBoatDeathClientRpc(target);
 
                     for (int j = 0; j < allPlayerData.Count; j++)
@@ -558,7 +540,7 @@ public class NetworkEntityManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void OnShootServerRpc(ulong shooterId, ulong objectId)
     {
-        
+
         OnShootClientRpc(shooterId, objectId);
         if (NetworkManager.Singleton.LocalClientId == shooterId) return;
         foreach (PlayerAvatar player in networkedGameObjects)
@@ -641,6 +623,10 @@ public class NetworkEntityManager : NetworkBehaviour
         if (NetworkManager.Singleton.LocalClientId == clientId)
         {
             localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = true;
+            foreach (Button button in shootingButtons)
+            {
+                button.interactable = false;
+            }
             localPlayer.GetComponentInChildren<ShipEffectController>(true).IsSunk();
             SinkIntoRespawnFunction(localPlayer, clientId);
 
@@ -662,7 +648,7 @@ public class NetworkEntityManager : NetworkBehaviour
         StartCoroutine(SinkIntoRespawn(player, clientId));
     }
 
-    [ServerRpc (RequireOwnership = false)]
+    [ServerRpc(RequireOwnership = false)]
     private void SetNotDeadServerRpc(ulong clientId)
     {
         for (int i = 0; i < allPlayerData.Count; i++)
@@ -690,6 +676,10 @@ public class NetworkEntityManager : NetworkBehaviour
         yield return new WaitForSeconds(6);
         player.GetComponentInChildren<ShipEffectController>().IsRespawn();
         player.GetComponent<MovementAndSteering>()._pauseUpdate = false;
+        foreach (Button button in shootingButtons)
+        {
+            button.interactable = true;
+        }
         SetNotDeadServerRpc(clientId);
     }
 
@@ -707,9 +697,6 @@ public class NetworkEntityManager : NetworkBehaviour
     }
 
     #endregion
-
-
-
     #endregion
 
 
@@ -820,7 +807,7 @@ public class NetworkEntityManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    void UpdateLocalHealthClientRpc(ulong clientId, int health)
+    void UpdateLocalDeathsClientRpc(ulong clientId, int health)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
         localHealth.text = health.ToString();

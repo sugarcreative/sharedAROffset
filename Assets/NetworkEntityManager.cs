@@ -23,7 +23,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private ScoreboardLogic scoreboardLogic;
 
-    private const int MAXHEALTH = 1;
+    private const int MAXHEALTH = 10;
 
     private const int STARTSCORE = 0;
 
@@ -79,6 +79,8 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private bool gameEnd = false;
 
+    [SerializeField] private GameObject wheel;
+
     #endregion
 
     #region Default Functions
@@ -120,7 +122,7 @@ public class NetworkEntityManager : NetworkBehaviour
                 //break;
                 return;
             case 3:
-                readyButtonImageIndex =1;
+                readyButtonImageIndex = 1;
                 break;
         }
 
@@ -184,6 +186,7 @@ public class NetworkEntityManager : NetworkBehaviour
                 foreach (PlayerData playerData in allPlayerData)
                 {
                     UpdateScoreboardClientRpc(playerData);
+                    //DoWheelDamageClientRpc(playerData);
                 }
             }
             else
@@ -205,6 +208,26 @@ public class NetworkEntityManager : NetworkBehaviour
                         readyButton.image.sprite = readyButtonImages[readyButtonImageIndex];
                     }
                 }
+            }
+        }
+    }
+
+    [ClientRpc]
+    private void DoWheelDamageClientRpc(PlayerData playerData)
+    {
+        if (playerData.clientId == NetworkManager.Singleton.LocalClient.ClientId)
+        {
+            switch (playerData.health)
+            {
+                case <= 3:
+                    wheel.GetComponent<WheelSwitcher>().SwitchWheel(2);
+                    break;
+                case <= 6:
+                    wheel.GetComponent<WheelSwitcher>().SwitchWheel(1);
+                    break;
+                case <= 10:
+                    wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
+                    break;
             }
         }
     }

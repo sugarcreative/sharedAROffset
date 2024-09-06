@@ -339,7 +339,6 @@ MonoBehaviour:
   - {fileID: 6365393272111523757}
   scoreboardItems:
   - {fileID: 3470182997801738410}
-  - {fileID: 2819975413006059531}
   playerReadyIcon: {fileID: 6365393272111523757}
 --- !u!1 &4321380168107013875
 GameObject:

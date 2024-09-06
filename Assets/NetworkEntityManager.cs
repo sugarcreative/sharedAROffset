@@ -81,6 +81,12 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private GameObject wheel;
 
+    [SerializeField] private GameObject[] uiPlayStateObjects;
+
+    [SerializeField] private GameObject roomCodeText;
+
+    [SerializeField] private GameObject playerFinder;
+
     #endregion
 
     #region Default Functions
@@ -115,22 +121,31 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             case 0:
                 readyButtonImageIndex = 1;
+                SwapReadyButtonImage();
                 break;
             case 2:
-                ServerStartMatch();
-                //readyButtonImageIndex = 3;
-                //break;
+                if (IsServer)
+                {
+                    //gameStarted = true;
+                    ServerStartMatch();
+                }
                 return;
             case 3:
                 readyButtonImageIndex = 1;
+                SwapReadyButtonImage();
                 break;
         }
 
+        if (!isReadyLocal)
+        {
+            isReadyLocal = true;
+            SendReady(isReadyLocal);
+        }
+    }
+
+    private void SwapReadyButtonImage()
+    {
         readyButton.image.sprite = readyButtonImages[readyButtonImageIndex];
-
-        isReadyLocal = !isReadyLocal;
-        SendReady(isReadyLocal);
-
     }
 
     public void SendReady(bool value)
@@ -186,7 +201,6 @@ public class NetworkEntityManager : NetworkBehaviour
                 foreach (PlayerData playerData in allPlayerData)
                 {
                     UpdateScoreboardClientRpc(playerData);
-                    //DoWheelDamageClientRpc(playerData);
                 }
             }
             else
@@ -200,34 +214,18 @@ public class NetworkEntityManager : NetworkBehaviour
                     }
                 }
 
-                if (count == allPlayerData.Count)
+                if (isReadyLocal)
                 {
-                    if (isReadyLocal)
+                    if (count == allPlayerData.Count)
                     {
-                        readyButtonImageIndex = 2; // show the begin button
-                        readyButton.image.sprite = readyButtonImages[readyButtonImageIndex];
+                        readyButtonImageIndex = 2;
                     }
+                    else
+                    {
+                        readyButtonImageIndex = 1;
+                    }
+                    SwapReadyButtonImage();
                 }
-            }
-        }
-    }
-
-    [ClientRpc]
-    private void DoWheelDamageClientRpc(PlayerData playerData)
-    {
-        if (playerData.clientId == NetworkManager.Singleton.LocalClient.ClientId)
-        {
-            switch (playerData.health)
-            {
-                case <= 3:
-                    wheel.GetComponent<WheelSwitcher>().SwitchWheel(2);
-                    break;
-                case <= 6:
-                    wheel.GetComponent<WheelSwitcher>().SwitchWheel(1);
-                    break;
-                case <= 10:
-                    wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
-                    break;
             }
         }
     }
@@ -242,6 +240,8 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             PositionPlayers();
         }
+
+        gameStarted = true;
 
         for (int i = 0; i < allPlayerData.Count; i++)
         {
@@ -268,18 +268,27 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     private void StartGameClientRpc()
     {
+        //localPlayer.GetComponent<ShipEffectController>().StopAllCoroutines();
+        //foreach (PlayerAvatar avatar in networkedGameObjects)
+        //{
+        //    GetComponent<ShipEffectController>().StopAllCoroutines();
+        //}
         gameStarted = true;
+        wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
+        roomCodeText.GetComponent<ModalFade>().Hide();
         localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = false;
         isReadyLocal = false;
         SetUpScene();
         CanvasDarkBG.GetComponent<ModalFade>().Hide();
         scoreboardPanel.GetComponent<ModalFade>().Hide();
         StartCoroutine(WaitToExecute(0.27f, new Action[] { scoreboardLogic.ModeScoreboard, SetScoreBoardModeScore }));
-        readyButtonImageIndex = 0;
-        readyButton.image.sprite = readyButtonImages[readyButtonImageIndex];
+        playerFinder.GetComponent<ModalFade>().Show();
+        //readyButton.image.sprite = readyButtonImages[readyButtonImageIndex];
         Timer.Instance.StartTimer(15f);
         gameEnd = false;
     }
+
+
 
     [ClientRpc]
     private void SetSailColorClientRpc()
@@ -326,12 +335,18 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void SetUpScene()
     {
+        //roomCodeText.GetComponent<ModalFade>().Hide();
         foreach (GameObject g in playStateObjects)
         {
             g.SetActive(true);
         }
+
+        foreach (GameObject g in uiPlayStateObjects)
+        {
+            g.GetComponent<ModalFade>().Show();
+        }
         localPlayer.GetComponent<LocalPlayer>().ShowCanvas();
-        TopBar.GetComponent<ModalFade>().Show();
+        //TopBar.GetComponent<ModalFade>().Show();
         ToggleNetworkPlayerVisibilty(true);
     }
 
@@ -342,8 +357,12 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             g.SetActive(false);
         }
+        foreach (GameObject g in uiPlayStateObjects)
+        {
+            g.GetComponent<ModalFade>().Hide();
+        }
         localPlayer.GetComponent<LocalPlayer>().HideCanvas();
-        TopBar.GetComponent<ModalFade>().Hide();
+        //TopBar.GetComponent<ModalFade>().Hide();
         ToggleNetworkPlayerVisibilty(false);
     }
 
@@ -389,7 +408,8 @@ public class NetworkEntityManager : NetworkBehaviour
         DestroyScene();
         gameStarted = false;
         readyButtonImageIndex = 3;
-        readyButton.image.sprite = readyButtonImages[readyButtonImageIndex];
+        SwapReadyButtonImage();
+        playerFinder.GetComponent<ModalFade>().Hide();
         scoreboardLogic.ModeGameEnd();
         scoreboardPanel.GetComponent<ModalFade>().Show();
         CanvasDarkBG.GetComponent<ModalFade>().Show();
@@ -442,7 +462,8 @@ public class NetworkEntityManager : NetworkBehaviour
 
         foreach (var playerData in allPlayerData)
         {
-            SetScoreboardClientRpc(playerData.clientId, playerData.name, playerData.score, playerData.deaths, playerData.color);
+            //SetScoreboardClientRpc(playerData.clientId, playerData.name, playerData.score, playerData.deaths, playerData.color);
+            NewSetScoreboardClientRpc(playerData);
         }
 
         SetSailColorClientRpc();
@@ -495,6 +516,8 @@ public class NetworkEntityManager : NetworkBehaviour
 
                 int newHealth = allPlayerData[i].health - DAMAGE;
 
+                WheelDamageClientRpc(target, newHealth);
+
                 if (newHealth <= 0)
                 {
                     int newDeaths = allPlayerData[i].deaths + 1;
@@ -513,6 +536,7 @@ public class NetworkEntityManager : NetworkBehaviour
                     };
 
                     UpdateLocalDeathsClientRpc(target, allPlayerData[i].deaths);
+
                     OnBoatDeathClientRpc(target);
 
                     for (int j = 0; j < allPlayerData.Count; j++)
@@ -557,6 +581,25 @@ public class NetworkEntityManager : NetworkBehaviour
                 }
                 break;
             }
+        }
+    }
+
+    [ClientRpc]
+    private void WheelDamageClientRpc(ulong clientId, int health)
+    {
+        if (clientId != NetworkManager.Singleton.LocalClientId) return;
+
+        if (health > 6)
+        {
+            wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
+        }
+        else if (health > 3)
+        {
+            wheel.GetComponent<WheelSwitcher>().SwitchWheel(1);
+        }
+        else
+        {
+            wheel.GetComponent<WheelSwitcher>().SwitchWheel(2);
         }
     }
 
@@ -697,6 +740,7 @@ public class NetworkEntityManager : NetworkBehaviour
     private IEnumerator SinkIntoRespawn(GameObject player, ulong clientId)
     {
         yield return new WaitForSeconds(6);
+        wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
         player.GetComponentInChildren<ShipEffectController>().IsRespawn();
         player.GetComponent<MovementAndSteering>()._pauseUpdate = false;
         foreach (Button button in shootingButtons)
@@ -763,6 +807,14 @@ public class NetworkEntityManager : NetworkBehaviour
         CreatePlayerCard(clientId, name, score, deaths, colorArg);
     }
 
+    [ClientRpc]
+    private void NewSetScoreboardClientRpc(PlayerData playerData)
+    {
+        if (playerCards.ContainsKey(playerData.clientId)) return;
+
+        NewCreatePlayerCard(playerData);
+    }
+
     private void SetScoreBoardModeScore()
     {
         foreach (KeyValuePair<ulong, PlayerCard> card in playerCards)
@@ -788,6 +840,14 @@ public class NetworkEntityManager : NetworkBehaviour
         playerCards.Add(clientId, newCard);
         newCard.Initialize(name);
     }
+
+    private void NewCreatePlayerCard(PlayerData playerData)
+    {
+        PlayerCard newCard = Instantiate(playerCardPrefab, playerCardParent);
+        playerCards.Add(playerData.clientId, newCard);
+        newCard.SetPlayerData(playerData);
+    }
+
 
     #endregion
 

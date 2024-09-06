@@ -59,6 +59,10 @@ public class ShipEffectController : MonoBehaviour
         allRenderers.AddRange(skinnedMeshRenderers);
     }
 
+    private void OnEnable()
+    {
+        StopAllCoroutines();
+    }
 
     public void CheckFurl(float value)
     {

@@ -9,8 +9,14 @@ public class WheelSwitcher : MonoBehaviour
     {
         for (int i = 0; i < wheels.Length; i++)
         {
-            if (i == index) wheels[index].SetActive(true);
-            else wheels[index].SetActive(false);
+            if (i == index)
+            {
+                wheels[i].SetActive(true);
+            }
+            else
+            {
+                wheels[i].SetActive(false);
+            }
         }
     }
 }

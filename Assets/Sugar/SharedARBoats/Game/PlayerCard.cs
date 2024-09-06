@@ -82,6 +82,7 @@ public class PlayerCard : MonoBehaviour
         nameText.text = data.name.ToString();
         killsText.text = data.score.ToString();
         deathsText.text = data.deaths.ToString();
+        SetColor(data.color);
         playerReadyIcon.GetComponent<Image>().enabled = data.isReady;
     }
 }

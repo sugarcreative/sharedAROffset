@@ -159,7 +159,8 @@ public class NetworkLogic : NetworkBehaviour
     private ISharedSpaceRoomOptions SetUpRoomAndUI(ISharedSpaceTrackingOptions topts)
     {
         _roomNameDisplayText.text = _roomName;
-        _roomNameDisplayText.gameObject.SetActive(true);
+        //_roomNameDisplayText.gameObject.SetActive(true);
+        _roomNameDisplayText.GetComponent<ModalFade>().Show();
 
         return ISharedSpaceRoomOptions.CreateVpsRoomOptions(topts, _roomName, 10, "vps_boats");
     }

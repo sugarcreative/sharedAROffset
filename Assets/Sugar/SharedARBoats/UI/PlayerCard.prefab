@@ -337,8 +337,10 @@ MonoBehaviour:
   lobbyItems:
   - {fileID: 8255541302942992315}
   - {fileID: 6365393272111523757}
+  - {fileID: 6365393272111523757}
   scoreboardItems:
   - {fileID: 3470182997801738410}
+  - {fileID: 6365393272111523757}
   playerReadyIcon: {fileID: 6365393272111523757}
 --- !u!1 &4321380168107013875
 GameObject:
@@ -508,7 +510,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 144, y: 0}
+  m_AnchoredPosition: {x: -57.38, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2428914910349149609

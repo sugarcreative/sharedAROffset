@@ -33,6 +33,7 @@ public class LocalPlayer : MonoBehaviour
         skinnedMeshRenderer = GetComponentsInChildren<SkinnedMeshRenderer>(true);
         meshRenderer = GetComponentsInChildren<MeshRenderer>(true);
         Color newCol;
+        
         if (ColorUtility.TryParseHtmlString(colorArg.ToString(), out newCol))
         {
             foreach (SkinnedMeshRenderer mr in skinnedMeshRenderer)

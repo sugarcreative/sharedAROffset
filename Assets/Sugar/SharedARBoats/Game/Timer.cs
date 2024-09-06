@@ -56,7 +56,10 @@ public class Timer : MonoBehaviour
 
     private void UpdateTimerText()
     {
-        timerText.text = time.ToString("F2");
+        //timerText.text = time.ToString("F2");
+        int minutes = Mathf.FloorToInt(time / 60);
+        int seconds = Mathf.FloorToInt(time % 60);
+        timerText.text = string.Format("{0}:{1:00}", minutes, seconds);
     }
 
     private void EndGame()

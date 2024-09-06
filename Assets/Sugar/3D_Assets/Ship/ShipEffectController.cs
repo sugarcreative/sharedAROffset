@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,8 @@ using UnityEngine.UI;
 public class ShipEffectController : MonoBehaviour
 {
     private Animator anim;
+
+    [SerializeField] private TMP_Text text;
 
     public GameObject shipDeathParticles, waterDeathParticles;
     //public RaycastCannon[] cannonFirePositionsLeft, cannonFirePositionsRight;
@@ -28,9 +31,14 @@ public class ShipEffectController : MonoBehaviour
 
     public Slider slider;
 
+    [SerializeField] private MeshRenderer[] newMeshList;
+
+    [SerializeField] private SkinnedMeshRenderer[] newSkinList;
+
     // Start is called before the first frame update
     void Start()
     {
+        text = FindObjectOfType<StatusText>(true).gameObject.GetComponent<TMP_Text>();
        
         anim = GetComponent<Animator>();
 
@@ -52,6 +60,9 @@ public class ShipEffectController : MonoBehaviour
             }
         }
 
+        newMeshList = GetComponentsInChildren<MeshRenderer>();
+        newSkinList = GetComponentsInChildren<SkinnedMeshRenderer>();
+
         MeshRenderer[] meshRenderers = GetComponentsInChildren<MeshRenderer>();
         allRenderers.AddRange(meshRenderers);
 
@@ -60,6 +71,12 @@ public class ShipEffectController : MonoBehaviour
     }
 
     private void OnEnable()
+    {
+        //IsRespawn();
+        anim.Play("Spawn", 0, 0);
+    }
+
+    private void OnDisable()
     {
         StopAllCoroutines();
     }
@@ -164,9 +181,22 @@ public class ShipEffectController : MonoBehaviour
 
         if (mr != null)
         {
+  
+
             StopAllCoroutines();
 
-            mr.material.SetFloat("_FadeShift", 0);
+            //mr.material.SetFloat("_FadeShift", 0);
+
+            foreach (MeshRenderer mr in newMeshList)
+            {
+                mr.material.SetFloat("_FadeShift", 0);
+                text.text = Random.value.ToString();
+            }
+
+            foreach (SkinnedMeshRenderer mr in newSkinList)
+            {
+                mr.material.SetFloat("_FadeShift", 0);
+            }
 
             StartCoroutine(StartRespawn());
         }
@@ -184,10 +214,21 @@ public class ShipEffectController : MonoBehaviour
 
             while (elapsedTime < respawnDuration)
             {
+                //text.text = Random.value.ToString();
                 lerpValue = Mathf.Lerp(startValue, endValue, elapsedTime / respawnDuration);
-                foreach (Renderer r in allRenderers)
+                //foreach (Renderer r in allRenderers)
+                //{
+                //    r.material.SetFloat("_FadeShift", lerpValue);
+                //}
+
+                foreach (MeshRenderer mr in newMeshList)
                 {
-                    r.material.SetFloat("_FadeShift", lerpValue);
+                    mr.material.SetFloat("_FadeShift", lerpValue);
+                }
+
+                foreach (SkinnedMeshRenderer mr in newSkinList)
+                {
+                    mr.material.SetFloat("_FadeShift", lerpValue);
                 }
 
                 elapsedTime += Time.deltaTime;
@@ -197,9 +238,20 @@ public class ShipEffectController : MonoBehaviour
 
             // Ensure the final value is exactly the end value
             lerpValue = endValue;
-            foreach (Renderer r in allRenderers)
+            //foreach (Renderer r in allRenderers)
+            //{
+            //    r.material.SetFloat("_FadeShift", lerpValue);
+            //}
+            foreach (MeshRenderer mr in newMeshList)
             {
-                r.material.SetFloat("_FadeShift", lerpValue);
+                mr.material.SetFloat("_FadeShift", lerpValue);
+
+            }
+
+            foreach (SkinnedMeshRenderer mr in newSkinList)
+            {
+                mr.material.SetFloat("_FadeShift", lerpValue);
+
             }
         }
     }

@@ -23,7 +23,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private ScoreboardLogic scoreboardLogic;
 
-    private const int MAXHEALTH = 10;
+    private const int MAXHEALTH = 1;
 
     private const int STARTSCORE = 0;
 
@@ -86,6 +86,10 @@ public class NetworkEntityManager : NetworkBehaviour
     [SerializeField] private GameObject roomCodeText;
 
     [SerializeField] private GameObject playerFinder;
+
+    [SerializeField] private GameObject[] ribbons;
+
+    private const float GAMETIME = 30f;
 
     #endregion
 
@@ -268,23 +272,17 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     private void StartGameClientRpc()
     {
-        //localPlayer.GetComponent<ShipEffectController>().StopAllCoroutines();
-        //foreach (PlayerAvatar avatar in networkedGameObjects)
-        //{
-        //    GetComponent<ShipEffectController>().StopAllCoroutines();
-        //}
         gameStarted = true;
         wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
         roomCodeText.GetComponent<ModalFade>().Hide();
-        localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = false;
         isReadyLocal = false;
         SetUpScene();
         CanvasDarkBG.GetComponent<ModalFade>().Hide();
         scoreboardPanel.GetComponent<ModalFade>().Hide();
         StartCoroutine(WaitToExecute(0.27f, new Action[] { scoreboardLogic.ModeScoreboard, SetScoreBoardModeScore }));
         playerFinder.GetComponent<ModalFade>().Show();
-        //readyButton.image.sprite = readyButtonImages[readyButtonImageIndex];
-        Timer.Instance.StartTimer(15f);
+        Timer.Instance.StartTimer(GAMETIME);
+        localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = false;
         gameEnd = false;
     }
 
@@ -307,6 +305,7 @@ public class NetworkEntityManager : NetworkBehaviour
     public void SetLocalColor()
     {
         localPlayer.GetComponent<LocalPlayer>().SetColor(colorList[NetworkManager.Singleton.LocalClientId]);
+        RibbonColorSet(colorList[NetworkManager.Singleton.LocalClientId]);
     }
 
     [ClientRpc]
@@ -906,4 +905,17 @@ public class NetworkEntityManager : NetworkBehaviour
     }
 
     #endregion
+
+
+    private void RibbonColorSet(FixedString64Bytes colorArg)
+    {
+        foreach(GameObject ribbon in ribbons)
+        {
+            Color newCol;
+            if (UnityEngine.ColorUtility.TryParseHtmlString(colorArg.ToString(), out newCol))
+            {
+                ribbon.GetComponent<SkinnedMeshRenderer>().material.SetColor("_Tint", newCol);
+            }
+        }
+    }
 }

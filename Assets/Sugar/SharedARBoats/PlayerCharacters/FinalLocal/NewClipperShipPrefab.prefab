@@ -286,6 +286,7 @@ Transform:
   - {fileID: 4126724316941057145}
   - {fileID: 3633055357430728840}
   - {fileID: 3272796179089425785}
+  - {fileID: 6744785609586017678}
   m_Father: {fileID: 123483699711559858}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &377912525069982390
@@ -380,7 +381,10 @@ MonoBehaviour:
   waterHeight: 0
   respawnDuration: 2
   allRenderers: []
-  slider: {fileID: 5193283979662171901}
+  newMeshList: []
+  newSkinList: []
+  worldPosRef: {fileID: 6744785609586017678}
+  ajustedYCoord: 0
 --- !u!1 &486104612359524172
 GameObject:
   m_ObjectHideFlags: 0
@@ -3013,6 +3017,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skinnedMeshRenderer: []
   meshRenderer: []
+  canvas: {fileID: 521408372692585386}
 --- !u!54 &60517214194854825
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3066,3 +3071,34 @@ MonoBehaviour:
   _pauseUpdate: 0
   _pauseDebug: 0
   _wheelAsset: {fileID: 0}
+--- !u!1 &9130831913458863955
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6744785609586017678}
+  m_Layer: 0
+  m_Name: WorldPosRef
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6744785609586017678
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9130831913458863955}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0412}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5066904200630072752}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

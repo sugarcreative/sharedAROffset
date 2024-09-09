@@ -569,6 +569,37 @@ Transform:
   - {fileID: 4102657994804662428}
   m_Father: {fileID: 1217635619369341710}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2761734252208764527
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 349948381137847274}
+  m_Layer: 0
+  m_Name: WorldPosRef
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &349948381137847274
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2761734252208764527}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.042}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6264408812831954738}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2782229681042566039
 GameObject:
   m_ObjectHideFlags: 0
@@ -1731,6 +1762,7 @@ Transform:
   - {fileID: 4184097002002457214}
   - {fileID: 6732905729573071829}
   - {fileID: 4307728786837021351}
+  - {fileID: 349948381137847274}
   m_Father: {fileID: 3038047883073969844}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!33 &4537802769426247831
@@ -1816,7 +1848,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ba087b999580254ea3e52c758057117, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: {fileID: 0}
   shipDeathParticles: {fileID: 1126799166507225401, guid: e15263fc9250afd45897abf384499cd8, type: 3}
   waterDeathParticles: {fileID: 7055872451937364414, guid: 1f4258ba47ee1e2429fd20a793f93d57, type: 3}
   deathExplosionPosition: {fileID: 0}
@@ -1826,9 +1857,10 @@ MonoBehaviour:
   waterHeight: 0
   respawnDuration: 2
   allRenderers: []
-  slider: {fileID: 0}
   newMeshList: []
   newSkinList: []
+  worldPosRef: {fileID: 349948381137847274}
+  ajustedYCoord: 0
 --- !u!1 &8089205294838729711
 GameObject:
   m_ObjectHideFlags: 0

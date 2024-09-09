@@ -16,6 +16,9 @@ public class NONARNETWORK : NetworkBehaviour
     [SerializeField]
     private Button _joinAsClientButton;
 
+    [SerializeField]
+    private Button _roomCodeEnterButton;
+
     [SerializeField] private GameObject hostJoinPanel, enterRoomCodePanel;
 
     [SerializeField] private Button beginButton;

@@ -6834,6 +6834,7 @@ MonoBehaviour:
       byte0061: 0
   _joinAsHostButton: {fileID: 666934407}
   _joinAsClientButton: {fileID: 766680196}
+  _roomCodeEnterButton: {fileID: 1248466132}
   hostJoinPanel: {fileID: 547806676}
   enterRoomCodePanel: {fileID: 829491743}
   beginButton: {fileID: 935534759}
@@ -9073,8 +9074,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: NetworkLogic, Assembly-CSharp
+      - m_Target: {fileID: 915224707}
+        m_TargetAssemblyTypeName: NONARNETWORK, Assembly-CSharp
         m_MethodName: OnConfirmButtonClicked
         m_Mode: 1
         m_Arguments:
@@ -11643,7 +11644,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1672803265
 RectTransform:
   m_ObjectHideFlags: 0

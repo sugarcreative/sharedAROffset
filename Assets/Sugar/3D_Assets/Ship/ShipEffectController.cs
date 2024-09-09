@@ -39,15 +39,16 @@ public class ShipEffectController : MonoBehaviour
 
     void Awake()
     {
-        boatHeight = worldPosRef.position.y;
 
+        boatHeight = worldPosRef.position.y;
+        anim = GetComponent<Animator>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
 
-        anim = GetComponent<Animator>();
+        //anim = GetComponent<Animator>();
 
         if (sailsFurled != null && sailsUnfurled != null)
         {
@@ -87,7 +88,7 @@ public class ShipEffectController : MonoBehaviour
 
     private void OnEnable()
     {
-        anim.Play("Spawn", 0, 0);
+        anim.Play("Spawn", 0, 0); //null reference error here
     }
 
     private void OnDisable()
@@ -194,7 +195,7 @@ public class ShipEffectController : MonoBehaviour
         StartCoroutine(StartRespawn());
 
 
-        anim.Play("Spawn", 0, 0); //this works
+        anim.Play("Spawn", 0, 0); // null reference error here
     }
 
 

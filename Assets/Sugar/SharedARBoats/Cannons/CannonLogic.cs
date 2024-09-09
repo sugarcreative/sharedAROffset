@@ -42,13 +42,13 @@ public class CannonLogic : MonoBehaviour
 
     IEnumerator FireCannons()
     {
-        Button.enabled = false;
+        Button.interactable = false;
         foreach (RaycastCannon cannon in newCannons)
         {
             cannon.FireCannon();
             yield return new WaitForSeconds(0.3f);
         }
         yield return new WaitForSeconds(1f);
-        Button.enabled = true;
+        Button.interactable = true;
     }
 }

@@ -69,12 +69,6 @@ public class ShipEffectController : MonoBehaviour
         newMeshList = GetComponentsInChildren<MeshRenderer>(true);
         newSkinList = GetComponentsInChildren<SkinnedMeshRenderer>(true);
 
-        //MeshRenderer[] meshRenderers = GetComponentsInChildren<MeshRenderer>();
-        //allRenderers.AddRange(meshRenderers);
-
-        //SkinnedMeshRenderer[] skinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
-        //allRenderers.AddRange(skinnedMeshRenderers);
-
         foreach (MeshRenderer mr in newMeshList)
         {
             mr.material.SetFloat("_YOffset", boatHeight);
@@ -84,11 +78,13 @@ public class ShipEffectController : MonoBehaviour
         {
             mr.material.SetFloat("_YOffset", boatHeight);
         }
+
+        SetInvis();
     }
 
     private void OnEnable()
     {
-        anim.Play("Spawn", 0, 0); //null reference error here
+        //anim.Play("Spawn", 0, 0);
     }
 
     private void OnDisable()
@@ -198,7 +194,26 @@ public class ShipEffectController : MonoBehaviour
         anim.Play("Spawn", 0, 0); // null reference error here
     }
 
+    public void SetInvis()
+    {
+        StopAllCoroutines();
 
+        foreach (MeshRenderer mr in newMeshList)
+        {
+            mr.material.SetFloat("_FadeShift", 0);
+
+        }
+
+        foreach (SkinnedMeshRenderer mr in newSkinList)
+        {
+            mr.material.SetFloat("_FadeShift", 0);
+        }
+    }
+    
+    public void ShowBoat()
+    {
+        StartCoroutine(StartRespawn());
+    }
 
     IEnumerator StartRespawn()
     {

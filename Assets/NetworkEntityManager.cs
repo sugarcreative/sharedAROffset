@@ -239,6 +239,7 @@ public class NetworkEntityManager : NetworkBehaviour
         if (isFirstGo)
         {
             isFirstGo = false;
+            //SetIsFirstGoFalseClientRpc();
         }
         else
         {
@@ -270,13 +271,23 @@ public class NetworkEntityManager : NetworkBehaviour
     }
 
     [ClientRpc]
+    private void SetIsFirstGoFalseClientRpc()
+    {
+        isFirstGo = false;
+    }
+
+    [ClientRpc]
     private void StartGameClientRpc()
     {
         gameStarted = true;
+        
         wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
         roomCodeText.GetComponent<ModalFade>().Hide();
         isReadyLocal = false;
         SetUpScene();
+        localPlayer.GetComponent<LocalPlayer>().ShowCanvas();
+        localPlayer.GetComponentInChildren<ShipEffectController>().ShowBoat();
+        ToggleNetworkPlayerVisibilty(true);
         CanvasDarkBG.GetComponent<ModalFade>().Hide();
         scoreboardPanel.GetComponent<ModalFade>().Hide();
         StartCoroutine(WaitToExecute(0.27f, new Action[] { scoreboardLogic.ModeScoreboard, SetScoreBoardModeScore }));
@@ -344,14 +355,18 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             g.GetComponent<ModalFade>().Show();
         }
-        localPlayer.GetComponent<LocalPlayer>().ShowCanvas();
-        //TopBar.GetComponent<ModalFade>().Show();
-        ToggleNetworkPlayerVisibilty(true);
+
+        //if (!isFirstGo)
+        //{
+        //    localPlayer.GetComponent<LocalPlayer>().ShowCanvas();
+        //    localPlayer.GetComponentInChildren<ShipEffectController>().ShowBoat();
+        //} 
+
+        //ToggleNetworkPlayerVisibilty(true);
     }
 
     private void DestroyScene()
     {
-        localPlayer.SetActive(false);
         foreach (GameObject g in playStateObjects)
         {
             g.SetActive(false);
@@ -360,6 +375,7 @@ public class NetworkEntityManager : NetworkBehaviour
         {
             g.GetComponent<ModalFade>().Hide();
         }
+        localPlayer.GetComponentInChildren<ShipEffectController>().SetInvis();
         localPlayer.GetComponent<LocalPlayer>().HideCanvas();
         //TopBar.GetComponent<ModalFade>().Hide();
         ToggleNetworkPlayerVisibilty(false);
@@ -376,7 +392,7 @@ public class NetworkEntityManager : NetworkBehaviour
                 {
                     if (playerAvatar.gameObject.GetComponent<NetworkObject>().OwnerClientId != NetworkManager.Singleton.LocalClientId)
                     {
-                        playerAvatar.gameObject.SetActive(true);
+                        //playerAvatar.gameObject.SetActive(true);
                         playerAvatar.gameObject.GetComponentInChildren<ShipEffectController>(true).IsRespawn();
                     }
                 }
@@ -386,7 +402,8 @@ public class NetworkEntityManager : NetworkBehaviour
                 {
                     if (player.gameObject.GetComponent<NetworkObject>().OwnerClientId != NetworkManager.Singleton.LocalClientId)
                     {
-                        player.gameObject.SetActive(false);
+                        //player.gameObject.SetActive(false);
+                        player.gameObject.GetComponentInChildren<ShipEffectController>(true).SetInvis();
                     }
                 }
                 break;
@@ -494,7 +511,7 @@ public class NetworkEntityManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void ReduceHealthServerRpc(ulong shooterId, ulong target)
     {
-        if (!IsServer) return;
+        if (!IsServer || gameEnd) return;
 
         //Reduce the health of target
         if (shootingDebug)

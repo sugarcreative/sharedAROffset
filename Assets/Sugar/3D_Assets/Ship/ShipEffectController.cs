@@ -68,11 +68,11 @@ public class ShipEffectController : MonoBehaviour
         newMeshList = GetComponentsInChildren<MeshRenderer>(true);
         newSkinList = GetComponentsInChildren<SkinnedMeshRenderer>(true);
 
-        MeshRenderer[] meshRenderers = GetComponentsInChildren<MeshRenderer>();
-        allRenderers.AddRange(meshRenderers);
+        //MeshRenderer[] meshRenderers = GetComponentsInChildren<MeshRenderer>();
+        //allRenderers.AddRange(meshRenderers);
 
-        SkinnedMeshRenderer[] skinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
-        allRenderers.AddRange(skinnedMeshRenderers);
+        //SkinnedMeshRenderer[] skinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
+        //allRenderers.AddRange(skinnedMeshRenderers);
 
         foreach (MeshRenderer mr in newMeshList)
         {
@@ -81,7 +81,7 @@ public class ShipEffectController : MonoBehaviour
 
         foreach (SkinnedMeshRenderer mr in newSkinList)
         {
-            mr.material.SetFloat("_Yoffset", boatHeight);
+            mr.material.SetFloat("_YOffset", boatHeight);
         }
     }
 

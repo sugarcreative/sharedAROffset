@@ -10,7 +10,7 @@ public class ShipEffectController : MonoBehaviour
 {
     private Animator anim;
 
-    [SerializeField] private TMP_Text text;
+    //[SerializeField] private TMP_Text text;
 
     public GameObject shipDeathParticles, waterDeathParticles;
     //public RaycastCannon[] cannonFirePositionsLeft, cannonFirePositionsRight;
@@ -29,8 +29,6 @@ public class ShipEffectController : MonoBehaviour
 
     public List<Renderer> allRenderers = new List<Renderer>();
 
-    public Slider slider;
-
     [SerializeField] private MeshRenderer[] newMeshList;
 
     [SerializeField] private SkinnedMeshRenderer[] newSkinList;
@@ -38,7 +36,7 @@ public class ShipEffectController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        text = FindObjectOfType<StatusText>(true).gameObject.GetComponent<TMP_Text>();
+        //text = FindObjectOfType<StatusText>(true).gameObject.GetComponent<TMP_Text>();
        
         anim = GetComponent<Animator>();
 
@@ -60,14 +58,27 @@ public class ShipEffectController : MonoBehaviour
             }
         }
 
-        newMeshList = GetComponentsInChildren<MeshRenderer>();
-        newSkinList = GetComponentsInChildren<SkinnedMeshRenderer>();
+        newMeshList = GetComponentsInChildren<MeshRenderer>(true);
+        newSkinList = GetComponentsInChildren<SkinnedMeshRenderer>(true);
 
         MeshRenderer[] meshRenderers = GetComponentsInChildren<MeshRenderer>();
         allRenderers.AddRange(meshRenderers);
 
         SkinnedMeshRenderer[] skinnedMeshRenderers = GetComponentsInChildren<SkinnedMeshRenderer>();
         allRenderers.AddRange(skinnedMeshRenderers);
+
+        foreach (MeshRenderer mr in newMeshList)
+        {
+            mr.material.SetFloat("_FadeShift", 0.3f);
+            Debug.Log("Mesh");
+            //text.text = Random.value.ToString();
+        }
+
+        foreach (SkinnedMeshRenderer mr in newSkinList)
+        {
+            mr.material.SetFloat("_FadeShift", 0.3f);
+            Debug.Log("skin");
+        }
     }
 
     private void OnEnable()
@@ -183,14 +194,14 @@ public class ShipEffectController : MonoBehaviour
         {
   
 
-            StopAllCoroutines();
+            StopAllCoroutines(); //this works
 
             //mr.material.SetFloat("_FadeShift", 0);
 
             foreach (MeshRenderer mr in newMeshList)
             {
                 mr.material.SetFloat("_FadeShift", 0);
-                text.text = Random.value.ToString();
+                //text.text = Random.value.ToString();
             }
 
             foreach (SkinnedMeshRenderer mr in newSkinList)
@@ -201,13 +212,13 @@ public class ShipEffectController : MonoBehaviour
             StartCoroutine(StartRespawn());
         }
 
-        anim.Play("Spawn", 0, 0);
+        anim.Play("Spawn", 0, 0); //this works
     }
 
     IEnumerator StartRespawn()
     {
-        if (mr != null)
-        {
+        //if (mr != null)
+        //{
             float startValue = 0f;
             float endValue = 1f;
             float elapsedTime = 0f;
@@ -253,6 +264,6 @@ public class ShipEffectController : MonoBehaviour
                 mr.material.SetFloat("_FadeShift", lerpValue);
 
             }
-        }
+        //}
     }
 }

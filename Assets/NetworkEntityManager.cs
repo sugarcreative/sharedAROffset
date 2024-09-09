@@ -736,9 +736,14 @@ public class NetworkEntityManager : NetworkBehaviour
         }
     }
 
+    public void RespawnTest()
+    {
+        localPlayer.GetComponentInChildren<ShipEffectController>().IsRespawn();
+    }
+
     private IEnumerator SinkIntoRespawn(GameObject player, ulong clientId)
     {
-        yield return new WaitForSeconds(6);
+        yield return new WaitForSeconds(6f);
         wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
         player.GetComponentInChildren<ShipEffectController>().IsRespawn();
         player.GetComponent<MovementAndSteering>()._pauseUpdate = false;

@@ -46,6 +46,7 @@ public class CannonLogic : MonoBehaviour
         foreach (RaycastCannon cannon in newCannons)
         {
             cannon.FireCannon();
+            AudioManager.Instance.PlaySound("localCannonFire1");
             yield return new WaitForSeconds(0.3f);
         }
         yield return new WaitForSeconds(1f);

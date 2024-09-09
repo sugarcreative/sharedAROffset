@@ -23,6 +23,7 @@ public class NetworkCannonsStarboard : MonoBehaviour
         {
             //Instantiate(shootingParticles, cannon.gameObject.transform.position, cannon.gameObject.transform.rotation);
             cannon.FireCannon();
+            AudioManager.Instance.PlaySound("networkCannonFire");
             yield return new WaitForSeconds(0.3f);
         }
     }

@@ -113,6 +113,7 @@ Material:
     - _ClearCoatSmoothness: 0
     - _Cull: 2
     - _Cutoff: 0.5
+    - _DEBUG_FLAGOFFSET: -1
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _Dissolve: 0
@@ -159,7 +160,7 @@ Material:
     - _FadeEmission: {r: 4.2870946, g: 0.43008, b: 0, a: 0}
     - _ImmortalTint: {r: 0, g: 0, b: 0, a: 0}
     - _NoiseScales: {r: 40, g: 5, b: 0, a: 0}
-    - _ObjectMinMaxAdjust: {r: 1, g: -1, b: 0, a: 0}
+    - _ObjectMinMaxAdjust: {r: 0.9, g: -1, b: 0, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _Tint: {r: 0.078431375, g: 0.5268339, b: 0.64705884, a: 0}
   m_BuildTextureStacks: []

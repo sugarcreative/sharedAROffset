@@ -702,6 +702,8 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     public void OnBoatDeathClientRpc(ulong clientId)
     {
+
+        AudioManager.Instance.PlaySound("woodenShipBreak");
         if (NetworkManager.Singleton.LocalClientId == clientId)
         {
             localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = true;

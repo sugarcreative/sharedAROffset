@@ -115,6 +115,14 @@ public class NetworkEntityManager : NetworkBehaviour
         localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = true;
     }
 
+    private void Update()
+    {
+        if (gameEnd)
+        {
+            StopAllCoroutines();
+        }
+    }
+
     #endregion
 
     #region Ready
@@ -279,6 +287,7 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     private void StartGameClientRpc()
     {
+        
         gameStarted = true;
         localPlayer.GetComponent<MovementAndSteering>().ResetWheel();
         wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
@@ -286,7 +295,7 @@ public class NetworkEntityManager : NetworkBehaviour
         isReadyLocal = false;
         SetUpScene();
         localPlayer.GetComponent<LocalPlayer>().ShowCanvas();
-        localPlayer.GetComponentInChildren<ShipEffectController>().ShowBoat();
+        localPlayer.GetComponentInChildren<ShipEffectController>().IsRespawn();
         ToggleNetworkPlayerVisibilty(true);
         CanvasDarkBG.GetComponent<ModalFade>().Hide();
         scoreboardPanel.GetComponent<ModalFade>().Hide();
@@ -295,6 +304,10 @@ public class NetworkEntityManager : NetworkBehaviour
         Timer.Instance.StartTimer(GAMETIME);
         localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = false;
         gameEnd = false;
+        if (isFirstGo) isFirstGo = false;
+        EnablePlayerControls(localPlayer);
+        localPlayer.GetComponent<MovementAndSteering>().IgnoreWheelLock();
+
     }
 
 
@@ -356,6 +369,11 @@ public class NetworkEntityManager : NetworkBehaviour
             g.GetComponent<ModalFade>().Show();
         }
 
+        if (!isFirstGo)
+        {
+            localPlayer.GetComponentInChildren<ShipEffectController>().IsRespawn();
+        }
+        
         wheel.GetComponent<WheelSwitcher>().NewWheel();
 
         //if (!isFirstGo)
@@ -364,7 +382,7 @@ public class NetworkEntityManager : NetworkBehaviour
         //    localPlayer.GetComponentInChildren<ShipEffectController>().ShowBoat();
         //} 
 
-        //ToggleNetworkPlayerVisibilty(true);
+        ToggleNetworkPlayerVisibilty(true);
     }
 
     private void DestroyScene()
@@ -398,6 +416,7 @@ public class NetworkEntityManager : NetworkBehaviour
                     {
                         //playerAvatar.gameObject.SetActive(true);
                         playerAvatar.gameObject.GetComponentInChildren<ShipEffectController>(true).IsRespawn();
+                        playerAvatar.gameObject.GetComponent<Collider>().enabled = true;
                     }
                 }
                 break;
@@ -408,6 +427,7 @@ public class NetworkEntityManager : NetworkBehaviour
                     {
                         //player.gameObject.SetActive(false);
                         player.gameObject.GetComponentInChildren<ShipEffectController>(true).SetInvis();
+                        player.gameObject.GetComponent<Collider>().enabled = false;
                     }
                 }
                 break;
@@ -760,6 +780,25 @@ public class NetworkEntityManager : NetworkBehaviour
         }
     }
 
+    private void RespawnPlayerAvatars()
+    {
+        foreach(PlayerAvatar player in networkedGameObjects)
+        {
+            player.gameObject.GetComponent<Collider>().enabled = true;
+            player.gameObject.GetComponentInChildren<ShipEffectController>().SpawnAnim();
+        }
+    }
+
+    private void EnablePlayerControls(GameObject player)
+    {
+        player.GetComponent<MovementAndSteering>()._pauseUpdate = false;
+        player.GetComponent<MovementAndSteering>()._wheelLock = true;
+        foreach (Button button in shootingButtons)
+        {
+            button.interactable = true;
+        }
+    }
+
     public void RespawnTest()
     {
         localPlayer.GetComponentInChildren<ShipEffectController>().IsRespawn();
@@ -767,8 +806,19 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private IEnumerator SinkIntoRespawn(GameObject player, ulong clientId)
     {
+        //while (!gameEnd)
+        //{
+        //    yield return new WaitForSeconds(6f);
+        //    //wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
+        //    wheel.GetComponent<WheelSwitcher>().NewWheel();
+        //    player.GetComponentInChildren<ShipEffectController>().IsRespawn();
+        //    SetNotDeadServerRpc(clientId);
+
+        //}
+        //EnablePlayerControls(player);
+
         yield return new WaitForSeconds(6f);
-        wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
+        wheel.GetComponent<WheelSwitcher>().NewWheel();
         player.GetComponentInChildren<ShipEffectController>().IsRespawn();
         player.GetComponent<MovementAndSteering>()._pauseUpdate = false;
         foreach (Button button in shootingButtons)

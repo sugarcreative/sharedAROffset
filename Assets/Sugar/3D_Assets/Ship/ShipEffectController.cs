@@ -92,6 +92,11 @@ public class ShipEffectController : MonoBehaviour
         StopAllCoroutines();
     }
 
+    public void SpawnAnim()
+    {
+        anim.Play("Spawn", 0, 0);
+    }
+
     public void CheckFurl(float value)
     {
         if (sailsFurled != null && sailsUnfurled != null)
@@ -210,10 +215,10 @@ public class ShipEffectController : MonoBehaviour
         }
     }
     
-    public void ShowBoat()
-    {
-        StartCoroutine(StartRespawn());
-    }
+    //public void ShowBoat()
+    //{
+    //    StartCoroutine(StartRespawn());
+    //}
 
     IEnumerator StartRespawn()
     {

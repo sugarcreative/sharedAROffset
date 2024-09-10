@@ -25,7 +25,7 @@ public class AudioManager : MonoBehaviour
         }
 
         Instance = this;
-        
+        InitializeAudioSourcePool(initialPoolSize);
     }
 
     private void InitializeAudioSourcePool(int poolSize)

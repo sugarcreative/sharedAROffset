@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -44,6 +46,8 @@ public class MovementAndSteering : MonoBehaviour
     public bool _pauseUpdate = false;
     [SerializeField] private bool _pauseDebug = true;
     #endregion
+
+    public bool ignoreWheelLock = false;
 
     //public Image _theWheel;
 
@@ -95,28 +99,47 @@ public class MovementAndSteering : MonoBehaviour
             //Debug.Log(_currentSliderValue);
         }
 
-        if (Input.touchCount == 0)
+        if (!ignoreWheelLock)
         {
-            _wheelLock = false;
+
+            if (Input.touchCount == 0) // maybe change this to Input.GetMouseButton(0)?
+            {
+                Debug.Log("Setting wheel lock false");
+                _wheelLock = false;
+            }
+
+            if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
+            {
+                if ((_hoveredGameObjectName == _sliderName) || (_hoveredGameObjectName == _readyButtonName) || _isSliderInteracted)
+                {
+                    Debug.Log("randomSpace");
+                }
+                else
+                {
+                    Debug.Log("Setting wheel lock true");
+                    _wheelLock = true;
+                }
+                //Debug.Log(_hoveredGameObjectName + " - hovered Object. " + _isSliderInteracted + " - sliderInteracted");
+            }
         }
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            if ((_hoveredGameObjectName == _sliderName) || (_hoveredGameObjectName == _readyButtonName) || _isSliderInteracted)
-            {
-
-            }
-            else
-            {
-                _wheelLock = true;
-            }
-            //Debug.Log(_hoveredGameObjectName + " - hovered Object. " + _isSliderInteracted + " - sliderInteracted");
-        }
         _timeSinceLastSliderChange += Time.deltaTime;
 
         Steering();
     }
     #endregion
+
+    public void IgnoreWheelLock()
+    {
+        StartCoroutine(IgnoreWheelLockCoroutine());
+    }
+
+    IEnumerator IgnoreWheelLockCoroutine()
+    {
+        ignoreWheelLock = true;
+        yield return new WaitForSeconds(0.2f);
+        ignoreWheelLock = false;
+    }
 
     public void SliderChanged(float value)
     {
@@ -162,7 +185,7 @@ public class MovementAndSteering : MonoBehaviour
         {
             if (_isGestureDetected)
             {
-                Debug.Log("We are getting the gesture but wheel is locked");
+                //Debug.Log("We are getting the gesture but wheel is locked");
                 if (_hoveredGameObjectName == _sliderName || _isSliderInteracted || _timeSinceLastSliderChange <= 0.2f) return;
 
                 _wheelRotation += _isClockwise ? -_rotationSpeed * Time.deltaTime : +_rotationSpeed * Time.deltaTime;
@@ -170,7 +193,7 @@ public class MovementAndSteering : MonoBehaviour
         }
         else
         {
-            Debug.Log("We are getting the gesture and the wheel is NOT locked");
+            //Debug.Log("We are getting the gesture and the wheel is NOT locked");
             _wheelRotation = Mathf.MoveTowards(_wheelRotation, 0f, _counterRotationSpeed * Time.deltaTime);
         }
 
@@ -212,7 +235,7 @@ public class MovementAndSteering : MonoBehaviour
     private void GestureDetected(bool isGestureDetected)
     {
         _isGestureDetected = isGestureDetected;
-        Debug.Log("Gesture is detected in bool" + isGestureDetected);
+        //Debug.Log("Gesture is detected in bool" + isGestureDetected);
     }
     #endregion
 

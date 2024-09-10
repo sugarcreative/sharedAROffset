@@ -821,6 +821,7 @@ public class NetworkEntityManager : NetworkBehaviour
         wheel.GetComponent<WheelSwitcher>().NewWheel();
         player.GetComponentInChildren<ShipEffectController>().IsRespawn();
         player.GetComponent<MovementAndSteering>()._pauseUpdate = false;
+        player.GetComponent<MovementAndSteering>().ResetWheel();
         foreach (Button button in shootingButtons)
         {
             button.interactable = true;

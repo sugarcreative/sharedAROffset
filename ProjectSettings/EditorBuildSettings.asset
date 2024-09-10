@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Scenes/NonARScene.unity
     guid: fac41ac4d4e201443bf1b8228d6f3c7e
   - enabled: 0
-    path: Assets/Scenes/InEditor.unity
+    path: Assets/Scenes/ChrisTestScenes/ChrisWheelTest.unity
     guid: 06f1ff9fe27f99a44b1dad9b5c93898b
   m_configObjects:
     Niantic.Lightship.AR.LightshipSettings: {fileID: 11400000, guid: 79218a9c125ecfe4984bce6f73c30829, type: 2}

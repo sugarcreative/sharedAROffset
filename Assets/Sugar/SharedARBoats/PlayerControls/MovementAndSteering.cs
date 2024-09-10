@@ -14,6 +14,7 @@ public class MovementAndSteering : MonoBehaviour
     public bool _wheelLock;
     private string _hoveredGameObjectName;
     private string _sliderName = "handle";
+    private string _readyButtonName = "ReadyButton";
     //private string _shootButtonName = "button";
     //private string _wheelName = "wheel";
     #endregion
@@ -64,11 +65,16 @@ public class MovementAndSteering : MonoBehaviour
 
     private void OnEnable()
     {
+        ResetWheel();
+    }
+
+    public void ResetWheel()
+    {
         _rb.velocity = Vector3.zero;
         _rb.angularVelocity = Vector3.zero;
         _wheelRotation = 0f;
         _wheelAsset.transform.rotation = Quaternion.Euler(_wheelAsset.transform.rotation.eulerAngles.x, _wheelAsset.transform.rotation.eulerAngles.y, -_wheelRotation);
-        _wheelRotation = 
+        _wheelRotation = 0;
         _slider.value = 0;
     }
 
@@ -96,7 +102,7 @@ public class MovementAndSteering : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (_hoveredGameObjectName == _sliderName || _isSliderInteracted)
+            if ((_hoveredGameObjectName == _sliderName) || (_hoveredGameObjectName == _readyButtonName) || _isSliderInteracted)
             {
 
             }
@@ -156,7 +162,7 @@ public class MovementAndSteering : MonoBehaviour
         {
             if (_isGestureDetected)
             {
-                //Debug.Log("We are getting the gesture but wheel is locked");
+                Debug.Log("We are getting the gesture but wheel is locked");
                 if (_hoveredGameObjectName == _sliderName || _isSliderInteracted || _timeSinceLastSliderChange <= 0.2f) return;
 
                 _wheelRotation += _isClockwise ? -_rotationSpeed * Time.deltaTime : +_rotationSpeed * Time.deltaTime;
@@ -164,7 +170,7 @@ public class MovementAndSteering : MonoBehaviour
         }
         else
         {
-            //Debug.Log("We are gettin getting the gesture and the wheel is NOT locked");
+            Debug.Log("We are getting the gesture and the wheel is NOT locked");
             _wheelRotation = Mathf.MoveTowards(_wheelRotation, 0f, _counterRotationSpeed * Time.deltaTime);
         }
 
@@ -206,7 +212,7 @@ public class MovementAndSteering : MonoBehaviour
     private void GestureDetected(bool isGestureDetected)
     {
         _isGestureDetected = isGestureDetected;
-        //Debug.Log("Gesture is detected in bool" + isGestureDetected);
+        Debug.Log("Gesture is detected in bool" + isGestureDetected);
     }
     #endregion
 

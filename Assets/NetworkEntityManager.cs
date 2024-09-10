@@ -87,7 +87,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private GameObject playerFinder;
 
-    [SerializeField] private GameObject[] ribbons;
+    [SerializeField] private GameObject ribbon;
 
     private const float GAMETIME = 30f;
 
@@ -280,7 +280,7 @@ public class NetworkEntityManager : NetworkBehaviour
     private void StartGameClientRpc()
     {
         gameStarted = true;
-        
+        localPlayer.GetComponent<MovementAndSteering>().ResetWheel();
         wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
         roomCodeText.GetComponent<ModalFade>().Hide();
         isReadyLocal = false;
@@ -346,15 +346,17 @@ public class NetworkEntityManager : NetworkBehaviour
     private void SetUpScene()
     {
         //roomCodeText.GetComponent<ModalFade>().Hide();
-        foreach (GameObject g in playStateObjects)
-        {
-            g.SetActive(true);
-        }
+        //foreach (GameObject g in playStateObjects)
+        //{
+        //    g.SetActive(true);
+        //}
 
         foreach (GameObject g in uiPlayStateObjects)
         {
             g.GetComponent<ModalFade>().Show();
         }
+
+        wheel.GetComponent<WheelSwitcher>().NewWheel();
 
         //if (!isFirstGo)
         //{
@@ -367,10 +369,12 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void DestroyScene()
     {
-        foreach (GameObject g in playStateObjects)
-        {
-            g.SetActive(false);
-        }
+        //foreach (GameObject g in playStateObjects)
+        //{
+        //    g.SetActive(false);
+        //}
+
+        wheel.GetComponent<WheelSwitcher>().WheelDeath();
         foreach (GameObject g in uiPlayStateObjects)
         {
             g.GetComponent<ModalFade>().Hide();
@@ -425,6 +429,7 @@ public class NetworkEntityManager : NetworkBehaviour
         gameStarted = false;
         readyButtonImageIndex = 3;
         SwapReadyButtonImage();
+        //WaitToExecute(2f, new Action[] {localPlayer.GetComponent<MovementAndSteering>().ResetWheel});
         playerFinder.GetComponent<ModalFade>().Hide();
         scoreboardLogic.ModeGameEnd();
         scoreboardPanel.GetComponent<ModalFade>().Show();
@@ -485,7 +490,7 @@ public class NetworkEntityManager : NetworkBehaviour
         SetSailColorClientRpc();
         PositionPlayerStartClientRpc(clientId);
         ShowLobbyClientRpc(clientId);
-        SetUpSceneClientRpc(clientId);
+        //SetUpSceneClientRpc(clientId);
 
     }
 
@@ -933,13 +938,10 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void RibbonColorSet(FixedString64Bytes colorArg)
     {
-        foreach(GameObject ribbon in ribbons)
+        Color newCol;
+        if (UnityEngine.ColorUtility.TryParseHtmlString(colorArg.ToString(), out newCol))
         {
-            Color newCol;
-            if (UnityEngine.ColorUtility.TryParseHtmlString(colorArg.ToString(), out newCol))
-            {
-                ribbon.GetComponent<SkinnedMeshRenderer>().material.SetColor("_Tint", newCol);
-            }
+            ribbon.GetComponent<SkinnedMeshRenderer>().material.SetColor("_Tint", newCol);
         }
     }
 }

@@ -56,8 +56,13 @@ public class NetworkLogic : NetworkBehaviour
         _joinAsClientButton.interactable = false;
         _joinAsHostButton.interactable = false;
 
-        NetworkManager.Singleton.OnClientConnectedCallback += OnConnection;
         _sharedSpaceManager.sharedSpaceManagerStateChanged += OnColocalizationTrackingStateChanged;
+    }
+
+    private void Start()
+    {
+        NetworkManager.Singleton.OnClientConnectedCallback += OnConnection;
+
     }
 
 

@@ -12246,26 +12246,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3690952605729045080, guid: c14c362e35725824d9413d284a5feb2f, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4926028745012915254, guid: c14c362e35725824d9413d284a5feb2f, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5547070368266158485, guid: c14c362e35725824d9413d284a5feb2f, type: 3}
-      propertyPath: resetAtStart
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6620340750050549047, guid: c14c362e35725824d9413d284a5feb2f, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7017061421183348999, guid: c14c362e35725824d9413d284a5feb2f, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8125330492888180139, guid: c14c362e35725824d9413d284a5feb2f, type: 3}
       propertyPath: m_Name
       value: Wheel

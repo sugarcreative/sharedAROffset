@@ -784,7 +784,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6814869759579302871
 Transform:
   m_ObjectHideFlags: 0
@@ -906,7 +906,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6273232133465729085
 Transform:
   m_ObjectHideFlags: 0
@@ -1119,7 +1119,7 @@ MonoBehaviour:
   - {fileID: 4096088526245607030}
   splinters: {fileID: 7339194888250249220}
   ribbon: {fileID: 5808131508967667732}
-  resetAtStart: 1
+  resetAtStart: 0
 --- !u!1 &8153380383265411902
 GameObject:
   m_ObjectHideFlags: 0

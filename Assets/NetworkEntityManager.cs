@@ -23,7 +23,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private ScoreboardLogic scoreboardLogic;
 
-    private const int MAXHEALTH = 1;
+    private const int MAXHEALTH = 10;
 
     private const int STARTSCORE = 0;
 
@@ -307,6 +307,7 @@ public class NetworkEntityManager : NetworkBehaviour
         if (isFirstGo) isFirstGo = false;
         EnablePlayerControls(localPlayer);
         localPlayer.GetComponent<MovementAndSteering>().IgnoreWheelLock();
+        EnsureNetworkColliders();
 
     }
 
@@ -401,6 +402,14 @@ public class NetworkEntityManager : NetworkBehaviour
         localPlayer.GetComponent<LocalPlayer>().HideCanvas();
         //TopBar.GetComponent<ModalFade>().Hide();
         ToggleNetworkPlayerVisibilty(false);
+    }
+
+    private void EnsureNetworkColliders()
+    {
+        foreach (PlayerAvatar avatar in networkedGameObjects)
+        {
+            avatar.GetComponent<Collider>().enabled = true;
+        }
     }
 
     private void ToggleNetworkPlayerVisibilty(bool active)

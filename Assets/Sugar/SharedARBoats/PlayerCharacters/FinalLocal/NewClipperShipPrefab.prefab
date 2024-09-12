@@ -2631,7 +2631,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1e4f916316982a04a93c0919501f4bef, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 53180c39bae38564ea789b6ff1288a35, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3130,7 +3130,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 123483699711559858}
-  - component: {fileID: 584507989021690757}
+  - component: {fileID: 8297256523093225775}
   - component: {fileID: 8797976605550999730}
   - component: {fileID: 60517214194854825}
   - component: {fileID: 5894806223549937764}
@@ -3158,8 +3158,8 @@ Transform:
   - {fileID: 5066904200630072752}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &584507989021690757
-CapsuleCollider:
+--- !u!65 &8297256523093225775
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3175,12 +3175,10 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Radius: 0.18469225
-  m_Height: 0.4720262
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.074671105, z: 0.004652905}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.1285997, y: 0.56273353, z: 0.4534055}
+  m_Center: {x: 0.007698753, y: 0.21529806, z: -0.0047978987}
 --- !u!114 &8797976605550999730
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3250,6 +3248,7 @@ MonoBehaviour:
   _pauseDebug: 0
   _circularGestureDetection: {fileID: 0}
   ignoreWheelLock: 0
+  _gestureWasLastInput: 0
   _wheelAsset: {fileID: 0}
 --- !u!1 &9130831913458863955
 GameObject:

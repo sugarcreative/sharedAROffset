@@ -736,7 +736,7 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: NIANTIC_LIGHTSHIP_AR_LOADER_ENABLED;AMPLIFY_SHADER_EDITOR
+    Android: NIANTIC_LIGHTSHIP_AR_LOADER_ENABLED;AMPLIFY_SHADER_EDITOR;NIANTIC_ARDK_USE_FAST_LIGHTWEIGHT_PAM
     Standalone: NIANTIC_LIGHTSHIP_AR_LOADER_ENABLED;AMPLIFY_SHADER_EDITOR
   additionalCompilerArguments: {}
   platformArchitecture: {}

@@ -313,9 +313,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 584507989021690757, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
-      propertyPath: m_Enabled
-      value: 0
+    - target: {fileID: 336546201878797774, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 336546201878797774, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 336546201878797774, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.03
       objectReference: {fileID: 0}
     - target: {fileID: 1604224111083122285, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
       propertyPath: m_AnchorMax.x
@@ -325,6 +333,10 @@ PrefabInstance:
       propertyPath: _wheelAsset
       value: 
       objectReference: {fileID: 1206100548}
+    - target: {fileID: 5894806223549937764, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
+      propertyPath: _circularGestureDetection
+      value: 
+      objectReference: {fileID: 2057030320}
     - target: {fileID: 7621014672091764387, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -333,14 +345,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: NewClipperShipPrefab
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 584507989021690757, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 9081438360304593471, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
-      insertIndex: 1
-      addedObject: {fileID: 91754755}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
 --- !u!4 &91754750 stripped
 Transform:
@@ -374,27 +382,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 9081438360304593471, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
   m_PrefabInstance: {fileID: 91754749}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &91754755
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 91754754}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.1285997, y: 0.56273353, z: 0.4534055}
-  m_Center: {x: 0.007698753, y: 0.21529806, z: -0.0047978987}
 --- !u!1 &102393852
 GameObject:
   m_ObjectHideFlags: 0
@@ -6863,7 +6850,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &955270222
 Transform:
   m_ObjectHideFlags: 0

@@ -89,7 +89,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private GameObject ribbon;
 
-    private const float GAMETIME = 30f;
+    private const float GAMETIME = 10f;
 
     #endregion
 
@@ -287,7 +287,6 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     private void StartGameClientRpc()
     {
-        
         gameStarted = true;
         localPlayer.GetComponent<MovementAndSteering>().ResetWheel();
         wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
@@ -306,9 +305,8 @@ public class NetworkEntityManager : NetworkBehaviour
         gameEnd = false;
         if (isFirstGo) isFirstGo = false;
         EnablePlayerControls(localPlayer);
-        localPlayer.GetComponent<MovementAndSteering>().IgnoreWheelLock();
+        //localPlayer.GetComponent<MovementAndSteering>().IgnoreWheelLock();
         EnsureNetworkColliders();
-
     }
 
 
@@ -801,7 +799,7 @@ public class NetworkEntityManager : NetworkBehaviour
     private void EnablePlayerControls(GameObject player)
     {
         player.GetComponent<MovementAndSteering>()._pauseUpdate = false;
-        player.GetComponent<MovementAndSteering>()._wheelLock = true;
+        player.GetComponent<MovementAndSteering>().CanTurnWheel = true;
         foreach (Button button in shootingButtons)
         {
             button.interactable = true;

@@ -29,6 +29,7 @@ public class WheelSwitcher : MonoBehaviour
 
     public void NewWheel()
     {
+        StopAllCoroutines();
         currentWheel = startWheel;
         oldWheel = startWheel;
 

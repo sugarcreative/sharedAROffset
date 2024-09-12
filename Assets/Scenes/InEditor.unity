@@ -3852,6 +3852,10 @@ PrefabInstance:
       propertyPath: _pauseUpdate
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5894806223549937764, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
+      propertyPath: _circularGestureDetection
+      value: 
+      objectReference: {fileID: 509257934}
     - target: {fileID: 7621014672091764387, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0

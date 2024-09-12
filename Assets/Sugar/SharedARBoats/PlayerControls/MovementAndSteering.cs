@@ -13,7 +13,7 @@ public class MovementAndSteering : MonoBehaviour
     private bool _isClockwise;
     private bool _isGestureDetected;
     private bool _isSliderInteracted = false;
-    public bool _wheelLock;
+    public bool CanTurnWheel;
     private string _hoveredGameObjectName;
     private string _sliderName = "handle";
     private string _readyButtonName = "ReadyButton";
@@ -45,9 +45,13 @@ public class MovementAndSteering : MonoBehaviour
     #region debugging
     public bool _pauseUpdate = false;
     [SerializeField] private bool _pauseDebug = true;
+
+    [SerializeField] CircularGestureDetection _circularGestureDetection;
     #endregion
 
     public bool ignoreWheelLock = false;
+
+    [SerializeField] private bool _gestureWasLastInput;
 
     //public Image _theWheel;
 
@@ -82,64 +86,95 @@ public class MovementAndSteering : MonoBehaviour
         _slider.value = 0;
     }
 
-    private void FixedUpdate()
-    {
-        if (_pauseUpdate) return;
-        Sailing();
-    }
+    //private void FixedUpdate()
+    //{
+    //    if (_pauseUpdate) return;
+    //    Sailing();
+    //}
+
+    //private void Update()
+    //{
+
+
+    //    _hoveredGameObjectName = GetUIElement();
+
+    //    if (_pauseUpdate) return;
+
+
+
+    //    if (!_pauseDebug)
+    //    {
+    //        //Debug.Log(_currentSliderValue);
+    //    }
+
+
+
+    //    if (Input.touchCount == 0) // maybe change this to Input.GetMouseButton(0)?
+    //    {
+    //        Debug.Log("Setting wheel lock false");
+    //        CanTurnWheel = false;
+    //    }
+    //    else
+    //    {
+    //        CanTurnWheel = true;
+    //    }
+
+    //    if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
+    //    {
+    //        // make it so that first finger on slider means check for other fingers and allow them to rotate the wheel
+
+    //        if ((_hoveredGameObjectName == _sliderName) || _isSliderInteracted)
+    //        {
+    //            Debug.Log("randomSpace");
+    //            CanTurnWheel = false;
+
+    //        }
+    //        else
+    //        {
+    //            Debug.Log("Setting wheel lock true");
+    //            CanTurnWheel = true;
+    //        }
+    //        //Debug.Log(_hoveredGameObjectName + " - hovered Object. " + _isSliderInteracted + " - sliderInteracted");
+    //    }
+
+
+    //    _timeSinceLastSliderChange += Time.deltaTime;
+
+    //    Steering();
+    //}
 
     private void Update()
     {
+
+        AllowGestureDetection(_isSliderInteracted);
+
         if (_pauseUpdate) return;
 
-        _hoveredGameObjectName = GetUIElement();
-
-        if (!_pauseDebug)
+        if (Input.GetMouseButton(0))
         {
-            //Debug.Log(_currentSliderValue);
-        }
-
-        if (!ignoreWheelLock)
-        {
-
-            if (Input.touchCount == 0) // maybe change this to Input.GetMouseButton(0)?
+            if (_isGestureDetected)
             {
-                Debug.Log("Setting wheel lock false");
-                _wheelLock = false;
+                _slider.interactable = false;
+                _gestureWasLastInput = true;
+                //shooting buttons not interactable
             }
-
-            if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
+            else
             {
-                if ((_hoveredGameObjectName == _sliderName) || (_hoveredGameObjectName == _readyButtonName) || _isSliderInteracted)
-                {
-                    Debug.Log("randomSpace");
-                }
-                else
-                {
-                    Debug.Log("Setting wheel lock true");
-                    _wheelLock = true;
-                }
-                //Debug.Log(_hoveredGameObjectName + " - hovered Object. " + _isSliderInteracted + " - sliderInteracted");
+                _slider.interactable = true;
+                //shooting buttons interactable
             }
         }
+        else
+        {
+            _slider.interactable = true;
+            _gestureWasLastInput = false;
+        }
 
-        _timeSinceLastSliderChange += Time.deltaTime;
-
-        Steering();
+        UpdatedSteering(Input.GetMouseButton(0));
+        Sailing();
     }
+
     #endregion
-
-    public void IgnoreWheelLock()
-    {
-        StartCoroutine(IgnoreWheelLockCoroutine());
-    }
-
-    IEnumerator IgnoreWheelLockCoroutine()
-    {
-        ignoreWheelLock = true;
-        yield return new WaitForSeconds(0.2f);
-        ignoreWheelLock = false;
-    }
 
     public void SliderChanged(float value)
     {
@@ -160,8 +195,6 @@ public class MovementAndSteering : MonoBehaviour
         _isSliderInteracted = false;
     }
 
-
-
     private void Sailing()
     {
         if (!_pauseDebug)
@@ -178,32 +211,76 @@ public class MovementAndSteering : MonoBehaviour
 
     }
 
-    private void Steering()
+    private void AllowGestureDetection(bool sliderInteracted)
     {
-        //Debug.Log("We are doing steering");
-        if (_wheelLock)
+        if (sliderInteracted)
         {
-            if (_isGestureDetected)
-            {
-                //Debug.Log("We are getting the gesture but wheel is locked");
-                if (_hoveredGameObjectName == _sliderName || _isSliderInteracted || _timeSinceLastSliderChange <= 0.2f) return;
-
-                _wheelRotation += _isClockwise ? -_rotationSpeed * Time.deltaTime : +_rotationSpeed * Time.deltaTime;
-            }
+            _circularGestureDetection.enabled = false;
         }
         else
         {
-            //Debug.Log("We are getting the gesture and the wheel is NOT locked");
+            _circularGestureDetection.enabled = true;
+        }
+    }
+
+    private void UpdatedSteering(bool input)
+    {
+        if (input)
+        {
+            if (_isGestureDetected)
+            {
+                _wheelRotation += _isClockwise ? -_rotationSpeed * Time.deltaTime : +_rotationSpeed * Time.deltaTime;
+
+            }
+            else
+            {
+                if (_gestureWasLastInput)
+                {
+                    
+                }
+                else
+                {
+                    _wheelRotation = Mathf.MoveTowards(_wheelRotation, 0f, _counterRotationSpeed * Time.deltaTime);
+                }
+            }
+        } else
+        {
             _wheelRotation = Mathf.MoveTowards(_wheelRotation, 0f, _counterRotationSpeed * Time.deltaTime);
         }
 
         _wheelRotation = Mathf.Clamp(_wheelRotation, _wheelRotationClamp.x, _wheelRotationClamp.y);
         _wheelAsset.transform.rotation = Quaternion.Euler(_wheelAsset.transform.rotation.eulerAngles.x, _wheelAsset.transform.rotation.eulerAngles.y, -_wheelRotation);
-        //_theWheel.transform.rotation = Quaternion.Euler(0f, 0f, _wheelRotation);
 
 
         transform.Rotate(0f, -_wheelRotation * _steeringMultiplier * Time.deltaTime, 0f);
     }
+
+    //private void Steering()
+    //{
+    //    //Debug.Log("We are doing steering");
+    //    if (CanTurnWheel)
+    //    {
+    //        if (_isGestureDetected)
+    //        {
+    //            //Debug.Log("We are getting the gesture but wheel is locked");
+    //            if (_hoveredGameObjectName == _sliderName || _isSliderInteracted || _timeSinceLastSliderChange <= 0.2f) return;
+
+    //            _wheelRotation += _isClockwise ? -_rotationSpeed * Time.deltaTime : +_rotationSpeed * Time.deltaTime;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        //Debug.Log("We are getting the gesture and the wheel is NOT locked");
+    //        _wheelRotation = Mathf.MoveTowards(_wheelRotation, 0f, _counterRotationSpeed * Time.deltaTime);
+    //    }
+
+    //    _wheelRotation = Mathf.Clamp(_wheelRotation, _wheelRotationClamp.x, _wheelRotationClamp.y);
+    //    _wheelAsset.transform.rotation = Quaternion.Euler(_wheelAsset.transform.rotation.eulerAngles.x, _wheelAsset.transform.rotation.eulerAngles.y, -_wheelRotation);
+    //    //_theWheel.transform.rotation = Quaternion.Euler(0f, 0f, _wheelRotation);
+
+
+    //    transform.Rotate(0f, -_wheelRotation * _steeringMultiplier * Time.deltaTime, 0f);
+    //}
 
     private string GetUIElement()
     {

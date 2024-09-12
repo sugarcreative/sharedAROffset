@@ -1155,7 +1155,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -3057,7 +3057,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5b4e3dc8007e174c8ce1f02fccc01e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _wheelLock: 0
+  CanTurnWheel: 0
   _wheelRotation: 0
   _steeringMultiplier: 0.1
   _rotationSpeed: 100
@@ -3070,6 +3070,8 @@ MonoBehaviour:
   _slider: {fileID: 5193283979662171901}
   _pauseUpdate: 0
   _pauseDebug: 0
+  _circularGestureDetection: {fileID: 0}
+  ignoreWheelLock: 0
   _wheelAsset: {fileID: 0}
 --- !u!1 &9130831913458863955
 GameObject:

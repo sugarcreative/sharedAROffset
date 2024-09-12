@@ -29,6 +29,7 @@ Shader "ShipShader"
 		_AlphaClip("Alpha Clip", Range( 0.1 , 0.5)) = 0.1
 		_ImmortalFade("Immortal Fade", Range( 0 , 1)) = 0
 		_DEBUG_FLAGOFFSET("DEBUG_FLAGOFFSET", Float) = 0
+		_Smoothness("Smoothness", Range( 0 , 1)) = 0
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
 
 
@@ -208,13 +209,13 @@ Shader "ShipShader"
 			#pragma multi_compile_instancing
 			#pragma instancing_options renderinglayer
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
-			#define _SPECULAR_SETUP 1
-			#pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
-			#pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF
 			#define _NORMAL_DROPOFF_TS 1
 			#pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
 			#pragma multi_compile_fog
 			#define ASE_FOG 1
+			#define _SPECULAR_SETUP 1
+			#pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
+			#pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
 			#define _NORMALMAP 1
@@ -344,26 +345,27 @@ Shader "ShipShader"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _Albedo_ST;
-			float4 _Specular_ST;
 			float4 _Tint;
 			float4 _EmblemColor;
-			float4 _ImmortalTint;
-			float4 _FadeEmission;
 			float4 _Normals_ST;
+			float4 _FadeEmission;
+			float4 _Specular_ST;
+			float4 _ImmortalTint;
 			float3 _FadeDirection;
+			float2 _EmblemPosition;
 			float2 _NoiseScales;
 			float2 _ObjectMinMaxAdjust;
-			float2 _EmblemPosition;
-			float _EmblemScale;
-			float _ImmortalFade;
+			float _EmissionOnly;
+			float _DEBUG_FLAGOFFSET;
+			float _Smoothness;
+			float _FadeBlur;
 			float _FadeShift;
 			float _EmissionOffset;
-			float _InvertFade;
-			float _FadeBlur;
-			float _BrightnessBoost;
-			float _DEBUG_FLAGOFFSET;
-			float _EmissionOnly;
+			float _ImmortalFade;
 			float _InvertEmblem;
+			float _EmblemScale;
+			float _BrightnessBoost;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -672,6 +674,7 @@ Shader "ShipShader"
 				float4 fadeEmiss125 = lerpResult115;
 				
 				float2 uv_Specular = IN.ase_texcoord8.xy * _Specular_ST.xy + _Specular_ST.zw;
+				float4 tex2DNode12 = tex2D( _Specular, uv_Specular );
 				
 				float FlagMask147 = temp_output_50_0;
 				float lerpResult149 = lerp( (temp_output_83_0 + (_FadeShift - 0.0) * (temp_output_86_0 - temp_output_83_0) / (1.0 - 0.0)) , (( _DEBUG_FLAGOFFSET + temp_output_83_0 ) + (_FadeShift - 0.0) * (temp_output_86_0 - ( _DEBUG_FLAGOFFSET + temp_output_83_0 )) / (1.0 - 0.0)) , FlagMask147);
@@ -686,9 +689,9 @@ Shader "ShipShader"
 				float3 BaseColor = lerpResult41.rgb;
 				float3 Normal = switchResult62;
 				float3 Emission = ( fadeEmiss125 + _ImmortalTint ).rgb;
-				float3 Specular = tex2D( _Specular, uv_Specular ).rgb;
+				float3 Specular = tex2DNode12.rgb;
 				float Metallic = 0;
-				float Smoothness = 0.5;
+				float Smoothness = ( _Smoothness * tex2DNode12 ).r;
 				float Occlusion = 1;
 				float Alpha = ( finalAlpha117 * step( _ImmortalFade , smallNoise129 ) );
 				float AlphaClipThreshold = _AlphaClip;
@@ -944,9 +947,9 @@ Shader "ShipShader"
 
 			#pragma multi_compile_instancing
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
-			#define _SPECULAR_SETUP 1
 			#define _NORMAL_DROPOFF_TS 1
 			#define ASE_FOG 1
+			#define _SPECULAR_SETUP 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
 			#define _NORMALMAP 1
@@ -1026,26 +1029,27 @@ Shader "ShipShader"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _Albedo_ST;
-			float4 _Specular_ST;
 			float4 _Tint;
 			float4 _EmblemColor;
-			float4 _ImmortalTint;
-			float4 _FadeEmission;
 			float4 _Normals_ST;
+			float4 _FadeEmission;
+			float4 _Specular_ST;
+			float4 _ImmortalTint;
 			float3 _FadeDirection;
+			float2 _EmblemPosition;
 			float2 _NoiseScales;
 			float2 _ObjectMinMaxAdjust;
-			float2 _EmblemPosition;
-			float _EmblemScale;
-			float _ImmortalFade;
+			float _EmissionOnly;
+			float _DEBUG_FLAGOFFSET;
+			float _Smoothness;
+			float _FadeBlur;
 			float _FadeShift;
 			float _EmissionOffset;
-			float _InvertFade;
-			float _FadeBlur;
-			float _BrightnessBoost;
-			float _DEBUG_FLAGOFFSET;
-			float _EmissionOnly;
+			float _ImmortalFade;
 			float _InvertEmblem;
+			float _EmblemScale;
+			float _BrightnessBoost;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -1351,9 +1355,9 @@ Shader "ShipShader"
 
 			#pragma multi_compile_instancing
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
-			#define _SPECULAR_SETUP 1
 			#define _NORMAL_DROPOFF_TS 1
 			#define ASE_FOG 1
+			#define _SPECULAR_SETUP 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
 			#define _NORMALMAP 1
@@ -1431,26 +1435,27 @@ Shader "ShipShader"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _Albedo_ST;
-			float4 _Specular_ST;
 			float4 _Tint;
 			float4 _EmblemColor;
-			float4 _ImmortalTint;
-			float4 _FadeEmission;
 			float4 _Normals_ST;
+			float4 _FadeEmission;
+			float4 _Specular_ST;
+			float4 _ImmortalTint;
 			float3 _FadeDirection;
+			float2 _EmblemPosition;
 			float2 _NoiseScales;
 			float2 _ObjectMinMaxAdjust;
-			float2 _EmblemPosition;
-			float _EmblemScale;
-			float _ImmortalFade;
+			float _EmissionOnly;
+			float _DEBUG_FLAGOFFSET;
+			float _Smoothness;
+			float _FadeBlur;
 			float _FadeShift;
 			float _EmissionOffset;
-			float _InvertFade;
-			float _FadeBlur;
-			float _BrightnessBoost;
-			float _DEBUG_FLAGOFFSET;
-			float _EmissionOnly;
+			float _ImmortalFade;
 			float _InvertEmblem;
+			float _EmblemScale;
+			float _BrightnessBoost;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -1723,9 +1728,9 @@ Shader "ShipShader"
 			Cull Off
 
 			HLSLPROGRAM
-			#define _SPECULAR_SETUP 1
 			#define _NORMAL_DROPOFF_TS 1
 			#define ASE_FOG 1
+			#define _SPECULAR_SETUP 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
 			#define _NORMALMAP 1
@@ -1791,26 +1796,27 @@ Shader "ShipShader"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _Albedo_ST;
-			float4 _Specular_ST;
 			float4 _Tint;
 			float4 _EmblemColor;
-			float4 _ImmortalTint;
-			float4 _FadeEmission;
 			float4 _Normals_ST;
+			float4 _FadeEmission;
+			float4 _Specular_ST;
+			float4 _ImmortalTint;
 			float3 _FadeDirection;
+			float2 _EmblemPosition;
 			float2 _NoiseScales;
 			float2 _ObjectMinMaxAdjust;
-			float2 _EmblemPosition;
-			float _EmblemScale;
-			float _ImmortalFade;
+			float _EmissionOnly;
+			float _DEBUG_FLAGOFFSET;
+			float _Smoothness;
+			float _FadeBlur;
 			float _FadeShift;
 			float _EmissionOffset;
-			float _InvertFade;
-			float _FadeBlur;
-			float _BrightnessBoost;
-			float _DEBUG_FLAGOFFSET;
-			float _EmissionOnly;
+			float _ImmortalFade;
 			float _InvertEmblem;
+			float _EmblemScale;
+			float _BrightnessBoost;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -2114,9 +2120,9 @@ Shader "ShipShader"
 
 			HLSLPROGRAM
 
-			#define _SPECULAR_SETUP 1
 			#define _NORMAL_DROPOFF_TS 1
 			#define ASE_FOG 1
+			#define _SPECULAR_SETUP 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
 			#define _NORMALMAP 1
@@ -2173,26 +2179,27 @@ Shader "ShipShader"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _Albedo_ST;
-			float4 _Specular_ST;
 			float4 _Tint;
 			float4 _EmblemColor;
-			float4 _ImmortalTint;
-			float4 _FadeEmission;
 			float4 _Normals_ST;
+			float4 _FadeEmission;
+			float4 _Specular_ST;
+			float4 _ImmortalTint;
 			float3 _FadeDirection;
+			float2 _EmblemPosition;
 			float2 _NoiseScales;
 			float2 _ObjectMinMaxAdjust;
-			float2 _EmblemPosition;
-			float _EmblemScale;
-			float _ImmortalFade;
+			float _EmissionOnly;
+			float _DEBUG_FLAGOFFSET;
+			float _Smoothness;
+			float _FadeBlur;
 			float _FadeShift;
 			float _EmissionOffset;
-			float _InvertFade;
-			float _FadeBlur;
-			float _BrightnessBoost;
-			float _DEBUG_FLAGOFFSET;
-			float _EmissionOnly;
+			float _ImmortalFade;
 			float _InvertEmblem;
+			float _EmblemScale;
+			float _BrightnessBoost;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -2472,9 +2479,9 @@ Shader "ShipShader"
 
 			#pragma multi_compile_instancing
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
-			#define _SPECULAR_SETUP 1
 			#define _NORMAL_DROPOFF_TS 1
 			#define ASE_FOG 1
+			#define _SPECULAR_SETUP 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
 			#define _NORMALMAP 1
@@ -2564,26 +2571,27 @@ Shader "ShipShader"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _Albedo_ST;
-			float4 _Specular_ST;
 			float4 _Tint;
 			float4 _EmblemColor;
-			float4 _ImmortalTint;
-			float4 _FadeEmission;
 			float4 _Normals_ST;
+			float4 _FadeEmission;
+			float4 _Specular_ST;
+			float4 _ImmortalTint;
 			float3 _FadeDirection;
+			float2 _EmblemPosition;
 			float2 _NoiseScales;
 			float2 _ObjectMinMaxAdjust;
-			float2 _EmblemPosition;
-			float _EmblemScale;
-			float _ImmortalFade;
+			float _EmissionOnly;
+			float _DEBUG_FLAGOFFSET;
+			float _Smoothness;
+			float _FadeBlur;
 			float _FadeShift;
 			float _EmissionOffset;
-			float _InvertFade;
-			float _FadeBlur;
-			float _BrightnessBoost;
-			float _DEBUG_FLAGOFFSET;
-			float _EmissionOnly;
+			float _ImmortalFade;
 			float _InvertEmblem;
+			float _EmblemScale;
+			float _BrightnessBoost;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -2915,12 +2923,12 @@ Shader "ShipShader"
 			#pragma multi_compile_instancing
 			#pragma instancing_options renderinglayer
 			#pragma multi_compile _ LOD_FADE_CROSSFADE
-			#define _SPECULAR_SETUP 1
-			#pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
-			#pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF
 			#define _NORMAL_DROPOFF_TS 1
 			#pragma multi_compile_fog
 			#define ASE_FOG 1
+			#define _SPECULAR_SETUP 1
+			#pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
+			#pragma shader_feature_local_fragment _ENVIRONMENTREFLECTIONS_OFF
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
 			#define _NORMALMAP 1
@@ -3043,26 +3051,27 @@ Shader "ShipShader"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _Albedo_ST;
-			float4 _Specular_ST;
 			float4 _Tint;
 			float4 _EmblemColor;
-			float4 _ImmortalTint;
-			float4 _FadeEmission;
 			float4 _Normals_ST;
+			float4 _FadeEmission;
+			float4 _Specular_ST;
+			float4 _ImmortalTint;
 			float3 _FadeDirection;
+			float2 _EmblemPosition;
 			float2 _NoiseScales;
 			float2 _ObjectMinMaxAdjust;
-			float2 _EmblemPosition;
-			float _EmblemScale;
-			float _ImmortalFade;
+			float _EmissionOnly;
+			float _DEBUG_FLAGOFFSET;
+			float _Smoothness;
+			float _FadeBlur;
 			float _FadeShift;
 			float _EmissionOffset;
-			float _InvertFade;
-			float _FadeBlur;
-			float _BrightnessBoost;
-			float _DEBUG_FLAGOFFSET;
-			float _EmissionOnly;
+			float _ImmortalFade;
 			float _InvertEmblem;
+			float _EmblemScale;
+			float _BrightnessBoost;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -3366,6 +3375,7 @@ Shader "ShipShader"
 				float4 fadeEmiss125 = lerpResult115;
 				
 				float2 uv_Specular = IN.ase_texcoord8.xy * _Specular_ST.xy + _Specular_ST.zw;
+				float4 tex2DNode12 = tex2D( _Specular, uv_Specular );
 				
 				float FlagMask147 = temp_output_50_0;
 				float lerpResult149 = lerp( (temp_output_83_0 + (_FadeShift - 0.0) * (temp_output_86_0 - temp_output_83_0) / (1.0 - 0.0)) , (( _DEBUG_FLAGOFFSET + temp_output_83_0 ) + (_FadeShift - 0.0) * (temp_output_86_0 - ( _DEBUG_FLAGOFFSET + temp_output_83_0 )) / (1.0 - 0.0)) , FlagMask147);
@@ -3380,9 +3390,9 @@ Shader "ShipShader"
 				float3 BaseColor = lerpResult41.rgb;
 				float3 Normal = switchResult62;
 				float3 Emission = ( fadeEmiss125 + _ImmortalTint ).rgb;
-				float3 Specular = tex2D( _Specular, uv_Specular ).rgb;
+				float3 Specular = tex2DNode12.rgb;
 				float Metallic = 0;
-				float Smoothness = 0.5;
+				float Smoothness = ( _Smoothness * tex2DNode12 ).r;
 				float Occlusion = 1;
 				float Alpha = ( finalAlpha117 * step( _ImmortalFade , smallNoise129 ) );
 				float AlphaClipThreshold = _AlphaClip;
@@ -3501,9 +3511,9 @@ Shader "ShipShader"
 
 			
 
-			#define _SPECULAR_SETUP 1
 			#define _NORMAL_DROPOFF_TS 1
 			#define ASE_FOG 1
+			#define _SPECULAR_SETUP 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
 			#define _NORMALMAP 1
@@ -3567,26 +3577,27 @@ Shader "ShipShader"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _Albedo_ST;
-			float4 _Specular_ST;
 			float4 _Tint;
 			float4 _EmblemColor;
-			float4 _ImmortalTint;
-			float4 _FadeEmission;
 			float4 _Normals_ST;
+			float4 _FadeEmission;
+			float4 _Specular_ST;
+			float4 _ImmortalTint;
 			float3 _FadeDirection;
+			float2 _EmblemPosition;
 			float2 _NoiseScales;
 			float2 _ObjectMinMaxAdjust;
-			float2 _EmblemPosition;
-			float _EmblemScale;
-			float _ImmortalFade;
+			float _EmissionOnly;
+			float _DEBUG_FLAGOFFSET;
+			float _Smoothness;
+			float _FadeBlur;
 			float _FadeShift;
 			float _EmissionOffset;
-			float _InvertFade;
-			float _FadeBlur;
-			float _BrightnessBoost;
-			float _DEBUG_FLAGOFFSET;
-			float _EmissionOnly;
+			float _ImmortalFade;
 			float _InvertEmblem;
+			float _EmblemScale;
+			float _BrightnessBoost;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -3842,9 +3853,9 @@ Shader "ShipShader"
 
 			
 
-			#define _SPECULAR_SETUP 1
 			#define _NORMAL_DROPOFF_TS 1
 			#define ASE_FOG 1
+			#define _SPECULAR_SETUP 1
 			#define _EMISSION
 			#define _ALPHATEST_ON 1
 			#define _NORMALMAP 1
@@ -3908,26 +3919,27 @@ Shader "ShipShader"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _Albedo_ST;
-			float4 _Specular_ST;
 			float4 _Tint;
 			float4 _EmblemColor;
-			float4 _ImmortalTint;
-			float4 _FadeEmission;
 			float4 _Normals_ST;
+			float4 _FadeEmission;
+			float4 _Specular_ST;
+			float4 _ImmortalTint;
 			float3 _FadeDirection;
+			float2 _EmblemPosition;
 			float2 _NoiseScales;
 			float2 _ObjectMinMaxAdjust;
-			float2 _EmblemPosition;
-			float _EmblemScale;
-			float _ImmortalFade;
+			float _EmissionOnly;
+			float _DEBUG_FLAGOFFSET;
+			float _Smoothness;
+			float _FadeBlur;
 			float _FadeShift;
 			float _EmissionOffset;
-			float _InvertFade;
-			float _FadeBlur;
-			float _BrightnessBoost;
-			float _DEBUG_FLAGOFFSET;
-			float _EmissionOnly;
+			float _ImmortalFade;
 			float _InvertEmblem;
+			float _EmblemScale;
+			float _BrightnessBoost;
+			float _InvertFade;
 			float _AlphaClip;
 			#ifdef ASE_TRANSMISSION
 				float _TransmissionShadow;
@@ -4245,7 +4257,6 @@ Node;AmplifyShaderEditor.RangedFloatNode;22;-2336,-848;Inherit;False;Property;_B
 Node;AmplifyShaderEditor.TextureCoordinatesNode;13;-2736,-544;Inherit;True;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.StepOpNode;15;-2368,-544;Inherit;True;2;0;FLOAT;0.5;False;1;FLOAT;0.35;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;17;-2096,-416;Inherit;True;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SamplerNode;12;-528,-496;Inherit;True;Property;_Specular;Specular;4;0;Create;True;0;0;0;False;0;False;-1;None;8033ebf6b8e1caf48b319a21eaa14adb;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
 Node;AmplifyShaderEditor.SamplerNode;11;-528,-720;Inherit;True;Property;_Normals;Normals;2;0;Create;True;0;0;0;False;0;False;-1;None;f25a41351f12e354b9d40a29c81a2b09;True;0;True;white;Auto;True;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;6;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
 Node;AmplifyShaderEditor.GetLocalVarNode;56;-2160,-576;Inherit;False;55;albedo;1;0;OBJECT;;False;1;COLOR;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;20;-1936,-704;Inherit;False;2;2;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;1;COLOR;0
@@ -4282,8 +4293,10 @@ Node;AmplifyShaderEditor.ColorNode;128;-560,0;Inherit;False;Property;_ImmortalTi
 Node;AmplifyShaderEditor.RangedFloatNode;72;-304,496;Inherit;False;Property;_AlphaClip;Alpha Clip;20;0;Create;True;0;0;0;False;0;False;0.1;0.1;0.1;0.5;0;1;FLOAT;0
 Node;AmplifyShaderEditor.LerpOp;41;-1104,-160;Inherit;True;3;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;2;COLOR;0,0,0,0;False;1;COLOR;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;131;-304,240;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SamplerNode;12;-528,-496;Inherit;True;Property;_Specular;Specular;4;0;Create;True;0;0;0;False;0;False;-1;None;8033ebf6b8e1caf48b319a21eaa14adb;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;8;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;6;FLOAT;0;False;7;SAMPLERSTATE;;False;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
+Node;AmplifyShaderEditor.RangedFloatNode;153;16,-448;Inherit;False;Property;_Smoothness;Smoothness;23;0;Create;True;0;0;0;False;0;False;0;0;0;1;0;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;154;336,-368;Inherit;False;2;2;0;FLOAT;0;False;1;COLOR;0,0,0,0;False;1;COLOR;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;0;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ExtraPrePass;0;0;ExtraPrePass;5;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;0;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;0;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;1;0,0;Float;False;True;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;ShipShader;94348b07e5e8bab40bd6c8a1e3df54cd;True;Forward;0;1;Forward;21;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;2;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;1;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalForwardOnly;False;False;0;;0;0;Standard;42;Lighting Model;0;0;Workflow;0;638586208389251876;Surface;0;0;  Refraction Model;0;0;  Blend;0;0;Two Sided;0;638586206586602827;Fragment Normal Space,InvertActionOnDeselection;0;638586209115556224;Forward Only;1;0;Transmission;0;0;  Transmission Shadow;0.5,False,;0;Translucency;0;638586209204009560;  Translucency Strength;1,False,;0;  Normal Distortion;0.5,False,;0;  Scattering;2,False,;0;  Direct;0.9,False,;0;  Ambient;0.1,False,;0;  Shadow;0.5,False,;0;Cast Shadows;1;0;  Use Shadow Threshold;0;0;Receive Shadows;1;0;Receive SSAO;1;638586209503208929;GPU Instancing;1;0;LOD CrossFade;1;0;Built-in Fog;1;638586209574348732;_FinalColorxAlpha;0;0;Meta Pass;1;0;Override Baked GI;0;0;Extra Pre Pass;0;0;Tessellation;0;0;  Phong;0;0;  Strength;0.5,False,;0;  Type;0;0;  Tess;16,False,;0;  Min;10,False,;0;  Max;25,False,;0;  Edge Length;16,False,;0;  Max Displacement;25,False,;0;Write Depth;0;0;  Early Z;0;0;Vertex Position,InvertActionOnDeselection;1;0;Debug Display;0;0;Clear Coat;0;0;0;10;False;True;True;True;True;True;True;True;True;True;False;;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;2;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ShadowCaster;0;2;ShadowCaster;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;True;False;False;False;False;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;False;True;1;LightMode=ShadowCaster;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;3;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;DepthOnly;0;3;DepthOnly;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;True;True;False;False;False;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;False;False;True;1;LightMode=DepthOnly;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;4;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;Meta;0;4;Meta;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Meta;False;False;0;;0;0;Standard;0;False;0
@@ -4292,6 +4305,7 @@ Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;6;0,0;Float;False;False;-1;
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;7;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;GBuffer;0;7;GBuffer;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;1;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalGBuffer;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;8;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;SceneSelectionPass;0;8;SceneSelectionPass;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;2;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=SceneSelectionPass;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;9;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ScenePickingPass;0;9;ScenePickingPass;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Picking;False;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;1;384,-160;Float;False;True;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;ShipShader;94348b07e5e8bab40bd6c8a1e3df54cd;True;Forward;0;1;Forward;21;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;2;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;1;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalForwardOnly;False;False;0;;0;0;Standard;42;Lighting Model;0;0;Workflow;0;638617485205277459;Surface;0;0;  Refraction Model;0;0;  Blend;0;0;Two Sided;0;638586206586602827;Fragment Normal Space,InvertActionOnDeselection;0;638586209115556224;Forward Only;1;0;Transmission;0;0;  Transmission Shadow;0.5,False,;0;Translucency;0;638586209204009560;  Translucency Strength;1,False,;0;  Normal Distortion;0.5,False,;0;  Scattering;2,False,;0;  Direct;0.9,False,;0;  Ambient;0.1,False,;0;  Shadow;0.5,False,;0;Cast Shadows;1;0;  Use Shadow Threshold;0;0;Receive Shadows;1;0;Receive SSAO;1;638586209503208929;GPU Instancing;1;0;LOD CrossFade;1;0;Built-in Fog;1;638586209574348732;_FinalColorxAlpha;0;0;Meta Pass;1;0;Override Baked GI;0;0;Extra Pre Pass;0;0;Tessellation;0;0;  Phong;0;0;  Strength;0.5,False,;0;  Type;0;0;  Tess;16,False,;0;  Min;10,False,;0;  Max;25,False,;0;  Edge Length;16,False,;0;  Max Displacement;25,False,;0;Write Depth;0;0;  Early Z;0;0;Vertex Position,InvertActionOnDeselection;1;0;Debug Display;0;0;Clear Coat;0;0;0;10;False;True;True;True;True;True;True;True;True;True;False;;False;0
 WireConnection;76;0;73;0
 WireConnection;77;1;75;0
 WireConnection;77;2;74;0
@@ -4409,11 +4423,14 @@ WireConnection;41;1;18;0
 WireConnection;41;2;58;0
 WireConnection;131;0;118;0
 WireConnection;131;1;134;0
+WireConnection;154;0;153;0
+WireConnection;154;1;12;0
 WireConnection;1;0;41;0
 WireConnection;1;1;62;0
 WireConnection;1;2;127;0
 WireConnection;1;9;12;0
+WireConnection;1;4;154;0
 WireConnection;1;6;131;0
 WireConnection;1;7;72;0
 ASEEND*/
-//CHKSM=9A2B6A2205ECC94FFD0FCFAB52A68F2F85B3EA77
+//CHKSM=9B76F70D0600D5D7F1F012FE0623365587ADF9FF

@@ -89,7 +89,11 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private GameObject ribbon;
 
+    [SerializeField] private Image coloredRing; 
+
     private const float GAMETIME = 10f;
+
+
 
     #endregion
 
@@ -329,6 +333,7 @@ public class NetworkEntityManager : NetworkBehaviour
     {
         localPlayer.GetComponent<LocalPlayer>().SetColor(colorList[NetworkManager.Singleton.LocalClientId]);
         RibbonColorSet(colorList[NetworkManager.Singleton.LocalClientId]);
+
     }
 
     [ClientRpc]
@@ -1000,6 +1005,7 @@ public class NetworkEntityManager : NetworkBehaviour
         if (UnityEngine.ColorUtility.TryParseHtmlString(colorArg.ToString(), out newCol))
         {
             ribbon.GetComponent<SkinnedMeshRenderer>().material.SetColor("_Tint", newCol);
+            coloredRing.color = newCol;
         }
     }
 }

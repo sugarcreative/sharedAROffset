@@ -377,6 +377,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &91754753 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6771029868368865057, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
+  m_PrefabInstance: {fileID: 91754749}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &91754754 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9081438360304593471, guid: b4587e8c68787e846ae1ec1a793cd5d4, type: 3}
@@ -4029,6 +4040,7 @@ MonoBehaviour:
   roomCodeText: {fileID: 1155191623}
   playerFinder: {fileID: 1359530631}
   ribbon: {fileID: 1206100549}
+  coloredRing: {fileID: 91754753}
 --- !u!114 &518432857
 MonoBehaviour:
   m_ObjectHideFlags: 0

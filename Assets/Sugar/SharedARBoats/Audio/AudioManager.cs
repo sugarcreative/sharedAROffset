@@ -68,8 +68,8 @@ public class AudioManager : MonoBehaviour
     {
         AudioSource availableSource = GetAvailableAudioSource();
         availableSource.clip = audioClipsDict[soundName];
-        //float pitch = Random.Range(-0.4f, 0.4f);
-        //availableSource.pitch = pitch;
+        float pitch = Random.Range(0.8f, 1.2f);
+        availableSource.pitch = pitch;
         availableSource.Play();
     }
 }

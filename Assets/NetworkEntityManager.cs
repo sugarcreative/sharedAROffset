@@ -91,7 +91,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private Image coloredRing; 
 
-    private const float GAMETIME = 10f;
+    private const float GAMETIME = 60f;
 
 
 
@@ -1005,7 +1005,7 @@ public class NetworkEntityManager : NetworkBehaviour
         if (UnityEngine.ColorUtility.TryParseHtmlString(colorArg.ToString(), out newCol))
         {
             ribbon.GetComponent<SkinnedMeshRenderer>().material.SetColor("_Tint", newCol);
-            coloredRing.color = newCol;
+            //coloredRing.color = newCol;
         }
     }
 }

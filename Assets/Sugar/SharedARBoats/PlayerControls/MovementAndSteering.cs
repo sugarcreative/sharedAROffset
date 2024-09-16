@@ -86,63 +86,6 @@ public class MovementAndSteering : MonoBehaviour
         _slider.value = 0;
     }
 
-    //private void FixedUpdate()
-    //{
-    //    if (_pauseUpdate) return;
-    //    Sailing();
-    //}
-
-    //private void Update()
-    //{
-
-
-    //    _hoveredGameObjectName = GetUIElement();
-
-    //    if (_pauseUpdate) return;
-
-
-
-    //    if (!_pauseDebug)
-    //    {
-    //        //Debug.Log(_currentSliderValue);
-    //    }
-
-
-
-    //    if (Input.touchCount == 0) // maybe change this to Input.GetMouseButton(0)?
-    //    {
-    //        Debug.Log("Setting wheel lock false");
-    //        CanTurnWheel = false;
-    //    }
-    //    else
-    //    {
-    //        CanTurnWheel = true;
-    //    }
-
-    //    if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
-    //    {
-    //        // make it so that first finger on slider means check for other fingers and allow them to rotate the wheel
-
-    //        if ((_hoveredGameObjectName == _sliderName) || _isSliderInteracted)
-    //        {
-    //            Debug.Log("randomSpace");
-    //            CanTurnWheel = false;
-
-    //        }
-    //        else
-    //        {
-    //            Debug.Log("Setting wheel lock true");
-    //            CanTurnWheel = true;
-    //        }
-    //        //Debug.Log(_hoveredGameObjectName + " - hovered Object. " + _isSliderInteracted + " - sliderInteracted");
-    //    }
-
-
-    //    _timeSinceLastSliderChange += Time.deltaTime;
-
-    //    Steering();
-    //}
-
     private void Update()
     {
 
@@ -223,6 +166,12 @@ public class MovementAndSteering : MonoBehaviour
         }
     }
 
+    public void ForceAllowGestureDetection()
+    {
+        _isSliderInteracted = false;
+        _circularGestureDetection.enabled = true;
+    }
+
     private void UpdatedSteering(bool input)
     {
         if (input)
@@ -255,32 +204,6 @@ public class MovementAndSteering : MonoBehaviour
         transform.Rotate(0f, -_wheelRotation * _steeringMultiplier * Time.deltaTime, 0f);
     }
 
-    //private void Steering()
-    //{
-    //    //Debug.Log("We are doing steering");
-    //    if (CanTurnWheel)
-    //    {
-    //        if (_isGestureDetected)
-    //        {
-    //            //Debug.Log("We are getting the gesture but wheel is locked");
-    //            if (_hoveredGameObjectName == _sliderName || _isSliderInteracted || _timeSinceLastSliderChange <= 0.2f) return;
-
-    //            _wheelRotation += _isClockwise ? -_rotationSpeed * Time.deltaTime : +_rotationSpeed * Time.deltaTime;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        //Debug.Log("We are getting the gesture and the wheel is NOT locked");
-    //        _wheelRotation = Mathf.MoveTowards(_wheelRotation, 0f, _counterRotationSpeed * Time.deltaTime);
-    //    }
-
-    //    _wheelRotation = Mathf.Clamp(_wheelRotation, _wheelRotationClamp.x, _wheelRotationClamp.y);
-    //    _wheelAsset.transform.rotation = Quaternion.Euler(_wheelAsset.transform.rotation.eulerAngles.x, _wheelAsset.transform.rotation.eulerAngles.y, -_wheelRotation);
-    //    //_theWheel.transform.rotation = Quaternion.Euler(0f, 0f, _wheelRotation);
-
-
-    //    transform.Rotate(0f, -_wheelRotation * _steeringMultiplier * Time.deltaTime, 0f);
-    //}
 
     private string GetUIElement()
     {

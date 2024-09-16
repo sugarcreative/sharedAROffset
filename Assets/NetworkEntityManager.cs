@@ -91,7 +91,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     [SerializeField] private Image coloredRing; 
 
-    private const float GAMETIME = 60f;
+    [SerializeField] private float GAMETIME = 60f;
 
 
 
@@ -311,6 +311,7 @@ public class NetworkEntityManager : NetworkBehaviour
         EnablePlayerControls(localPlayer);
         //localPlayer.GetComponent<MovementAndSteering>().IgnoreWheelLock();
         EnsureNetworkColliders();
+        localPlayer.GetComponent<MovementAndSteering>().ForceAllowGestureDetection();
     }
 
 

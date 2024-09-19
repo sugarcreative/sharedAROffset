@@ -17,10 +17,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/InEditor.unity
     guid: 51d8ead8ca3cebe49a9147b8aa17631c
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/FinalScenes/FinalHallwayScene.unity
     guid: a5a77ace7565b444c98f8d633c431187
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/FinalScenes/FinalCarshaltonTest.unity
     guid: b71d364e9a732e54d801432a66ba7ae6
   m_configObjects:

@@ -17,12 +17,15 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/InEditor.unity
     guid: 51d8ead8ca3cebe49a9147b8aa17631c
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/FinalScenes/FinalHallwayScene.unity
     guid: a5a77ace7565b444c98f8d633c431187
   - enabled: 0
     path: Assets/Scenes/FinalScenes/FinalCarshaltonTest.unity
     guid: b71d364e9a732e54d801432a66ba7ae6
+  - enabled: 1
+    path: Assets/Scenes/FinalScenes/BoatsBoston.unity
+    guid: e189a59f64d3f1e499c60701bb113614
   m_configObjects:
     Niantic.Lightship.AR.LightshipSettings: {fileID: 11400000, guid: 79218a9c125ecfe4984bce6f73c30829, type: 2}
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: a823a0367a6649a47bcb3337f8c2fc86, type: 2}

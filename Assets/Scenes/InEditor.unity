@@ -7740,7 +7740,7 @@ MonoBehaviour:
   playerFinder: {fileID: 162166349}
   ribbon: {fileID: 214740672}
   coloredRing: {fileID: 1777192036}
-  GAMETIME: 10
+  GAMETIME: 300
 --- !u!114 &1095947346
 MonoBehaviour:
   m_ObjectHideFlags: 0

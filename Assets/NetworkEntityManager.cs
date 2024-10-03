@@ -1,103 +1,127 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using Unity.Collections;
 using Unity.VisualScripting;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
-using UnityEditor;
 
 public class NetworkEntityManager : NetworkBehaviour
 {
-
-    #region Class Fields
-
+    
     public static NetworkEntityManager Instance;
+    
+#region Server Variables
+        
+        private NetworkList<PlayerData> _allPlayerData;
 
-    private NetworkList<PlayerData> allPlayerData;
+#endregion
 
-    [SerializeField] private GameObject scoreboardPanel;
-
-    [SerializeField] private ScoreboardLogic scoreboardLogic;
-
-    private const int MAXHEALTH = 10;
-
-    private const int STARTSCORE = 0;
-
-    private const int DAMAGE = 1;
-
+#region Player Variables
+    
+    [Space (10)]
     [SerializeField] private GameObject localPlayer;
-
-    [SerializeField] private TMP_Text combatLog;
-
-    [SerializeField] private TMP_Text localHealth;
-
+    private MovementAndSteering _movementAndSteering;
+    private ShipEffectController _shipEffectController;
+    [SerializeField] private GameObject ribbon;
+    [SerializeField] private Image coloredRing;
+    
+#endregion
+    
+#region Network Variables
+    
+    [SerializeField] private PlayerAvatar[] networkedGameObjects;
+    
+#endregion
+    
+#region UI Elements
+    
+    [Header("UI Elements")]
+    
+    [SerializeField] private TMP_Text combatLog; //This is only used for debugging
+    [FormerlySerializedAs("localHealth")] [SerializeField] private TMP_Text localDeathCount;
     [SerializeField] private TMP_Text localScore;
 
+    [SerializeField] private GameObject wheel;
+    private WheelSwitcher _wheelSwitcher;
+    
+    [SerializeField] private GameObject scoreboardPanel;
+    private ScoreboardLogic _scoreboardLogic;
+    private ModalFade _scoreboardPanelModalFade;
+    
+    private ModalFade _playerFinderModalFade;
+    
+    [SerializeField] private Transform playerCardParent;
     [SerializeField] private PlayerCard playerCardPrefab;
+    private Dictionary<ulong, PlayerCard> _playerCards = new Dictionary<ulong, PlayerCard>();
+    
+    [SerializeField] private Button readyButton;
+    [SerializeField] private Button[] shootingButtons;
+    
+    [SerializeField] private GameObject canvasDarkBG;
+    [SerializeField] private GameObject topUIBar;
+    [SerializeField] private GameObject roomCodeText;
+    [SerializeField] private GameObject[] uiPlayStateObjects;
+    [SerializeField] private GameObject[] wheelAndWheelCam;
+    [SerializeField] private GameObject playerFinder;
+    
+    [SerializeField] private Sprite[] readyButtonImages;
+    
+    private int _readyButtonImageIndex;
+    
+#endregion
+   
+#region Game Settings
+    
+    [Header ("Game Settings")]
+    
+    [SerializeField] private  int playerMaxHealth = 10;
 
-    [SerializeField] Transform playerCardParent;
+    [SerializeField] private  int startingScore = 0;
 
-    private Dictionary<ulong, PlayerCard> playerCards = new Dictionary<ulong, PlayerCard>();
+    [SerializeField] private  int playerDamage = 1;
+    
+    [SerializeField] private float gameTime = 300f;
+
+#endregion
+
+#region Game Runtime Variables
+    
+    private bool _isReadyLocal;
+    private bool _gameStarted;
+    private bool _gettingReady;
+    private bool _isFirstGo = true;
+    private bool _gameEnd;
+    
+#endregion
+
+    
+    
 
     public bool shootingDebug = false;
 
-    public FixedString64Bytes[] colorList = new FixedString64Bytes[] { "#AD3232", "#A59622", "#285D27", "#28A5A7", "#29447D", "#A5579E", "#00FF6E" };
+    public FixedString64Bytes[] colorList = { "#AD3232", "#A59622", "#285D27", "#28A5A7", "#29447D", "#A5579E", "#00FF6E" };
+    
 
-    private bool isReadyLocal = false;
-
-    private bool gameStarted;
-
-    [SerializeField] private Button readyButton;
-
-    private bool gettingReady;
-
-    private ulong latestClientId;
-
-    [SerializeField] private GameObject[] playStateObjects;
 
     [SerializeField] private Transform spawnAroundObject;
-
-    private bool isFirstGo = true;
-
+    
     [SerializeField] private Transform[] spawnPoints;
 
-    [SerializeField] private PlayerAvatar[] networkedGameObjects;
-
-    [SerializeField] private GameObject CanvasDarkBG;
-
-    [SerializeField] private Sprite[] readyButtonImages;
-
-    [SerializeField] private GameObject TopBar;
-
-    private int readyButtonImageIndex = 0;
-
-    [SerializeField] private Button[] shootingButtons;
-
-    private bool gameEnd = false;
-
-    [SerializeField] private GameObject wheel;
-
-    [SerializeField] private GameObject[] uiPlayStateObjects;
-
-    [SerializeField] private GameObject roomCodeText;
-
-    [SerializeField] private GameObject playerFinder;
-
-    [SerializeField] private GameObject ribbon;
-
-    [SerializeField] private Image coloredRing; 
-
-    [SerializeField] private float GAMETIME = 60f;
 
 
 
-    #endregion
 
-    #region Default Functions
+
+
+
+
+    
+
+#region Default Functions
 
     private void Awake()
     {
@@ -112,59 +136,75 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void Start()
     {
+        //Get variables related to the player object
+        _movementAndSteering = localPlayer.GetComponent<MovementAndSteering>();
+        _movementAndSteering._pauseUpdate = true;
+        _shipEffectController = localPlayer.GetComponentInChildren<ShipEffectController>();
+        
+        //Get object to switch between different wheel damage states
+        _wheelSwitcher = wheel.GetComponent<WheelSwitcher>();
+        
+        _scoreboardPanelModalFade = scoreboardPanel.GetComponent<ModalFade>();
+        _scoreboardLogic = scoreboardPanel.GetComponent<ScoreboardLogic>();
+        
+        _playerFinderModalFade = playerFinder.GetComponent<ModalFade>();
+        
         Timer.onGameEnd += EndGame;
-        gameStarted = false;
-        allPlayerData = new NetworkList<PlayerData>();
-        allPlayerData.OnListChanged += OnPlayerListChanged;
-        localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = true;
+        
+        
+        _allPlayerData = new NetworkList<PlayerData>();
+        _allPlayerData.OnListChanged += OnPlayerListChanged;
+        
     }
 
     private void Update()
     {
-        if (gameEnd)
+        if (_gameEnd)
         {
             StopAllCoroutines();
         }
     }
 
-    #endregion
+#endregion
 
-    #region Ready
+#region Ready
+
+    private void SwapReadyButtons(int index) {
+        switch (index)
+                {
+                    case 0:
+                        _readyButtonImageIndex = 1;
+                        SwapReadyButtonImage();
+                        break;
+                    case 2:
+                        if (IsServer)
+                        {
+                            ServerStartMatch();
+                        }
+                        return;
+                    case 3:
+                        _readyButtonImageIndex = 1;
+                        SwapReadyButtonImage();
+                        break;
+                }
+    }
 
     public void SetReady()
     {
-        switch (readyButtonImageIndex)
-        {
-            case 0:
-                readyButtonImageIndex = 1;
-                SwapReadyButtonImage();
-                break;
-            case 2:
-                if (IsServer)
-                {
-                    //gameStarted = true;
-                    ServerStartMatch();
-                }
-                return;
-            case 3:
-                readyButtonImageIndex = 1;
-                SwapReadyButtonImage();
-                break;
-        }
+        SwapReadyButtons(_readyButtonImageIndex);
 
-        if (!isReadyLocal)
-        {
-            isReadyLocal = true;
-            SendReady(isReadyLocal);
-        }
+        if (_isReadyLocal) return;
+            
+        _isReadyLocal = true;
+        SendReady(_isReadyLocal);
     }
 
     private void SwapReadyButtonImage()
     {
-        readyButton.image.sprite = readyButtonImages[readyButtonImageIndex];
+        readyButton.image.sprite = readyButtonImages[_readyButtonImageIndex];
     }
 
-    public void SendReady(bool value)
+    private void SendReady(bool value)
     {
         ulong clientId = NetworkManager.Singleton.LocalClientId;
 
@@ -186,22 +226,22 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void SendReadyInner(ulong clientId, bool value)
     {
-        for (int i = 0; i < allPlayerData.Count; i++)
+        for (int i = 0; i < _allPlayerData.Count; i++)
         {
-            if (allPlayerData[i].clientId == clientId)
+            if (_allPlayerData[i].clientId == clientId)
             {
-                allPlayerData[i] = new PlayerData()
+                _allPlayerData[i] = new PlayerData()
                 {
-                    clientId = allPlayerData[i].clientId,
-                    name = allPlayerData[i].name,
-                    score = allPlayerData[i].score,
-                    health = allPlayerData[i].health,
-                    deaths = allPlayerData[i].deaths,
-                    isDead = allPlayerData[i].isDead,
-                    color = allPlayerData[i].color,
+                    clientId = _allPlayerData[i].clientId,
+                    name = _allPlayerData[i].name,
+                    score = _allPlayerData[i].score,
+                    health = _allPlayerData[i].health,
+                    deaths = _allPlayerData[i].deaths,
+                    isDead = _allPlayerData[i].isDead,
+                    color = _allPlayerData[i].color,
                     isReady = value
                 };
-                UpdateScoreboardReadyClientRpc(allPlayerData[i].clientId, allPlayerData[i].isReady);
+                UpdateScoreboardReadyClientRpc(_allPlayerData[i].clientId, _allPlayerData[i].isReady);
             }
         }
     }
@@ -212,9 +252,9 @@ public class NetworkEntityManager : NetworkBehaviour
         if (IsServer)
         {
 
-            if (gameStarted)
+            if (_gameStarted)
             {
-                foreach (PlayerData playerData in allPlayerData)
+                foreach (PlayerData playerData in _allPlayerData)
                 {
                     UpdateScoreboardClientRpc(playerData);
                 }
@@ -222,7 +262,7 @@ public class NetworkEntityManager : NetworkBehaviour
             else
             {
                 int count = 0;
-                foreach (PlayerData playerData in allPlayerData)
+                foreach (PlayerData playerData in _allPlayerData)
                 {
                     if (playerData.isReady)
                     {
@@ -230,15 +270,15 @@ public class NetworkEntityManager : NetworkBehaviour
                     }
                 }
 
-                if (isReadyLocal)
+                if (_isReadyLocal)
                 {
-                    if (count == allPlayerData.Count)
+                    if (count == _allPlayerData.Count)
                     {
-                        readyButtonImageIndex = 2;
+                        _readyButtonImageIndex = 2;
                     }
                     else
                     {
-                        readyButtonImageIndex = 1;
+                        _readyButtonImageIndex = 1;
                     }
                     SwapReadyButtonImage();
                 }
@@ -248,70 +288,63 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void ServerStartMatch()
     {
-        if (isFirstGo)
+        if (_isFirstGo)
         {
-            isFirstGo = false;
-            //SetIsFirstGoFalseClientRpc();
+            _isFirstGo = false;
         }
         else
         {
             PositionPlayers();
         }
 
-        gameStarted = true;
+        _gameStarted = true;
 
-        for (int i = 0; i < allPlayerData.Count; i++)
+        for (int i = 0; i < _allPlayerData.Count; i++)
         {
 
-            allPlayerData[i] = new PlayerData()
+            _allPlayerData[i] = new PlayerData()
             {
-                clientId = allPlayerData[i].clientId,
-                name = allPlayerData[i].name,
-                score = STARTSCORE,
-                health = MAXHEALTH,
+                clientId = _allPlayerData[i].clientId,
+                name = _allPlayerData[i].name,
+                score = startingScore,
+                health = playerMaxHealth,
                 deaths = 0,
                 isDead = false,
-                color = allPlayerData[i].color,
+                color = _allPlayerData[i].color,
                 isReady = false
             };
-            UpdateScoreboardScoreClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].score);
-            UpdateScoreboardDeathsClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
-            UpdateLocalScoreClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].score);
-            UpdateLocalDeathsClientRpc(i.ConvertTo<UInt64>(), allPlayerData[i].deaths);
+            UpdateScoreboardScoreClientRpc(i.ConvertTo<UInt64>(), _allPlayerData[i].score);
+            UpdateScoreboardDeathsClientRpc(i.ConvertTo<UInt64>(), _allPlayerData[i].deaths);
+            UpdateLocalScoreClientRpc(i.ConvertTo<UInt64>(), _allPlayerData[i].score);
+            UpdateLocalDeathsClientRpc(i.ConvertTo<UInt64>(), _allPlayerData[i].deaths);
         }
         StartGameClientRpc();
     }
 
-    [ClientRpc]
-    private void SetIsFirstGoFalseClientRpc()
-    {
-        isFirstGo = false;
-    }
 
     [ClientRpc]
     private void StartGameClientRpc()
     {
-        gameStarted = true;
-        localPlayer.GetComponent<MovementAndSteering>().ResetWheel();
-        wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
+        _gameStarted = true;
+        _movementAndSteering.ResetWheel();
+        _wheelSwitcher.SwitchWheel(0);
         roomCodeText.GetComponent<ModalFade>().Hide();
-        isReadyLocal = false;
+        _isReadyLocal = false;
         SetUpScene();
         localPlayer.GetComponent<LocalPlayer>().ShowCanvas();
-        localPlayer.GetComponentInChildren<ShipEffectController>().IsRespawn();
+        _shipEffectController.IsRespawn();
         ToggleNetworkPlayerVisibilty(true);
-        CanvasDarkBG.GetComponent<ModalFade>().Hide();
-        scoreboardPanel.GetComponent<ModalFade>().Hide();
-        StartCoroutine(WaitToExecute(0.27f, new Action[] { scoreboardLogic.ModeScoreboard, SetScoreBoardModeScore }));
-        playerFinder.GetComponent<ModalFade>().Show();
-        Timer.Instance.StartTimer(GAMETIME);
-        localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = false;
-        gameEnd = false;
-        if (isFirstGo) isFirstGo = false;
+        canvasDarkBG.GetComponent<ModalFade>().Hide();
+        _scoreboardPanelModalFade.Hide();
+        StartCoroutine(WaitToExecute(0.27f, new Action[] { _scoreboardLogic.ModeScoreboard, SetScoreBoardModeScore }));
+        _playerFinderModalFade.Show();
+        Timer.Instance.StartTimer(gameTime);
+        _movementAndSteering._pauseUpdate = false;
+        _gameEnd = false;
+        if (_isFirstGo) _isFirstGo = false;
         EnablePlayerControls(localPlayer);
-        //localPlayer.GetComponent<MovementAndSteering>().IgnoreWheelLock();
         EnsureNetworkColliders();
-        localPlayer.GetComponent<MovementAndSteering>().ForceAllowGestureDetection();
+        _movementAndSteering.ForceAllowGestureDetection();
     }
 
 
@@ -352,7 +385,7 @@ public class NetworkEntityManager : NetworkBehaviour
         }
     }
 
-    #endregion
+#endregion
 
     [ClientRpc]
     private void SetUpSceneClientRpc(ulong clientId)
@@ -363,48 +396,31 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void SetUpScene()
     {
-        //roomCodeText.GetComponent<ModalFade>().Hide();
-        //foreach (GameObject g in playStateObjects)
-        //{
-        //    g.SetActive(true);
-        //}
-
         foreach (GameObject g in uiPlayStateObjects)
         {
             g.GetComponent<ModalFade>().Show();
         }
 
-        if (!isFirstGo)
+        if (!_isFirstGo)
         {
-            localPlayer.GetComponentInChildren<ShipEffectController>().IsRespawn();
+            _shipEffectController.IsRespawn();
         }
         
-        wheel.GetComponent<WheelSwitcher>().NewWheel();
+        _wheelSwitcher.NewWheel();
 
-        //if (!isFirstGo)
-        //{
-        //    localPlayer.GetComponent<LocalPlayer>().ShowCanvas();
-        //    localPlayer.GetComponentInChildren<ShipEffectController>().ShowBoat();
-        //} 
 
         ToggleNetworkPlayerVisibilty(true);
     }
 
     private void DestroyScene()
     {
-        //foreach (GameObject g in playStateObjects)
-        //{
-        //    g.SetActive(false);
-        //}
-
-        wheel.GetComponent<WheelSwitcher>().WheelDeath();
+        _wheelSwitcher.WheelDeath();
         foreach (GameObject g in uiPlayStateObjects)
         {
             g.GetComponent<ModalFade>().Hide();
         }
-        localPlayer.GetComponentInChildren<ShipEffectController>().SetInvis();
+        _shipEffectController.SetInvis();
         localPlayer.GetComponent<LocalPlayer>().HideCanvas();
-        //TopBar.GetComponent<ModalFade>().Hide();
         ToggleNetworkPlayerVisibilty(false);
     }
 
@@ -427,7 +443,6 @@ public class NetworkEntityManager : NetworkBehaviour
                 {
                     if (playerAvatar.gameObject.GetComponent<NetworkObject>().OwnerClientId != NetworkManager.Singleton.LocalClientId)
                     {
-                        //playerAvatar.gameObject.SetActive(true);
                         playerAvatar.gameObject.GetComponentInChildren<ShipEffectController>(true).IsRespawn();
                         playerAvatar.gameObject.GetComponent<Collider>().enabled = true;
                     }
@@ -438,7 +453,6 @@ public class NetworkEntityManager : NetworkBehaviour
                 {
                     if (player.gameObject.GetComponent<NetworkObject>().OwnerClientId != NetworkManager.Singleton.LocalClientId)
                     {
-                        //player.gameObject.SetActive(false);
                         player.gameObject.GetComponentInChildren<ShipEffectController>(true).SetInvis();
                         player.gameObject.GetComponent<Collider>().enabled = false;
                     }
@@ -456,24 +470,23 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     private void EndGameClientRpc()
     {
-        localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = true;
-        gameEnd = true;
+        _movementAndSteering._pauseUpdate = true;
+        _gameEnd = true;
         DestroyScene();
-        gameStarted = false;
-        readyButtonImageIndex = 3;
+        _gameStarted = false;
+        _readyButtonImageIndex = 3;
         SwapReadyButtonImage();
-        //WaitToExecute(2f, new Action[] {localPlayer.GetComponent<MovementAndSteering>().ResetWheel});
-        playerFinder.GetComponent<ModalFade>().Hide();
-        scoreboardLogic.ModeGameEnd();
-        scoreboardPanel.GetComponent<ModalFade>().Show();
-        CanvasDarkBG.GetComponent<ModalFade>().Show();
+        _playerFinderModalFade.Hide();
+        _scoreboardLogic.ModeGameEnd();
+        _scoreboardPanelModalFade.Show();
+        canvasDarkBG.GetComponent<ModalFade>().Show();
     }
 
     private void ShowLobby(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        scoreboardLogic.Initialize();
-        scoreboardPanel.GetComponent<ModalFade>().Show();
+        _scoreboardLogic.Initialize();
+        _scoreboardPanelModalFade.Show();
     }
 
     [ClientRpc]
@@ -483,17 +496,17 @@ public class NetworkEntityManager : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void AddNewClientToListServerRpc(ulong clientId, FixedString64Bytes name)
+    public void AddNewClientToListServerRpc(ulong clientId, FixedString64Bytes clientName)
     {
-        AddNewClientToList(clientId, name);
+        AddNewClientToList(clientId, clientName);
     }
 
-    public void AddNewClientToList(ulong clientId, FixedString64Bytes name)
+    public void AddNewClientToList(ulong clientId, FixedString64Bytes clientName)
     {
         if (!IsServer) return;
 
         GetNetworkedObjectsClientRpc();
-        foreach (var playerData in allPlayerData)
+        foreach (var playerData in _allPlayerData)
         {
             if (playerData.clientId == clientId) return;
         }
@@ -501,29 +514,26 @@ public class NetworkEntityManager : NetworkBehaviour
         PlayerData newPlayerData = new()
         {
             clientId = clientId,
-            name = name,
-            score = STARTSCORE,
-            health = MAXHEALTH,
+            name = clientName,
+            score = startingScore,
+            health = playerMaxHealth,
             deaths = 0,
             isDead = false,
-            color = colorList[allPlayerData.Count],
+            color = colorList[_allPlayerData.Count],
             isReady = false,
         };
 
 
-        //UpdateLocalHealthClientRpc(clientId, MAXHEALTH);
-        allPlayerData.Add(newPlayerData);
+        _allPlayerData.Add(newPlayerData);
 
-        foreach (var playerData in allPlayerData)
+        foreach (var playerData in _allPlayerData)
         {
-            //SetScoreboardClientRpc(playerData.clientId, playerData.name, playerData.score, playerData.deaths, playerData.color);
             NewSetScoreboardClientRpc(playerData);
         }
 
         SetSailColorClientRpc();
         PositionPlayerStartClientRpc(clientId);
         ShowLobbyClientRpc(clientId);
-        //SetUpSceneClientRpc(clientId);
 
     }
 
@@ -549,12 +559,12 @@ public class NetworkEntityManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void ReduceHealthServerRpc(ulong shooterId, ulong target)
     {
-        if (!IsServer || gameEnd) return;
+        if (!IsServer || _gameEnd) return;
 
         //Reduce the health of target
         if (shootingDebug)
         {
-            for (int i = 0; i < allPlayerData.Count; i++)
+            for (int i = 0; i < _allPlayerData.Count; i++)
             {
                 ShooterDebugClientRpc(shooterId);
                 TargetDebugClientRpc(target);
@@ -562,75 +572,75 @@ public class NetworkEntityManager : NetworkBehaviour
             return;
         }
 
-        for (int i = 0; i < allPlayerData.Count; i++)
+        for (int i = 0; i < _allPlayerData.Count; i++)
         {
-            if (allPlayerData[i].clientId == target)
+            if (_allPlayerData[i].clientId == target)
             {
-                if (allPlayerData[i].isDead) return;
+                if (_allPlayerData[i].isDead) return;
 
-                int newHealth = allPlayerData[i].health - DAMAGE;
+                int newHealth = _allPlayerData[i].health - playerDamage;
 
                 WheelDamageClientRpc(target, newHealth);
 
                 if (newHealth <= 0)
                 {
-                    int newDeaths = allPlayerData[i].deaths + 1;
+                    int newDeaths = _allPlayerData[i].deaths + 1;
                     newHealth = 0;
 
-                    allPlayerData[i] = new PlayerData
+                    _allPlayerData[i] = new PlayerData
                     {
-                        clientId = allPlayerData[i].clientId,
-                        name = allPlayerData[i].name,
-                        score = allPlayerData[i].score,
+                        clientId = _allPlayerData[i].clientId,
+                        name = _allPlayerData[i].name,
+                        score = _allPlayerData[i].score,
                         health = newHealth,
                         deaths = newDeaths,
                         isDead = true,
-                        color = allPlayerData[i].color,
-                        isReady = allPlayerData[i].isReady,
+                        color = _allPlayerData[i].color,
+                        isReady = _allPlayerData[i].isReady,
                     };
 
-                    UpdateLocalDeathsClientRpc(target, allPlayerData[i].deaths);
+                    UpdateLocalDeathsClientRpc(target, _allPlayerData[i].deaths);
 
                     OnBoatDeathClientRpc(target);
 
-                    for (int j = 0; j < allPlayerData.Count; j++)
+                    for (int j = 0; j < _allPlayerData.Count; j++)
                     {
-                        if ((allPlayerData[j].clientId == shooterId))
+                        if ((_allPlayerData[j].clientId == shooterId))
                         {
-                            int newScore = allPlayerData[j].score + 1;
+                            int newScore = _allPlayerData[j].score + 1;
 
                             UpdateLocalScoreClientRpc(shooterId, newScore);
 
-                            allPlayerData[j] = new PlayerData
+                            _allPlayerData[j] = new PlayerData
                             {
-                                clientId = allPlayerData[j].clientId,
-                                name = allPlayerData[j].name,
+                                clientId = _allPlayerData[j].clientId,
+                                name = _allPlayerData[j].name,
                                 score = newScore,
-                                health = allPlayerData[j].health,
-                                deaths = allPlayerData[j].deaths,
-                                isDead = allPlayerData[j].isDead,
-                                color = allPlayerData[j].color,
-                                isReady = allPlayerData[j].isReady,
+                                health = _allPlayerData[j].health,
+                                deaths = _allPlayerData[j].deaths,
+                                isDead = _allPlayerData[j].isDead,
+                                color = _allPlayerData[j].color,
+                                isReady = _allPlayerData[j].isReady,
                             };
                         }
                     }
                     break;
                 }
 
-                if (!allPlayerData[i].isDead)
+                if (!_allPlayerData[i].isDead)
                 {
                     UpdateLocalTextClientRpc(shooterId, target);
 
-                    allPlayerData[i] = new PlayerData
+                    _allPlayerData[i] = new PlayerData
                     {
-                        clientId = allPlayerData[i].clientId,
-                        name = allPlayerData[i].name,
-                        score = allPlayerData[i].score,
+                        clientId = _allPlayerData[i].clientId,
+                        name = _allPlayerData[i].name,
+                        score = _allPlayerData[i].score,
                         health = newHealth,
-                        deaths = allPlayerData[i].deaths,
-                        isDead = allPlayerData[i].isDead,
-                        color = allPlayerData[i].color,
-                        isReady = allPlayerData[i].isReady,
+                        deaths = _allPlayerData[i].deaths,
+                        isDead = _allPlayerData[i].isDead,
+                        color = _allPlayerData[i].color,
+                        isReady = _allPlayerData[i].isReady,
                     };
                 }
                 break;
@@ -645,15 +655,15 @@ public class NetworkEntityManager : NetworkBehaviour
 
         if (health > 6)
         {
-            wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
+            _wheelSwitcher.SwitchWheel(0);
         }
         else if (health > 3)
         {
-            wheel.GetComponent<WheelSwitcher>().SwitchWheel(1);
+            _wheelSwitcher.SwitchWheel(1);
         }
         else
         {
-            wheel.GetComponent<WheelSwitcher>().SwitchWheel(2);
+            _wheelSwitcher.SwitchWheel(2);
         }
     }
 
@@ -744,12 +754,12 @@ public class NetworkEntityManager : NetworkBehaviour
         AudioManager.Instance.PlaySound("woodenShipBreak");
         if (NetworkManager.Singleton.LocalClientId == clientId)
         {
-            localPlayer.GetComponent<MovementAndSteering>()._pauseUpdate = true;
-            foreach (Button button in shootingButtons)
+            _movementAndSteering._pauseUpdate = true;
+            foreach (var button in shootingButtons)
             {
                 button.interactable = false;
             }
-            localPlayer.GetComponentInChildren<ShipEffectController>(true).IsSunk();
+            _shipEffectController.IsSunk();
             SinkIntoRespawnFunction(localPlayer, clientId);
 
         }
@@ -773,68 +783,44 @@ public class NetworkEntityManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SetNotDeadServerRpc(ulong clientId)
     {
-        for (int i = 0; i < allPlayerData.Count; i++)
+        for (int i = 0; i < _allPlayerData.Count; i++)
         {
-            if (allPlayerData[i].clientId == clientId)
+            if (_allPlayerData[i].clientId == clientId)
             {
-                allPlayerData[i] = new PlayerData
+                _allPlayerData[i] = new PlayerData
                 {
-                    clientId = allPlayerData[i].clientId,
-                    name = allPlayerData[i].name,
-                    score = allPlayerData[i].score,
-                    health = MAXHEALTH,
-                    deaths = allPlayerData[i].deaths,
+                    clientId = _allPlayerData[i].clientId,
+                    name = _allPlayerData[i].name,
+                    score = _allPlayerData[i].score,
+                    health = playerMaxHealth,
+                    deaths = _allPlayerData[i].deaths,
                     isDead = false,
-                    color = allPlayerData[i].color,
-                    isReady = allPlayerData[i].isReady,
+                    color = _allPlayerData[i].color,
+                    isReady = _allPlayerData[i].isReady,
                 };
                 break;
             }
         }
     }
 
-    private void RespawnPlayerAvatars()
-    {
-        foreach(PlayerAvatar player in networkedGameObjects)
-        {
-            player.gameObject.GetComponent<Collider>().enabled = true;
-            player.gameObject.GetComponentInChildren<ShipEffectController>().SpawnAnim();
-        }
-    }
-
     private void EnablePlayerControls(GameObject player)
     {
-        player.GetComponent<MovementAndSteering>()._pauseUpdate = false;
-        player.GetComponent<MovementAndSteering>().CanTurnWheel = true;
+        _movementAndSteering._pauseUpdate = false;
+        _movementAndSteering.CanTurnWheel = true;
         foreach (Button button in shootingButtons)
         {
             button.interactable = true;
         }
     }
 
-    public void RespawnTest()
-    {
-        localPlayer.GetComponentInChildren<ShipEffectController>().IsRespawn();
-    }
-
     private IEnumerator SinkIntoRespawn(GameObject player, ulong clientId)
     {
-        //while (!gameEnd)
-        //{
-        //    yield return new WaitForSeconds(6f);
-        //    //wheel.GetComponent<WheelSwitcher>().SwitchWheel(0);
-        //    wheel.GetComponent<WheelSwitcher>().NewWheel();
-        //    player.GetComponentInChildren<ShipEffectController>().IsRespawn();
-        //    SetNotDeadServerRpc(clientId);
-
-        //}
-        //EnablePlayerControls(player);
 
         yield return new WaitForSeconds(6f);
-        wheel.GetComponent<WheelSwitcher>().NewWheel();
-        player.GetComponentInChildren<ShipEffectController>().IsRespawn();
-        player.GetComponent<MovementAndSteering>()._pauseUpdate = false;
-        player.GetComponent<MovementAndSteering>().ResetWheel();
+        _wheelSwitcher.NewWheel();
+        _shipEffectController.IsRespawn();
+        _movementAndSteering._pauseUpdate = false;
+        _movementAndSteering.ResetWheel();
         foreach (Button button in shootingButtons)
         {
             button.interactable = true;
@@ -864,37 +850,37 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     public void UpdateScoreboardScoreClientRpc(ulong clientId, int newScore)
     {
-        playerCards[clientId].SetScore(newScore);
+        _playerCards[clientId].SetScore(newScore);
     }
 
     [ClientRpc]
     public void UpdateScoreboardDeathsClientRpc(ulong clientId, int newDeaths)
     {
-        playerCards[clientId].SetDeaths(newDeaths);
+        _playerCards[clientId].SetDeaths(newDeaths);
     }
 
     [ClientRpc]
     public void UpdateScoreBoardColorClientRpc(ulong clientId, FixedString64Bytes newCol)
     {
-        playerCards[clientId].SetColor(newCol);
+        _playerCards[clientId].SetColor(newCol);
     }
 
     [ClientRpc]
     public void UpdateScoreboardReadyClientRpc(ulong clientId, bool newReady)
     {
-        playerCards[clientId].SetReady(newReady);
+        _playerCards[clientId].SetReady(newReady);
     }
 
     [ClientRpc]
     public void UpdateScoreboardClientRpc(PlayerData playerdata)
     {
-        playerCards[playerdata.clientId].SetPlayerData(playerdata);
+        _playerCards[playerdata.clientId].SetPlayerData(playerdata);
     }
 
     [ClientRpc]
     public void SetScoreboardClientRpc(ulong clientId, FixedString64Bytes name, int score, int deaths, FixedString64Bytes colorArg)
     {
-        if (playerCards.ContainsKey(clientId)) return;
+        if (_playerCards.ContainsKey(clientId)) return;
 
         CreatePlayerCard(clientId, name, score, deaths, colorArg);
     }
@@ -902,14 +888,14 @@ public class NetworkEntityManager : NetworkBehaviour
     [ClientRpc]
     private void NewSetScoreboardClientRpc(PlayerData playerData)
     {
-        if (playerCards.ContainsKey(playerData.clientId)) return;
+        if (_playerCards.ContainsKey(playerData.clientId)) return;
 
         NewCreatePlayerCard(playerData);
     }
 
     private void SetScoreBoardModeScore()
     {
-        foreach (KeyValuePair<ulong, PlayerCard> card in playerCards)
+        foreach (KeyValuePair<ulong, PlayerCard> card in _playerCards)
         {
             card.Value.ModeScoreboard();
         }
@@ -917,7 +903,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void SetScoreboardModeLobby()
     {
-        foreach (KeyValuePair<ulong, PlayerCard> card in playerCards)
+        foreach (KeyValuePair<ulong, PlayerCard> card in _playerCards)
         {
             card.Value.ModeLobby();
         }
@@ -929,14 +915,14 @@ public class NetworkEntityManager : NetworkBehaviour
         newCard.SetScore(kills);
         newCard.SetDeaths(deaths);
         newCard.SetColor(colorArg);
-        playerCards.Add(clientId, newCard);
+        _playerCards.Add(clientId, newCard);
         newCard.Initialize(name);
     }
 
     private void NewCreatePlayerCard(PlayerData playerData)
     {
         PlayerCard newCard = Instantiate(playerCardPrefab, playerCardParent);
-        playerCards.Add(playerData.clientId, newCard);
+        _playerCards.Add(playerData.clientId, newCard);
         newCard.SetPlayerData(playerData);
     }
 
@@ -956,14 +942,14 @@ public class NetworkEntityManager : NetworkBehaviour
     private void TargetDebugClientRpc(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        //combatLog.text = "you have been hit";
+        combatLog.text = "you have been hit";
     }
 
     [ClientRpc]
     private void ShooterDebugClientRpc(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        //combatLog.text = "you have shot someone";
+        combatLog.text = "you have shot someone";
     }
 
 
@@ -971,7 +957,7 @@ public class NetworkEntityManager : NetworkBehaviour
     void UpdateLocalTextClientRpc(ulong shooterId, ulong targetId)
     {
         if (NetworkManager.Singleton.LocalClientId != targetId) return;
-        //combatLog.text = $"You have been shot by {shooterId}";
+        combatLog.text = $"You have been shot by {shooterId}";
     }
 
     [ClientRpc]
@@ -985,7 +971,7 @@ public class NetworkEntityManager : NetworkBehaviour
     void UpdateLocalDeathsClientRpc(ulong clientId, int health)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        localHealth.text = health.ToString();
+        localDeathCount.text = health.ToString();
     }
 
     [ClientRpc]
@@ -993,7 +979,7 @@ public class NetworkEntityManager : NetworkBehaviour
     {
         if (NetworkManager.Singleton.LocalClientId == targetId)
         {
-            //combatLog.text = $"{shooterId} has sunk your boat!";
+            combatLog.text = $"{shooterId} has sunk your boat!";
         }
     }
 

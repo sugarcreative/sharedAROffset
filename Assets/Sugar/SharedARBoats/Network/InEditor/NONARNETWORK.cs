@@ -48,6 +48,7 @@ public class NONARNETWORK : NetworkBehaviour
     private void Start()
     {
         NetworkManager.Singleton.OnClientConnectedCallback += OnConnection;
+        beginButton.interactable = true;
     }
     public void ShowHostJoinPanel()
     {

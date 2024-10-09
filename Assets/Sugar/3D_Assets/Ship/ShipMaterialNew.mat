@@ -145,7 +145,7 @@ Material:
     - _EmissionOnly: 0
     - _EnvironmentReflections: 1
     - _FadeBlur: 0.3
-    - _FadeShift: 0.608
+    - _FadeShift: 0.716
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0

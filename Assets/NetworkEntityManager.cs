@@ -1009,4 +1009,11 @@ public class NetworkEntityManager : NetworkBehaviour
             //coloredRing.color = newCol;
         }
     }
+
+    [ContextMenu("ShowBoatButtons")]
+    private void ShowBoatButtons() {
+        foreach (var button in shootingButtons) {
+            button.interactable = true;
+        }
+    }
 }

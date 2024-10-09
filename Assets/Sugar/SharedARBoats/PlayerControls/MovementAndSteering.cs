@@ -43,7 +43,7 @@ public class MovementAndSteering : MonoBehaviour
     public Slider _slider;
 
     #region debugging
-    public bool _pauseUpdate = false;
+    public bool _pauseUpdate = true;
     [SerializeField] private bool _pauseDebug = true;
 
     [SerializeField] CircularGestureDetection _circularGestureDetection;

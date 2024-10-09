@@ -1098,7 +1098,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2133372438
+  GlobalObjectIdHash: 3995169154
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -1628,6 +1628,12 @@ MonoBehaviour:
   - {fileID: 9093106844957075594}
   - {fileID: 6480427961417513962}
   - {fileID: 948673243927323886}
+  NonARScene: {fileID: 6018308489043718927}
+  NonARSpawnPosParent: {fileID: 0}
+  NonARSpawnAroundObject: {fileID: 0}
+  ARScene: {fileID: 8969633618641304033}
+  ARSpawnPosParent: {fileID: 0}
+  ARSpawnAroundObject: {fileID: 0}
 --- !u!1 &1195288352852748132
 GameObject:
   m_ObjectHideFlags: 0
@@ -2290,7 +2296,7 @@ GameObject:
   - component: {fileID: 5788260638933425687}
   - component: {fileID: 6146639288548632593}
   m_Layer: 4
-  m_Name: Hexagon Pointed-Top
+  m_Name: ARSpawnPosParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7243,7 +7249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4099639702
+  GlobalObjectIdHash: 213964279
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -7869,7 +7875,7 @@ GameObject:
   - component: {fileID: 8702440758919479383}
   - component: {fileID: 5806397393053012897}
   m_Layer: 4
-  m_Name: Hexagon Pointed-Top
+  m_Name: NonARSpawnPosParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9386,7 +9392,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1563436820607488228}
   m_Layer: 0
-  m_Name: NonARScenery
+  m_Name: NonARScene
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10082,8 +10088,9 @@ GameObject:
   - component: {fileID: 7200908142568132240}
   - component: {fileID: 6914319252531660601}
   - component: {fileID: 7759143083080468781}
+  - component: {fileID: 2310738514879708656}
   m_Layer: 4
-  m_Name: CylinderNonAR
+  m_Name: SpawnDirectionNonAR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10177,6 +10184,18 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &2310738514879708656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6217639565558716536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8553c85e81b7ede4a80bcaf0029d0c13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6230327042635406932
 GameObject:
   m_ObjectHideFlags: 0
@@ -12612,7 +12631,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 209574553
+  GlobalObjectIdHash: 3656462385
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -14455,7 +14474,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6417443331479305733}
   m_Layer: 0
-  m_Name: ARScenery
+  m_Name: ARScene
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14784,8 +14803,9 @@ GameObject:
   - component: {fileID: 1420884419425393088}
   - component: {fileID: 888926248342831807}
   - component: {fileID: 2527544888139516884}
+  - component: {fileID: 9071891169304708826}
   m_Layer: 4
-  m_Name: Cylinder
+  m_Name: SpawnDirectionAR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14879,6 +14899,18 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &9071891169304708826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9105622195478672316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8553c85e81b7ede4a80bcaf0029d0c13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9116431086298724878
 GameObject:
   m_ObjectHideFlags: 0

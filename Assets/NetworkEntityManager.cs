@@ -22,8 +22,10 @@ public class NetworkEntityManager : NetworkBehaviour
 
 #region Player Variables
     
+    [FormerlySerializedAs("localPlayer")]
     [Space (10)]
-    [SerializeField] private GameObject localPlayer;
+    [SerializeField] private GameObject player;
+    [SerializeField] private LocalPlayer localPlayerScript; 
     private MovementAndSteering _movementAndSteering;
     private ShipEffectController _shipEffectController;
     [SerializeField] private GameObject ribbon;
@@ -113,14 +115,40 @@ public class NetworkEntityManager : NetworkBehaviour
 
 
 
-
-
-
-
+    [Header ("NonARObjects")]
+    [SerializeField] private GameObject NonARScene;
+    [SerializeField] private GameObject NonARSpawnPosParent;
+    [SerializeField] private GameObject NonARSpawnAroundObject;
+    [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private GameObject playerParentObject;
     
+    [Header ("ARObjects")]
+    [SerializeField] private GameObject ARScene;
+    [SerializeField] private GameObject ARSpawnPosParent;
+    [SerializeField] private GameObject ARSpawnAroundObject;
 
 
-    
+    public void SetLocalPlayer() {
+        localPlayerScript = player.GetComponent<LocalPlayer>();
+    }
+
+    public void SetMovementAndSteering() {
+        _movementAndSteering = player.GetComponent<MovementAndSteering>();
+    }
+
+    public void SetShipEffectController() {
+        _shipEffectController = player.GetComponentInChildren<ShipEffectController>(true);
+    }
+
+
+    public void InstantiatePlayer(GameObject prefab) {
+        player = Instantiate(prefab, playerParentObject.transform);
+        SetLocalPlayer();
+        SetMovementAndSteering();
+        SetShipEffectController();
+    }
+
+
 
 #region Default Functions
 
@@ -137,10 +165,11 @@ public class NetworkEntityManager : NetworkBehaviour
 
     private void Start()
     {
+        InstantiatePlayer(playerPrefab);
         //Get variables related to the player object
-        _movementAndSteering = localPlayer.GetComponent<MovementAndSteering>();
-        _movementAndSteering._pauseUpdate = true;
-        _shipEffectController = localPlayer.GetComponentInChildren<ShipEffectController>();
+        // _movementAndSteering = player.GetComponent<MovementAndSteering>();
+        // _movementAndSteering._pauseUpdate = true;
+        // _shipEffectController = player.GetComponentInChildren<ShipEffectController>();
         
         //Get object to switch between different wheel damage states
         _wheelSwitcher = wheel.GetComponent<WheelSwitcher>();
@@ -332,7 +361,7 @@ public class NetworkEntityManager : NetworkBehaviour
         roomCodeText.GetComponent<ModalFade>().Hide();
         _isReadyLocal = false;
         SetUpScene();
-        localPlayer.GetComponent<LocalPlayer>().ShowCanvas();
+        localPlayerScript.ShowCanvas();
         _shipEffectController.IsRespawn();
         ToggleNetworkPlayerVisibilty(true);
         canvasDarkBG.GetComponent<ModalFade>().Hide();
@@ -343,7 +372,7 @@ public class NetworkEntityManager : NetworkBehaviour
         _movementAndSteering._pauseUpdate = false;
         _gameEnd = false;
         if (_isFirstGo) _isFirstGo = false;
-        EnablePlayerControls(localPlayer);
+        EnablePlayerControls(player);
         EnsureNetworkColliders();
         _movementAndSteering.ForceAllowGestureDetection();
     }
@@ -366,7 +395,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
     public void SetLocalColor()
     {
-        localPlayer.GetComponent<LocalPlayer>().SetColor(colorList[NetworkManager.Singleton.LocalClientId]);
+        localPlayerScript.SetColor(colorList[NetworkManager.Singleton.LocalClientId]);
         RibbonColorSet(colorList[NetworkManager.Singleton.LocalClientId]);
 
     }
@@ -426,7 +455,7 @@ public class NetworkEntityManager : NetworkBehaviour
             g.GetComponent<ModalFade>().Hide();
         }
         _shipEffectController.SetInvis();
-        localPlayer.GetComponent<LocalPlayer>().HideCanvas();
+        localPlayerScript.HideCanvas();
         ToggleNetworkPlayerVisibilty(false);
     }
 
@@ -555,10 +584,10 @@ public class NetworkEntityManager : NetworkBehaviour
     private void PositionPlayerStartClientRpc(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        localPlayer.transform.position = spawnPoints[clientId].transform.position;
-        Vector3 directionAwayFromCenter = (localPlayer.transform.position - spawnAroundObject.transform.position).normalized;
+        player.transform.position = spawnPoints[clientId].transform.position;
+        Vector3 directionAwayFromCenter = (player.transform.position - spawnAroundObject.transform.position).normalized;
         directionAwayFromCenter.y = 0f;
-        localPlayer.transform.rotation = Quaternion.LookRotation(directionAwayFromCenter);
+        player.transform.rotation = Quaternion.LookRotation(directionAwayFromCenter);
         SetSailColor();
     }
 
@@ -766,7 +795,7 @@ public class NetworkEntityManager : NetworkBehaviour
                 button.interactable = false;
             }
             _shipEffectController.IsSunk();
-            SinkIntoRespawnFunction(localPlayer, clientId);
+            SinkIntoRespawnFunction(player, clientId);
 
         }
 

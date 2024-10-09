@@ -47,6 +47,7 @@ public class LocalPlayer : MonoBehaviour
         }
     }
 
+
     public void ShowCanvas()
     {
         canvas.GetComponent<ModalFade>().Show();

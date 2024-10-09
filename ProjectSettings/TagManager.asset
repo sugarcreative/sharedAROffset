@@ -9,13 +9,13 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - RangeLayer
   - Water
   - UI
   - LocalPlayer
   - NetworkPlayer
   - WheelCam
-  - 
+  - NoInteractions
   - 
   - 
   - 

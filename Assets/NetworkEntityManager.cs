@@ -98,7 +98,7 @@ public class NetworkEntityManager : NetworkBehaviour
     
 #endregion
 
-    
+
     
 
     public bool shootingDebug = false;
@@ -117,6 +117,7 @@ public class NetworkEntityManager : NetworkBehaviour
 
 
 
+    
 
 
     
@@ -374,6 +375,11 @@ public class NetworkEntityManager : NetworkBehaviour
     private void GetNetworkedObjectsClientRpc()
     {
         networkedGameObjects = FindObjectsOfType<PlayerAvatar>(true);
+        foreach (var networkedGameObject in networkedGameObjects) {
+            if (networkedGameObject.IsLocalPlayer) {
+                networkedGameObject.gameObject.layer = LayerMask.NameToLayer("NoInteractions");
+            }
+        }
     }
 
     IEnumerator WaitToExecute(float time, Action[] function)
